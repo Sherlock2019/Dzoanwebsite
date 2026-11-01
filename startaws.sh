@@ -35,7 +35,11 @@ warn() { printf '\033[1;33m! %s\033[0m\n' "$*"; }
 die() { printf '\033[1;31m✗ %s\033[0m\n' "$*"; exit 1; }
 
 command -v curl >/dev/null || die "curl is required."
-sudo -v || die "sudo is required (to configure the web server and HTTPS)."
+if ! sudo -n true 2>/dev/null; then
+  echo "sudo is needed to configure the web server and HTTPS."
+  echo "(On EC2 the 'ubuntu' user normally has password-less sudo; on this instance it asks for a password.)"
+  sudo -v || die "No sudo access. Restore password-less sudo (README → 'sudo asks for a password'), then re-run."
+fi
 
 # ---------------------------------------------------------------- this EC2's public IP
 token="$(curl -s -m 2 -X PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 60' || true)"

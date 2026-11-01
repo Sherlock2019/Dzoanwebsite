@@ -164,6 +164,15 @@ On the EC2, `./startaws.sh` does steps 2–4 for the jobsmatchnow.com subdomain.
 The security group needs ports 80 and 443 open. Close 9063 afterwards. Options: `SUBDOMAIN`, `DOMAIN`, `PORT`, `CERT_EMAIL`.
 After `git pull` or a reboot, re-run `./startaws.sh`. Plain `./start.sh` would use port 3100 instead of 9063.
 
+**sudo asks for a password.** Stock EC2 Ubuntu has password-less sudo for `ubuntu`. If yours asks for a password you
+don't know, restore it in one of these ways:
+- **Session Manager:** in the AWS console, go to EC2 → instance → Connect → *Session Manager*. Its `ssm-user` has
+  password-less sudo. Then run:
+  `echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/90-cloud-init-users`
+- **Docker group:** if `groups` lists `docker`, Docker can write the same file:
+  `docker run --rm -v /etc/sudoers.d:/s alpine sh -c "echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /s/90-cloud-init-users && chmod 440 /s/90-cloud-init-users"`
+- **Neither works:** stop the instance, attach its root volume to another instance, and fix the file there.
+
 ## Signing in as the owner
 
 Open the dashboard address printed by `start.sh` (e.g. **http://localhost:3100/admin**) and sign in with `OWNER_EMAIL` and your password. Visitors never see an edit
