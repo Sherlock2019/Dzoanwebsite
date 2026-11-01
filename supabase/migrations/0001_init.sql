@@ -46,10 +46,13 @@ alter table public.profile enable row level security;
 
 -- No insert/update/delete policies exist, so only the service role (server) can write.
 
--- Private storage bucket for images and the résumé PDF (15 MB limit, images + PDF only).
+-- Private storage bucket for images, the résumé PDF and documents uploaded for AI ingestion
+-- (20 MB limit).
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('portfolio-media', 'portfolio-media', false, 15728640,
-        array['image/png','image/jpeg','image/webp','application/pdf'])
+values ('portfolio-media', 'portfolio-media', false, 20971520,
+        array['image/png','image/jpeg','image/webp','application/pdf',
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+              'text/plain','text/markdown'])
 on conflict (id) do update
   set public = false,
       file_size_limit = excluded.file_size_limit,

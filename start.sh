@@ -12,6 +12,7 @@
 #   PUBLIC_URL=https://my.domain ./start.sh   full public URL when you put HTTPS/a domain in front.
 #   BIND=127.0.0.1 ./start.sh          listen on one interface only (default 0.0.0.0 = all).
 #   OWNER_EMAIL=you@x.com ./start.sh   owner login created on the very first run.
+#   FLOWISE=0 ./start.sh               don't start the Flowise container (Docker) alongside the site.
 #
 # First run only: installs Node.js if needed (via nvm, no sudo), installs dependencies,
 # creates .env.local with a one-time owner password (.data/OWNER_PASSWORD.txt) and loads the seed content.
@@ -98,6 +99,42 @@ if [[ ! -f .env.local ]]; then
   echo "One-time password saved to .data/OWNER_PASSWORD.txt — copy it to your password manager, then delete the file."
 fi
 
+# ---------------------------------------------------------------- AI document database (optional, Docker)
+flowise_healthy() { [[ "$(docker inspect -f '{{.State.Health.Status}}' myweb-flowise 2>/dev/null)" == "healthy" ]]; }
+if [[ -f docker-compose.yml ]] && command -v docker >/dev/null && docker info >/dev/null 2>&1; then
+  if ! grep -q '^RAG_DATABASE_URL=postgres' .env.local; then
+    pw="$(head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \n')"
+    printf '\n# AI document database (docker compose service "rag-db", created by start.sh)\nRAG_DB_PASSWORD=%s\nRAG_DATABASE_URL=postgres://myweb:%s@127.0.0.1:55434/myweb\n' "$pw" "$pw" >> .env.local
+  fi
+  if ! docker ps --format '{{.Names}}' | grep -qx myweb-rag-db; then
+    say "Starting the AI document database (Docker)"
+    docker compose --env-file .env.local up -d --wait rag-db >/dev/null 2>&1 \
+      || warn "Could not start the document database; AI documents stay disabled until Docker works."
+  fi
+  # Flowise backend (AI orchestration), on FLOWISE_PORT (default 3110).
+  if [[ "${FLOWISE:-1}" != "0" ]]; then
+    grep -q '^FLOWISE_PORT=' .env.local || printf '\n# Flowise (docker compose service "flowise", started by start.sh)\nFLOWISE_PORT=3110\n' >> .env.local
+    FLOWISE_PORT_USED="$(grep '^FLOWISE_PORT=' .env.local | tail -1 | cut -d= -f2)"
+    if ! grep -q '^FLOWISE_URL=http' .env.local; then
+      printf 'FLOWISE_URL=http://127.0.0.1:%s\n' "$FLOWISE_PORT_USED" >> .env.local
+    elif grep -qx 'FLOWISE_URL=http://127.0.0.1:3000' .env.local; then
+      # Old default from .env.example; point it at this site's own Flowise.
+      sed -i "s#^FLOWISE_URL=http://127.0.0.1:3000\$#FLOWISE_URL=http://127.0.0.1:$FLOWISE_PORT_USED#" .env.local
+    fi
+    # Flowise stores its data in its own database on rag-db.
+    if docker ps --format '{{.Names}}' | grep -qx myweb-rag-db \
+      && ! docker exec myweb-rag-db psql -U myweb -d myweb -tAc "SELECT 1 FROM pg_database WHERE datname = 'flowise'" | grep -q 1; then
+      docker exec myweb-rag-db createdb -U myweb flowise
+    fi
+    # "up" is a no-op when the container is current and recreates it after docker-compose.yml changes.
+    flowise_healthy || say "Starting Flowise (Docker; the first run downloads the image, a few minutes)"
+    docker compose --env-file .env.local up -d --wait flowise >/dev/null 2>&1 \
+      || warn "Flowise did not start (docker logs myweb-flowise). Analysis still works directly with Qwen."
+  fi
+else
+  grep -q '^RAG_DATABASE_URL=postgres' .env.local 2>/dev/null || echo "  (Docker not available: AI document features are off. The site works without them.)"
+fi
+
 # ---------------------------------------------------------------- content
 if [[ ! -f .data/db.json ]]; then
   if [[ -f content/seed/seed.json ]]; then
@@ -166,6 +203,10 @@ CMD=(node_modules/.bin/next start -H "$BIND" -p "$PORT_TO_USE")
 echo "$SITE_URL" > "$URL_FILE"
 say "Website:          $SITE_URL"
 echo "  Owner dashboard: $SITE_URL/admin"
+echo "  API docs:        $SITE_URL/api-docs   (Swagger UI, owner sign-in)"
+if [[ -n "${FLOWISE_PORT_USED:-}" ]] && flowise_healthy; then
+  echo "  Flowise:         http://$HOST_NAME:$FLOWISE_PORT_USED   (API: http://$HOST_NAME:$FLOWISE_PORT_USED/api/v1)"
+fi
 [[ "$HOST_NAME" != "localhost" ]] && echo "  On this machine: http://localhost:$PORT_TO_USE"
 if [[ "$HOST_NAME" != "localhost" && "$SITE_URL" == http://* ]]; then
   warn "Public site over plain HTTP: open TCP port $PORT_TO_USE in the EC2 security group."

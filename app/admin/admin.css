@@ -1,5 +1,127 @@
 /* Owner dashboard */
 
+/* AI & documents */
+.ai-status {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+
+.ai-status li {
+  background: #fff;
+  border: 1px solid #dde4ee;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+
+.ai-status .hint {
+  width: 100%;
+  margin: 0;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  background: #c4ccd8;
+}
+
+.status-dot.ok {
+  background: #16a34a;
+}
+
+.status-dot.warn {
+  background: #e3a008;
+}
+
+.doc-row {
+  align-items: flex-start !important;
+}
+
+.doc-summary {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+  color: #34465c;
+  white-space: pre-line;
+}
+
+.proposal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.proposal {
+  border: 1px solid #dde4ee;
+  border-radius: 12px;
+  padding: 16px;
+  background: #fbfcfe;
+}
+
+.proposal-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.proposal-reason {
+  margin: 0 0 8px;
+}
+
+.proposal-evidence {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-left: 3px solid var(--accent);
+  background: #f0f7fd;
+  font-size: 0.9rem;
+  color: #2a3d52;
+  display: flex;
+  gap: 8px;
+}
+
+.proposal-diff {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.proposal textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 0.92rem;
+  padding: 9px 12px;
+  border: 1px solid #cdd7e3;
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.proposal-current {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 0.9rem;
+  background: #fff;
+  border: 1px dashed #cdd7e3;
+  border-radius: 8px;
+  padding: 9px 12px;
+  max-height: 260px;
+  overflow: auto;
+  color: #56606b;
+}
+
 .admin-shell {
   display: grid;
   grid-template-columns: 250px 1fr;

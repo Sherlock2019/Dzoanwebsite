@@ -11,6 +11,7 @@ import {
   LuNetwork,
   LuRocket,
   LuSettings,
+  LuSparkles,
   LuUser,
 } from "react-icons/lu";
 
@@ -23,6 +24,7 @@ const LINKS = [
   { href: "/admin/experience", label: "Experience", icon: LuBriefcase },
   { href: "/admin/skills", label: "Skills & stacks", icon: LuSettings },
   { href: "/admin/certifications", label: "Certifications", icon: LuAward },
+  { href: "/admin/ai", label: "AI & documents", icon: LuSparkles },
 ];
 
 export default function AdminNav({ email }: { email: string }) {

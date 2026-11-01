@@ -20,7 +20,7 @@ const csp = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  serverExternalPackages: ["sharp"],
+  serverExternalPackages: ["sharp", "pg", "mammoth", "unpdf"],
   async headers() {
     const headers = [
       { key: "X-Content-Type-Options", value: "nosniff" },

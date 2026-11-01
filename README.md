@@ -7,6 +7,76 @@ projects and certifications.
 - Public site: fixed dark sidebar, About, Skills + Business/Human stack, Résumé timeline, filterable project and
   architecture galleries, a zoomable diagram viewer, Current Projects, Certifications and Contact.
 - Owner dashboard (`/admin`): create, edit, publish, unpublish, reorder and delete content; upload images and the PDF.
+- AI: a recruiter chat (Claude), document upload with hybrid search (RAG), and AI-proposed site updates that you
+  approve (Qwen through Ollama, optionally orchestrated by Flowise).
+- API docs: Swagger UI at `/api-docs`.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  visitor(["Visitor / recruiter"])
+  owner(["Owner"])
+
+  subgraph next["Next.js 15 app (./start.sh, port 3100)"]
+    direction TB
+    site["Public site<br/>About · Projects · Architectures · Résumé"]
+    chatw["Chat widget"]
+    admin["Owner dashboard /admin<br/>content editor · AI & documents"]
+    docs["Swagger UI /api-docs<br/>+ /api/openapi.json"]
+    subgraph api["API routes"]
+      chatapi["/api/chat<br/>rate limit · same-origin"]
+      adminapi["/api/admin/*<br/>owner session · zod validation"]
+      aiapi["/api/admin/ai/*<br/>documents · analyze · proposals"]
+      media["/media/*<br/>published files only"]
+    end
+    subgraph libs["Server libraries"]
+      content["lib/content + lib/db<br/>Repository"]
+      storage["lib/storage<br/>ObjectStorage"]
+      rag["lib/rag<br/>parse · chunk · embed · hybrid search"]
+      analyze["lib/ai/analyze + proposals<br/>evidence check · approval"]
+      ctx["lib/ai/site-context<br/>published content only"]
+    end
+  end
+
+  subgraph data["Content storage (DATA_PROVIDER)"]
+    local[(".data/db.json + uploads<br/>local, default")]
+    supa[("Supabase Postgres + Storage<br/>optional")]
+  end
+
+  subgraph docker["Docker (started by ./start.sh)"]
+    pg[("rag-db: Postgres + pgvector<br/>127.0.0.1:55434")]
+    flowise["Flowise<br/>:3110 · UI + /api/v1"]
+  end
+
+  ollama["Ollama :11434<br/>embeddinggemma · qwen2.5:7b"]
+  claude["Anthropic API<br/>Claude Haiku 5.5"]
+
+  visitor --> site & chatw
+  chatw --> chatapi
+  owner --> admin & docs
+  admin --> adminapi & aiapi
+  docs -. try it out .-> api
+  site --> media
+  chatapi --> ctx & rag
+  chatapi -- streaming, cached prompt --> claude
+  adminapi --> content & storage
+  aiapi --> rag & analyze
+  ctx & analyze --> content
+  content --> local & supa
+  storage --> local & supa
+  media --> storage
+  rag --> pg
+  rag -- embeddings --> ollama
+  analyze --> pg
+  analyze -- chatflow, when configured --> flowise
+  analyze -- otherwise direct --> ollama
+  flowise -- ChatOllama --> ollama
+  flowise -- own "flowise" database --> pg
+```
+
+Every AI piece is optional: without Docker, Ollama or an Anthropic key the matching feature switches off and the
+rest of the site keeps working (see [AI features](#ai-features)).
 
 ## Quick start (local)
 
@@ -15,9 +85,21 @@ cd ~/Myweb
 ./start.sh          # installs, configures, seeds and builds on first run, then serves the site
 ./start.sh --bg     # same, in the background (survives closing the terminal / SSH)
 ./start.sh --dev    # development mode with hot reload
-./stop.sh           # stop it
+./stop.sh           # stop it (./stop.sh --all also stops the Docker services)
 PORT=4000 ./start.sh
+FLOWISE=0 ./start.sh   # don't start Flowise
 ```
+
+Everything starts together, and `start.sh` prints the links:
+
+| Service | Link (local defaults) | Notes |
+|---|---|---|
+| Website | http://localhost:3100 | Public site |
+| Owner dashboard | http://localhost:3100/admin | AI & documents page has *Open Flowise* / *Open Swagger* buttons |
+| API docs (Swagger UI) | http://localhost:3100/api-docs | Owner sign-in required; spec at `/api/openapi.json` |
+| Flowise (UI + backend) | http://localhost:3110 | REST API under `/api/v1`; health: `/api/v1/ping`. Docker service `flowise` |
+| Document database | `127.0.0.1:55434` | Docker service `rag-db` (Postgres + pgvector), localhost only |
+| Ollama | http://127.0.0.1:11434 | Installed separately (see AI features) |
 
 The launcher starts at port 3100 (or `PORT`). If that port is busy, it uses the next free one and prints the
 address. It listens on all interfaces (`BIND=127.0.0.1` restricts it to this machine).
@@ -107,6 +189,54 @@ thumbnail is generated for the galleries. Architecture images can be downloaded 
 The data layer sits behind `lib/db` (`Repository`) and `lib/storage` (`ObjectStorage`). To use another database or
 object store, add one adapter for each.
 
+## AI features
+
+All optional. Each one switches off cleanly when its service isn't configured, and the site works without any of
+them. Settings are in `.env.example`; the dashboard page **AI & documents** shows what is connected.
+
+| Feature | Needs | Without it |
+|---|---|---|
+| Document upload, search index and AI Inbox | `RAG_DATABASE_URL` (Postgres + pgvector) | The AI page shows only the status panel |
+| Vector search (embeddings) | Ollama with `EMBED_MODEL` (default `embeddinggemma`, 768 dimensions) | Keyword search only |
+| Document analysis → proposed site updates | Ollama with `ANALYZE_MODEL` (default `qwen2.5:7b`), or a Flowise chatflow | Analyze fails with a message; documents stay searchable |
+| Public recruiter chat | `ANTHROPIC_API_KEY` (model `CHAT_MODEL`, default `claude-haiku-5-5`) | The chat button is hidden |
+
+**Document database.** When Docker is available, `./start.sh` generates `RAG_DB_PASSWORD` and `RAG_DATABASE_URL` in
+`.env.local` and starts the `rag-db` service from `docker-compose.yml` (pgvector, localhost port 55434, data in the
+`myweb-rag-data` volume). The tables are created on first use. To run it by hand:
+`docker compose --env-file .env.local up -d rag-db`.
+
+**Local models.** Install [Ollama](https://ollama.com), then `ollama pull embeddinggemma && ollama pull qwen2.5:7b`.
+Analysis runs Qwen with a 16k-token context and sends at most the first 32,000 characters of a document; the
+dashboard says when a document was longer. If you change `EMBED_MODEL` to one with a different vector size, update
+`embedDimensions` in `lib/ai/config.ts` and recreate the `rag_chunks` table.
+
+**Flowise (optional).** `./start.sh` runs Flowise in Docker on port 3110 (`FLOWISE_PORT`) and sets
+`FLOWISE_URL`. It uses host networking so it can reach Ollama at `http://127.0.0.1:11434`. Its chatflows and
+accounts are stored in a separate `flowise` database on `rag-db` (created by `start.sh`), and its keys and files in
+the `myweb-flowise-data` volume. On the first visit Flowise asks you to create its admin account. To orchestrate analysis
+through it instead of calling Ollama directly, create a chatflow that passes `{question}` to a ChatOllama node
+(base URL `http://127.0.0.1:11434`, `qwen2.5:7b`, temperature 0.2, context 16384, JSON output), then set
+`FLOWISE_CHATFLOW_ID` and, if the flow is protected, `FLOWISE_API_KEY`, and restart. The prompt already contains the
+instructions, the current site and the document. On EC2, Flowise listens on all interfaces: keep port 3110 closed in
+the security group and use an SSH tunnel (`ssh -L 3110:localhost:3110 …`).
+
+**How it works.**
+
+1. Dashboard → AI & documents → *Upload documents* (PDF, .docx, .txt, .md; 20 MB each). Originals are stored privately
+   under `sources/` and are only downloadable by the owner. The text is extracted, chunked, embedded and indexed.
+2. *Analyze* compares the document with the current site and fills the **AI Inbox** with proposals (profile text,
+   project fields, new projects, roles, certifications, skills). Each one must quote the document word for word;
+   proposals whose quote isn't in the document are discarded automatically.
+3. Review each proposal, edit it if needed, then *Apply* or *Reject*. Updates to existing content go live at once;
+   new projects, roles and certifications are created as drafts. Nothing changes without your approval.
+4. Tick *Chatbot can use* on a document to let the public chat quote it. Documents are private by default.
+
+**Recruiter chat.** Claude answers only from published content (drafts never reach it) plus excerpts from documents
+marked *Chatbot can use*. Limits: 20 questions per visitor per 10 minutes and `CHAT_DAILY_LIMIT` per day (default
+1000), counted per server process. The portfolio part of the prompt is cached, so repeat questions are cheap; token
+use is logged as `[chat] … in (+… cached), … out`. Set `CHAT_ENABLED=false` to hide the chat.
+
 ## Security model
 
 - Owner auth runs on the server: an scrypt password hash, and an HMAC-signed session in an HttpOnly, `SameSite=Strict`
@@ -122,6 +252,10 @@ object store, add one adapter for each.
   private. Orphaned files are deleted when content is removed.
 - Supabase: RLS is on for all tables. Anonymous clients can only read published rows and can never write. The profile
   table has no public policy.
+- AI: every AI admin route is owner-only. Uploaded documents are detected by their bytes, never published, and served
+  only to the owner. AI proposals are validated against a fixed schema and go through the normal content validation
+  when applied. The chat API checks the origin, is rate-limited, and only sees published content.
+- API docs: `/api-docs` and `/api/openapi.json` are owner-only; Swagger UI is served from the site itself (no CDN).
 - Security headers include CSP, `X-Frame-Options: DENY` and `nosniff`. Secrets live only in environment variables.
 
 ## Tests

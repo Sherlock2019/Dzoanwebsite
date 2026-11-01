@@ -3,6 +3,12 @@
 set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")"
 
+# ./stop.sh --all also stops the Docker services (document database and Flowise); by default they
+# keep running so the next ./start.sh is fast.
+if [[ "${1:-}" == "--all" ]] && command -v docker >/dev/null && [[ -f docker-compose.yml ]]; then
+  docker compose --env-file .env.local stop >/dev/null 2>&1 && echo "Docker services (rag-db, flowise) stopped."
+fi
+
 PID_FILE=".data/server.pid"
 if [[ ! -f "$PID_FILE" ]] || ! kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
   echo "The website is not running (no live $PID_FILE)."

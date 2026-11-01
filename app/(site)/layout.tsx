@@ -1,4 +1,6 @@
+import ChatWidget from "@/components/chat/ChatWidget";
 import AdminHotkey from "@/components/layout/AdminHotkey";
+import { chatEnabled } from "@/lib/ai/config";
 import Sidebar, { type NavItem, type Social } from "@/components/layout/Sidebar";
 import { getOwnerSession } from "@/lib/auth/guard";
 import { thumbUrl } from "@/lib/media-url";
@@ -54,6 +56,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           </p>
         </footer>
       </main>
+      {chatEnabled() && <ChatWidget name={profile.name} />}
     </div>
   );
 }

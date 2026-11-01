@@ -1,0 +1,57 @@
+# AI document database (Postgres + pgvector) for the portfolio. Started by ./start.sh when Docker
+# is available. Only listens on localhost. Data lives in the "myweb-rag-data" Docker volume.
+services:
+  rag-db:
+    image: pgvector/pgvector:pg17
+    container_name: myweb-rag-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: myweb
+      POSTGRES_PASSWORD: ${RAG_DB_PASSWORD:?set RAG_DB_PASSWORD in .env.local}
+      POSTGRES_DB: myweb
+    ports:
+      - "127.0.0.1:55434:5432"
+    volumes:
+      - myweb-rag-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myweb -d myweb"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # Flowise (AI orchestration for document analysis). Host networking so its ChatOllama node can
+  # reach Ollama at http://127.0.0.1:11434. UI and API on FLOWISE_PORT (default 3110).
+  flowise:
+    image: flowiseai/flowise:3.1.2
+    container_name: myweb-flowise
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      rag-db:
+        condition: service_healthy
+    environment:
+      PORT: ${FLOWISE_PORT:-3110}
+      # Flowise keeps its data in its own "flowise" database on rag-db (start.sh creates it).
+      # Its SQLite mode crashes on start in 3.1.x (connect-sqlite3 session store).
+      DATABASE_TYPE: postgres
+      DATABASE_HOST: 127.0.0.1
+      DATABASE_PORT: "55434"
+      DATABASE_USER: myweb
+      DATABASE_PASSWORD: ${RAG_DB_PASSWORD:?set RAG_DB_PASSWORD in .env.local}
+      DATABASE_NAME: flowise
+      SECRETKEY_PATH: /home/node/.flowise
+      LOG_PATH: /home/node/.flowise/logs
+      BLOB_STORAGE_PATH: /home/node/.flowise/storage
+    volumes:
+      # Mounted at the home folder (owned by the image's "node" user) so the volume is writable.
+      - myweb-flowise-data:/home/node
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:$${PORT}/api/v1/ping >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+      start_period: 10s
+
+volumes:
+  myweb-rag-data:
+  myweb-flowise-data:

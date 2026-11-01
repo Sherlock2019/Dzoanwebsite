@@ -8,7 +8,10 @@ export interface ObjectStorage {
 }
 
 // Only server-generated keys are accepted: <folder>/<year>/<uuid>[.thumb].<ext>
-const KEY_PATTERN = /^(images|documents)\/\d{4}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(\.thumb)?\.(png|jpg|webp|pdf)$/;
+// "sources" holds documents uploaded for AI ingestion; they are never referenced by published
+// content, so the media route only ever serves them to the signed-in owner.
+const KEY_PATTERN =
+  /^(images|documents|sources)\/\d{4}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(\.thumb)?\.(png|jpg|webp|pdf|docx|txt|md)$/;
 
 export function isValidKey(key: string): boolean {
   return KEY_PATTERN.test(key);
@@ -19,6 +22,9 @@ export const CONTENT_TYPES: Record<string, string> = {
   jpg: "image/jpeg",
   webp: "image/webp",
   pdf: "application/pdf",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  txt: "text/plain; charset=utf-8",
+  md: "text/markdown; charset=utf-8",
 };
 
 export function contentTypeForKey(key: string): string {
