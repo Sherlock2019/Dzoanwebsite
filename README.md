@@ -150,6 +150,20 @@ npm run build && npm start         # http://localhost:3100
 
 Overrides: `PUBLIC_HOST=1.2.3.4` (if metadata is unavailable), `PUBLIC_URL=https://…` (domain / HTTPS) and `PORT=…`.
 
+### One command: https://dzoannguyentran.jobsmatchnow.com
+
+On the EC2, `./startaws.sh` does steps 2–4 for the jobsmatchnow.com subdomain. It is safe to re-run.
+
+1. **DNS:** it checks that the GoDaddy A record `dzoannguyentran` → the instance's public IP is live. With
+   `GODADDY_API_KEY`/`GODADDY_API_SECRET` set, it creates the record itself; otherwise it prints the record and waits.
+2. **Website:** it starts the site in the background on `127.0.0.1:9063`, reachable only through the proxy.
+3. **Proxy and HTTPS:** it adds the subdomain to the web server already on port 80 (nginx: a `conf.d` file plus a
+   certbot certificate; Caddy: a Caddyfile block). If neither is installed, it installs nginx.
+4. **Check:** it fetches the HTTPS URL.
+
+The security group needs ports 80 and 443 open. Close 9063 afterwards. Options: `SUBDOMAIN`, `DOMAIN`, `PORT`, `CERT_EMAIL`.
+After `git pull` or a reboot, re-run `./startaws.sh`. Plain `./start.sh` would use port 3100 instead of 9063.
+
 ## Signing in as the owner
 
 Open the dashboard address printed by `start.sh` (e.g. **http://localhost:3100/admin**) and sign in with `OWNER_EMAIL` and your password. Visitors never see an edit
