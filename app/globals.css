@@ -1099,6 +1099,26 @@ img {
   background: #fff;
 }
 
+.project-group + .project-group {
+  margin-top: 40px;
+}
+
+.project-group-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 1.2rem;
+  color: #0d2a4a;
+  margin: 0 0 18px;
+}
+
+.project-group-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #c9dcf2;
+}
+
 .empty-note {
   color: var(--muted);
   padding: 30px;

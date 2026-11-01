@@ -14,9 +14,11 @@ interface Props {
   collection: CollectionName;
   initial: Item | null;
   refs: { projects: RefOption[]; architectures: RefOption[] };
+  /** Values already used per field in this collection, for suggestExisting fields. */
+  existing?: Record<string, string[]>;
 }
 
-export default function EntityForm({ collection, initial, refs }: Props) {
+export default function EntityForm({ collection, initial, refs, existing = {} }: Props) {
   const config = COLLECTION_CONFIG[collection];
   const router = useRouter();
   const isNew = !initial?.id;
@@ -134,16 +136,38 @@ export default function EntityForm({ collection, initial, refs }: Props) {
         return <RefSelect id={id} value={String(value ?? "")} onChange={(v) => set(field.name, v)} options={refs[field.collection!].filter((o) => o.id !== item.id)} />;
       case "refs":
         return <RefsChecklist value={(value as string[]) || []} onChange={(v) => set(field.name, v)} options={refs[field.collection!]} />;
-      default:
+      default: {
+        const suggestions = field.suggestExisting ? existing[field.name] || [] : [];
         return (
-          <input
-            id={id}
-            type={field.type === "url" ? "url" : field.type === "email" ? "email" : field.type === "date" ? "date" : "text"}
-            value={String(value ?? "")}
-            required={field.required}
-            onChange={(e) => set(field.name, e.target.value)}
-          />
+          <>
+            <input
+              id={id}
+              type={field.type === "url" ? "url" : field.type === "email" ? "email" : field.type === "date" ? "date" : "text"}
+              value={String(value ?? "")}
+              required={field.required}
+              list={suggestions.length ? `${id}-list` : undefined}
+              onChange={(e) => set(field.name, e.target.value)}
+            />
+            {suggestions.length > 0 && (
+              <>
+                <datalist id={`${id}-list`}>
+                  {suggestions.map((s) => (
+                    <option key={s} value={s} />
+                  ))}
+                </datalist>
+                <div className="tag-suggestions">
+                  <span>Existing:</span>
+                  {suggestions.map((s) => (
+                    <button type="button" key={s} onClick={() => set(field.name, s)}>
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         );
+      }
     }
   }
 

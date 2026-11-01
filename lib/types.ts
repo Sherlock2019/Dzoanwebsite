@@ -78,6 +78,7 @@ interface Base {
 
 export interface Project extends Base {
   slug: string;
+  group: string;
   title: string;
   subtitle: string;
   context: string;

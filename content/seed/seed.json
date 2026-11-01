@@ -455,7 +455,8 @@
       "demo_url": "http://100.31.100.157:8502/",
       "repo_url": "https://github.com/Sherlock2019/AI-AIGENTbythePeoplesANDBOX",
       "links": [],
-      "related": []
+      "related": [],
+      "group": "Live AI Demos"
     },
     {
       "key": "banking",
@@ -501,7 +502,8 @@
         "improve-aws",
         "improve-gcp",
         "azure-credit"
-      ]
+      ],
+      "group": "Live AI Demos"
     },
     {
       "key": "sparc",
@@ -541,7 +543,8 @@
       "links": [],
       "related": [
         "cosmetics"
-      ]
+      ],
+      "group": "Live AI Demos"
     },
     {
       "key": "yesaican",
@@ -575,7 +578,8 @@
       "demo_url": "http://100.31.100.157:8054",
       "repo_url": "https://github.com/Sherlock2019/YesAIcancommunity-LAB",
       "links": [],
-      "related": []
+      "related": [],
+      "group": "Live AI Demos"
     },
     {
       "key": "gpucalc",
@@ -605,7 +609,8 @@
       "demo_url": "http://100.31.100.157:8081",
       "repo_url": "https://github.com/Sherlock2019/AIModelSpecsasGPUFLavor",
       "links": [],
-      "related": []
+      "related": [],
+      "group": "Live AI Demos"
     },
     {
       "key": "zen2flex",
@@ -636,7 +641,8 @@
       "demo_url": "",
       "repo_url": "",
       "links": [],
-      "related": []
+      "related": [],
+      "group": "Cloud, Data & FinOps"
     },
     {
       "key": "gameloft",
@@ -672,7 +678,8 @@
       "demo_url": "",
       "repo_url": "",
       "links": [],
-      "related": []
+      "related": [],
+      "group": "Cloud, Data & FinOps"
     },
     {
       "key": "sdlc-aicopilot",
@@ -705,7 +712,8 @@
         "MCP-style tools",
         "RAG",
         "Docker"
-      ]
+      ],
+      "group": "Live AI Demos"
     },
     {
       "key": "ev-fleet-ai-manager",
@@ -737,7 +745,8 @@
         "TypeScript",
         "Leaflet maps",
         "D3"
-      ]
+      ],
+      "group": "Live AI Demos"
     },
     {
       "key": "humanaisentinel",
@@ -771,7 +780,8 @@
         "FastAPI",
         "MCP-style integration",
         "Guardrails"
-      ]
+      ],
+      "group": "Agentic AI & Governance POCs"
     },
     {
       "key": "microcredit-advisor",
@@ -805,7 +815,8 @@
         "Human-in-the-loop",
         "AWS EC2"
       ],
-      "repo_url": "https://github.com/Sherlock2019/MicroCredit-Advisor"
+      "repo_url": "https://github.com/Sherlock2019/MicroCredit-Advisor",
+      "group": "Agentic AI & Governance POCs"
     },
     {
       "key": "trustchain-ai",
@@ -837,7 +848,8 @@
         "Smart contracts",
         "Blockchain"
       ],
-      "repo_url": "https://github.com/Sherlock2019/AI-blockchain-Gardian"
+      "repo_url": "https://github.com/Sherlock2019/AI-blockchain-Gardian",
+      "group": "Agentic AI & Governance POCs"
     },
     {
       "key": "kats-kt-ai-enhanced-ticket-support-system",
@@ -868,7 +880,8 @@
         "Local LLM",
         "HTML / JavaScript"
       ],
-      "repo_url": "https://github.com/Sherlock2019/KATS"
+      "repo_url": "https://github.com/Sherlock2019/KATS",
+      "group": "Agentic AI & Governance POCs"
     },
     {
       "key": "mlm-meaning-language-model",
@@ -898,7 +911,8 @@
         "Knowledge graph",
         "AWS EC2"
       ],
-      "repo_url": "https://github.com/Sherlock2019/NPLM-Next-Phrase-language-model-"
+      "repo_url": "https://github.com/Sherlock2019/NPLM-Next-Phrase-language-model-",
+      "group": "AI Research"
     },
     {
       "key": "acm-actions-consequential-model",
@@ -928,7 +942,8 @@
         "Vector search",
         "NLP"
       ],
-      "repo_url": "https://github.com/Sherlock2019/ACM"
+      "repo_url": "https://github.com/Sherlock2019/ACM",
+      "group": "AI Research"
     }
   ],
   "architectures": [

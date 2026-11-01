@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LuArrowDown, LuArrowUp, LuExternalLink, LuPencil, LuPlus, LuTrash2 } from "react-icons/lu";
 import { COLLECTION_CONFIG } from "@/lib/admin/collections";
@@ -85,8 +85,16 @@ export default function EntityList({ collection, initial }: { collection: Collec
           {rows.map((row, i) => {
             const cover = hasMedia ? coverOf(row) : null;
             const published = row.visibility === "published";
+            const groupOf = (r: Row) => String((config.groupField && r[config.groupField]) || "").trim() || "No group";
+            const showGroup = Boolean(config.groupField) && (i === 0 || groupOf(rows[i - 1]) !== groupOf(row));
             return (
-              <li key={row.id}>
+              <Fragment key={row.id}>
+              {showGroup && (
+                <li className="admin-group-heading" aria-hidden={false}>
+                  {groupOf(row)}
+                </li>
+              )}
+              <li>
                 {hasMedia && (
                   <div className="admin-list-thumb">{cover ? <img src={thumbUrl(cover)} alt="" /> : <span aria-hidden>—</span>}</div>
                 )}
@@ -122,6 +130,7 @@ export default function EntityList({ collection, initial }: { collection: Collec
                   </button>
                 </div>
               </li>
+              </Fragment>
             );
           })}
         </ul>

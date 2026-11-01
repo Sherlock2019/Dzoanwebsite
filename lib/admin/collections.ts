@@ -42,6 +42,8 @@ export interface Field {
   rows?: number;
   collection?: "projects" | "architectures";
   required?: boolean;
+  /** Text field that suggests values already used in this collection (e.g. group names). */
+  suggestExisting?: boolean;
 }
 
 export interface CollectionConfig {
@@ -52,6 +54,8 @@ export interface CollectionConfig {
   titleField: string;
   subtitleField?: string;
   publicPath?: "projects" | "architectures" | "current";
+  /** Field used to divide the dashboard list into sections. */
+  groupField?: string;
   fields: Field[];
   defaults: Record<string, unknown>;
 }
@@ -71,12 +75,20 @@ export const COLLECTION_CONFIG: Record<CollectionName, CollectionConfig> = {
     name: "projects",
     label: "Projects",
     singular: "project",
-    description: "Portfolio projects with screenshots, delivery stage, technologies and links.",
+    description: "Portfolio projects with screenshots, delivery stage, technologies and links. Projects are shown under their Group, in this order.",
     titleField: "title",
     subtitleField: "status",
     publicPath: "projects",
-    defaults: { status: "POC", visibility: "draft", categories: [], technologies: [], media: [], links: [], related_architectures: [], featured: false },
+    groupField: "group",
+    defaults: { group: "", status: "POC", visibility: "draft", categories: [], technologies: [], media: [], links: [], related_architectures: [], featured: false },
     fields: [
+      {
+        name: "group",
+        label: "Group (type of project)",
+        type: "text",
+        suggestExisting: true,
+        help: "Projects with the same group are shown together under this heading, e.g. “Live AI Demos”. Type a new name to create a group.",
+      },
       { name: "title", label: "Title", type: "text", required: true },
       { name: "subtitle", label: "Short subtitle", type: "text" },
       { name: "slug", label: "URL slug", type: "text", help: "Leave blank to generate from the title." },

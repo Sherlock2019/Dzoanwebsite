@@ -92,6 +92,7 @@ export const profileSchema = z.object({
 
 const projectSchema = z.object({
   slug,
+  group: text(80),
   title: text(150).pipe(z.string().min(1, "Title required")),
   subtitle: text(200),
   context: text(200),

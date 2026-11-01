@@ -388,6 +388,18 @@
   padding: 10px 14px;
 }
 
+.admin-list li.admin-group-heading {
+  background: transparent;
+  border: 0;
+  padding: 14px 2px 2px;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
 .admin-list-thumb {
   width: 84px;
   height: 54px;

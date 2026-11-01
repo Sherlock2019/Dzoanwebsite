@@ -49,6 +49,19 @@ export function ProjectCard({ project }: { project: Project }) {
   );
 }
 
+/** Group projects by `group`, keeping list order; groups appear in order of their first project. */
+function groupProjects(projects: Project[]): { name: string; items: Project[] }[] {
+  const groups: { name: string; items: Project[] }[] = [];
+  const anyGrouped = projects.some((p) => p.group?.trim());
+  for (const p of projects) {
+    const name = p.group?.trim() || (anyGrouped ? "Other projects" : "");
+    const g = groups.find((x) => x.name === name);
+    if (g) g.items.push(p);
+    else groups.push({ name, items: [p] });
+  }
+  return groups;
+}
+
 export default function Projects({ projects }: { projects: Project[] }) {
   const [filter, setFilter] = useState("All");
   const [query, setQuery] = useState("");
@@ -58,7 +71,7 @@ export default function Projects({ projects }: { projects: Project[] }) {
       projects.filter(
         (p) =>
           (filter === "All" || p.categories.includes(filter)) &&
-          matches(query, [p.title, p.subtitle, p.summary, p.context, p.status, p.technologies, p.categories]),
+          matches(query, [p.title, p.subtitle, p.summary, p.context, p.status, p.group, p.technologies, p.categories]),
       ),
     [projects, filter, query],
   );
@@ -83,11 +96,16 @@ export default function Projects({ projects }: { projects: Project[] }) {
           count={shown.length}
         />
         {shown.length ? (
-          <ul className="card-grid">
-            {shown.map((p) => (
-              <ProjectCard key={p.id} project={p} />
-            ))}
-          </ul>
+          groupProjects(shown).map(({ name, items }) => (
+            <div key={name || "_"} className="project-group">
+              {name && <h3 className="project-group-title">{name}</h3>}
+              <ul className="card-grid">
+                {items.map((p) => (
+                  <ProjectCard key={p.id} project={p} />
+                ))}
+              </ul>
+            </div>
+          ))
         ) : (
           <p className="empty-note">No projects match this filter.</p>
         )}
