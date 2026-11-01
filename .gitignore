@@ -3,16 +3,19 @@ node_modules/
 next-env.d.ts
 *.tsbuildinfo
 
-# Local database and uploads (persistent data — back this folder up, never commit it)
-.data/
+# Site content IS committed (db.json + uploads), so a clone is the complete website.
+# Everything else in .data is per-machine: server pid/log/url, runtime marker, one-time owner password.
+.data/*
+!.data/db.json
+!.data/uploads/
+
+# Windows download markers
+*:Zone.Identifier
 
 # Secrets
 .env
 .env.local
 .env.*.local
-
-# Private seed assets: résumé PDF and full-resolution diagrams stay on this machine
-content/seed/assets/
 
 # Private review notes (client names, unconfirmed facts) — local only
 content/review-notes.md

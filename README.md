@@ -117,7 +117,8 @@ npm run seed                       # loads content/seed/seed.json + content/seed
 npm run build && npm start         # http://localhost:3100
 ```
 
-`content/seed/assets/` (the résumé PDF and full-resolution diagrams) is git-ignored. Keep it on this machine.
+`content/seed/assets/` (the résumé PDF and full-resolution diagrams) and the live content in `.data/` are committed.
+The repository is public, so everything in them is downloadable from GitHub. Keep drafts and private files out.
 
 ## Running on AWS EC2
 
@@ -164,16 +165,11 @@ On the EC2, `./startaws.sh` does steps 2–4 for the jobsmatchnow.com subdomain.
 The security group needs ports 80 and 443 open. Close 9063 afterwards. Options: `SUBDOMAIN`, `DOMAIN`, `PORT`, `CERT_EMAIL`.
 After `git pull` or a reboot, re-run `./startaws.sh`. Plain `./start.sh` would use port 3100 instead of 9063.
 
-**Publish your real content, not the seed.** The seed images and résumé (`content/seed/assets/`) are private and
-not in git, so a fresh clone only gets the text. Copy the content you edit on your PC to the EC2 instead:
-```bash
-# on the PC (WSL), in ~/Myweb
-tar czf ~/myweb-data.tgz .data/db.json .data/uploads
-scp -i <your-key.pem> ~/myweb-data.tgz ubuntu@<EC2_IP>:~/
-# on the EC2, in the site folder
-./stop.sh; rm -rf .data/db.json .data/uploads; tar xzf ~/myweb-data.tgz; ./startaws.sh
-```
-AI documents (the pgvector index) are not included; upload them again in the AI Inbox.
+**Content travels with git.** The site content (`.data/db.json`, `.data/uploads/`) and the seed assets are
+committed, so a clone is the complete website. Edit on the PC, commit and push, then on the EC2 run
+`git pull && PORT=9065 ./startaws.sh`. Edits made in the EC2's admin change `.data/db.json` there: commit them
+from the EC2, or `git checkout .data` before pulling, or the pull refuses to overwrite them.
+AI documents (the pgvector index) are not in git; upload them again in the AI Inbox.
 
 **sudo asks for a password.** Stock EC2 Ubuntu has password-less sudo for `ubuntu`. If yours asks for a password you
 don't know, restore it in one of these ways:
