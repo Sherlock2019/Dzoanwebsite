@@ -183,6 +183,22 @@ if (( BACKGROUND )); then
   fi
 else
   echo "  Press Ctrl+C to stop (or run ./stop.sh from another terminal)."
-  echo $$ > "$PID_FILE"   # exec keeps this PID, so stop.sh can find the server
-  exec "${CMD[@]}"
+  # Run the server as a child and handle Ctrl+C here: Next.js alone can wait indefinitely for
+  # open browser connections to close. Ask it to stop, then force it after 3 seconds.
+  "${CMD[@]}" &
+  SERVER_PID=$!
+  echo "$SERVER_PID" > "$PID_FILE"
+  shutdown() {
+    trap '' INT TERM
+    printf '\nStopping the website…\n'
+    kill -TERM "$SERVER_PID" 2>/dev/null || true
+    for _ in $(seq 1 30); do kill -0 "$SERVER_PID" 2>/dev/null || break; sleep 0.1; done
+    kill -KILL "$SERVER_PID" 2>/dev/null || true
+    rm -f "$PID_FILE"
+    echo "Website stopped."
+    exit 0
+  }
+  trap shutdown INT TERM
+  wait "$SERVER_PID" || true
+  rm -f "$PID_FILE"
 fi

@@ -16,7 +16,8 @@ export default function AdminHotkey() {
         leftShiftDown = true;
         return;
       }
-      if (e.code !== "KeyA" || !e.shiftKey || !leftShiftDown || e.ctrlKey || e.altKey || e.metaKey) return;
+      // e.key (the typed letter) works on every layout — on AZERTY the "A" key has code "KeyQ".
+      if (e.key.toLowerCase() !== "a" || !e.shiftKey || !leftShiftDown || e.ctrlKey || e.altKey || e.metaKey) return;
       const el = e.target as HTMLElement | null;
       if (el && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName))) return;
       e.preventDefault();
