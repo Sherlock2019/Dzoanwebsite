@@ -17,6 +17,7 @@ export const PROJECT_CATEGORIES = [
   "AI Infrastructure / GPU",
   "Cloud / DevOps",
   "Internal Tools",
+  "AI Research",
   "Other",
 ] as const;
 

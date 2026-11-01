@@ -453,7 +453,7 @@
       ],
       "media": [],
       "demo_url": "http://100.31.100.157:8502/",
-      "repo_url": "",
+      "repo_url": "https://github.com/Sherlock2019/AI-AIGENTbythePeoplesANDBOX",
       "links": [],
       "related": []
     },
@@ -461,9 +461,9 @@
       "key": "banking",
       "title": "Banking AI Copilot — Credit & Asset Appraisal",
       "subtitle": "Private credit and asset appraisal POC with human decision authority",
-      "context": "Rackspace Technology · banking customer (ACB)",
+      "context": "Rackspace Technology · ACB Bank",
       "status": "POC",
-      "status_note": "Proof of concept. The public demo is a separate, earlier-stage showcase — not a production banking environment.",
+      "status_note": "Private banking analyst POC — not a live bank production deployment. The public demo is a separate showcase environment.",
       "categories": [
         "Agentic AI",
         "Banking / Finance"
@@ -472,14 +472,15 @@
       "summary": "A private credit and asset appraisal proof of concept that uses specialist agents, document RAG and cited evidence to streamline reviews — while human decision-makers stay in control.",
       "problem": "Credit and asset appraisal reviews involve many documents, policies and specialist checks. The bank wanted to explore how AI could speed up reviews without giving up privacy, compliance or human decision authority.",
       "role": "Led the workflow, data and privacy discovery workshops and built the POC hands-on.",
-      "implementation": "- FastAPI services and Flowise orchestration\n- Document RAG with PostgreSQL/pgvector retrieval and cited evidence\n- Specialist legal/compliance review and restricted agent/tool access\n- Human review, with decision authority kept by people",
-      "architecture": "The related diagrams show proposed target designs — hybrid OpenStack production with AWS or Google Cloud for development, training and staging. They describe the intended direction, not the POC as built.",
+      "implementation": "- FastAPI customer, document and audit API services, plus a banking analyst workspace for intake, evidence retrieval and staged human review\n- Flowise Chatflow orchestration for policy and citations, model routing and structured responses\n- Separate document RAG with Ollama embeddings and PostgreSQL/pgvector\n- Restricted Temenos / agent “digital officer” patterns for credit, asset, legal and fraud review — human officers keep final authorization",
+      "architecture": "The reference architecture was extended with OAuth/OIDC/SCIM, tenant-aware RBAC, Temporal and GitLab + SageMaker MLOps. These are planned extensions, not verified deployed features. The related diagrams show these proposed target designs.",
       "outcomes": "",
       "technologies": [
         "Python",
         "FastAPI",
         "Flowise",
         "RAG",
+        "Ollama embeddings",
         "PostgreSQL / pgvector",
         "Human-in-the-loop"
       ],
@@ -490,8 +491,8 @@
           "caption": "Proposed target architecture — not the POC as built"
         }
       ],
-      "demo_url": "http://100.31.100.157:8502/credit_appraisal",
-      "repo_url": "",
+      "demo_url": "http://100.31.100.157:8080",
+      "repo_url": "https://github.com/Sherlock2019/CreditpappraisalFlowise",
       "links": [],
       "related": [
         "banking-platform",
@@ -535,8 +536,8 @@
           "caption": "Reference / target architecture (v2)"
         }
       ],
-      "demo_url": "http://100.31.100.157:8000/#dashboard",
-      "repo_url": "",
+      "demo_url": "http://100.31.100.157:8000",
+      "repo_url": "https://github.com/Sherlock2019/SupplyChain_Predictions",
       "links": [],
       "related": [
         "cosmetics"
@@ -544,8 +545,8 @@
     },
     {
       "key": "yesaican",
-      "title": "YES AI CAN",
-      "subtitle": "Customer-zero platform for reusable AI agents and knowledge",
+      "title": "YES AI CAN — AI Agent Factory",
+      "subtitle": "Community lab: full-stack agent and ontology platform",
       "context": "Rackspace Technology — internal",
       "status": "Internal tool",
       "status_note": "Used by internal Rackspace teams (production use reported). The public demo is a separate showcase environment.",
@@ -557,19 +558,22 @@
       "summary": "An internal customer-zero platform for developing and demonstrating reusable AI capabilities for Rackspace teams.",
       "problem": "Teams needed a shared place to build, try and demonstrate reusable AI capabilities internally before offering them to customers.",
       "role": "Built the Customer Zero AI initiative and the platform.",
-      "implementation": "- A reusable application and agent environment\n- API and UI layers with Flowise orchestration\n- Retrieval and data relationships (business ontology)\n- Python services",
+      "implementation": "- API and UI layers connecting business entities and relationships, ontology concepts, RAG and vector retrieval, Flowise and models\n- Reusable agents that teams can develop and demonstrate\n- Python services with LangGraph / LangChain-style orchestration",
       "architecture": "",
       "outcomes": "",
       "technologies": [
         "Python",
+        "FastAPI",
+        "Streamlit",
         "Flowise",
+        "LangGraph / LangChain",
         "RAG",
-        "Ontology / knowledge graph",
-        "REST APIs"
+        "Vector retrieval",
+        "Ontology"
       ],
       "media": [],
-      "demo_url": "http://100.31.100.157:8054/",
-      "repo_url": "",
+      "demo_url": "http://100.31.100.157:8054",
+      "repo_url": "https://github.com/Sherlock2019/YesAIcancommunity-LAB",
       "links": [],
       "related": []
     },
@@ -598,8 +602,8 @@
         "FinOps"
       ],
       "media": [],
-      "demo_url": "http://100.31.100.157:8081/",
-      "repo_url": "",
+      "demo_url": "http://100.31.100.157:8081",
+      "repo_url": "https://github.com/Sherlock2019/AIModelSpecsasGPUFLavor",
       "links": [],
       "related": []
     },
@@ -669,6 +673,262 @@
       "repo_url": "",
       "links": [],
       "related": []
+    },
+    {
+      "key": "sdlc-aicopilot",
+      "repo_url": "https://github.com/Sherlock2019/SDLC-AIcopilot",
+      "links": [],
+      "media": [],
+      "related": [],
+      "architecture": "",
+      "outcomes": "",
+      "demo_url": "http://100.31.100.157:4000",
+      "title": "SDLC-AIcopilot",
+      "subtitle": "Developer tooling and DevSecOps POC — AI-assisted SDLC with human oversight",
+      "context": "Personal project",
+      "status": "POC",
+      "status_note": "Prototype. Deployment and impact metrics shown in the demo are simulated where indicated.",
+      "categories": [
+        "Agentic AI",
+        "Cloud / DevOps"
+      ],
+      "featured": false,
+      "summary": "A 25-stage prototype of an AI-assisted software lifecycle — requirements, architecture, coding, test automation, security reviews, CI/CD and incident root-cause analysis — with people reviewing each step.",
+      "problem": "Software teams want AI help across the whole delivery lifecycle, not just code completion — while keeping security reviews, quality gates and human decisions in place.",
+      "role": "Designed and built the prototype.",
+      "implementation": "- 25 stages spanning requirements, architecture, coding, test automation, security reviews, CI/CD and incident RCA\n- MCP-style tools and RAG over a project context repository (architecture, coding standards, security policy, API guidelines, incident history)\n- Python/FastAPI backend and React frontend, with pytest and Docker",
+      "technologies": [
+        "Python",
+        "FastAPI",
+        "React",
+        "pytest",
+        "MCP-style tools",
+        "RAG",
+        "Docker"
+      ]
+    },
+    {
+      "key": "ev-fleet-ai-manager",
+      "repo_url": "https://github.com/Sherlock2019/EVAIManager",
+      "links": [],
+      "media": [],
+      "related": [],
+      "architecture": "",
+      "outcomes": "",
+      "demo_url": "http://100.31.100.157:9063",
+      "title": "EV Fleet AI Manager",
+      "subtitle": "EV fleet and mobility intelligence demo lab",
+      "context": "Personal project",
+      "status": "Personal project",
+      "status_note": "Portfolio demo lab running on demo data with simulation controls. Not a deployment for any vehicle manufacturer or fleet operator.",
+      "categories": [
+        "Other"
+      ],
+      "featured": false,
+      "summary": "A demo lab for electric-vehicle fleets: fleet command and vehicle health, charging network and route intelligence, ride-demand forecasting, and an ADAS model-improvement loop — “Drive, Observe, Learn, Predict, Optimize, Improve”.",
+      "problem": "EV fleet operators need to see vehicle health, charging and demand in one place — and driver-assistance (ADAS) models need a loop that turns real driving data into better models.",
+      "role": "Designed and built the demo lab.",
+      "implementation": "- Fleet Command Center: vehicle telemetry (state of health, motor efficiency, tires) and a “needs attention” list\n- Charging network, route intelligence, 24-hour ride demand and a demand forecast model\n- ADAS loop: labeling pipeline, training datasets, model metrics sliced by object class, weather, light and city, and an AI edge-case miner that ranks scenarios by risk\n- AI recommendations and simulation controls",
+      "technologies": [
+        "Python",
+        "FastAPI",
+        "scikit-learn",
+        "React",
+        "TypeScript",
+        "Leaflet maps",
+        "D3"
+      ]
+    },
+    {
+      "key": "humanaisentinel",
+      "repo_url": "https://github.com/Sherlock2019/HumanAISentinel",
+      "links": [
+        {
+          "label": "Version 2 — AIagentSentinelV2",
+          "url": "https://github.com/Sherlock2019/AIagentSentinelV2"
+        }
+      ],
+      "media": [],
+      "related": [],
+      "architecture": "",
+      "outcomes": "",
+      "demo_url": "",
+      "title": "HumanAISentinel",
+      "subtitle": "MCP runtime security and guardrails POC",
+      "context": "Personal project",
+      "status": "POC",
+      "status_note": "Prototype of agent action and tool-security patterns.",
+      "categories": [
+        "Agentic AI"
+      ],
+      "featured": false,
+      "summary": "A prototype guardrail layer for AI agents: policy evaluation, risk checks, human escalation, audit, and detection of unauthorized tool use.",
+      "problem": "As AI agents start calling tools and APIs, organizations need runtime controls that stop risky actions and bring a human in when needed.",
+      "role": "Designed and built the prototype.",
+      "implementation": "- Policy evaluation and risk checks on agent actions\n- Human escalation and audit trail\n- Patterns for detecting unauthorized tool use\n- MCP-style integration",
+      "technologies": [
+        "Python",
+        "FastAPI",
+        "MCP-style integration",
+        "Guardrails"
+      ]
+    },
+    {
+      "key": "microcredit-advisor",
+      "demo_url": "",
+      "links": [],
+      "media": [],
+      "architecture": "",
+      "outcomes": "",
+      "featured": false,
+      "related": [
+        "azure-credit"
+      ],
+      "title": "MicroCredit Advisor",
+      "subtitle": "Rural AI platform POC — two copilots on one shared platform",
+      "context": "Personal project · independent demo",
+      "status": "POC",
+      "status_note": "Independent demonstration themed on rural development — not commissioned, endorsed or deployed by IFAD. All borrowers, projects and figures are synthetic. The AI only advises; approvals are recorded by an authenticated person.",
+      "categories": [
+        "Banking / Finance",
+        "Agentic AI"
+      ],
+      "summary": "A working POC with two AI copilots: a Rural Finance Copilot for agricultural micro-credit, and a Project Monitoring & Impact Copilot for rural development projects — with cited answers and human approval.",
+      "problem": "Loan officers in rural finance need to judge seasonal cash flow and risk from scattered documents, and development teams need to track project milestones, budgets and evidence — without giving decisions to an AI.",
+      "role": "Designed and built the POC.",
+      "implementation": "- Rural Finance Copilot: loan-officer workspace with seasonal cash flow, yield and price-shock scenarios, risk flags, answers cited from borrower documents, and human approval with a full audit trail\n- Project Monitoring & Impact Copilot: milestones, budget (commitments vs. spending), indicators, missing reports, evidence-backed briefs, human report approval and a map of projects by country, region and city\n- Farmer mobile app mock-up for sending crop photos and scanned documents\n- Runs with Docker on a PC or AWS EC2; optional local Ollama model",
+      "technologies": [
+        "Python",
+        "Docker",
+        "RAG",
+        "Ollama",
+        "Human-in-the-loop",
+        "AWS EC2"
+      ],
+      "repo_url": "https://github.com/Sherlock2019/MicroCredit-Advisor"
+    },
+    {
+      "key": "trustchain-ai",
+      "demo_url": "",
+      "links": [],
+      "media": [],
+      "architecture": "",
+      "outcomes": "",
+      "featured": false,
+      "related": [],
+      "title": "TrustChain AI",
+      "subtitle": "Human-governed, Web3-verifiable autonomous AI agents",
+      "context": "Personal project",
+      "status": "POC",
+      "status_note": "Runnable proof of concept with mock data, mock payments and a local blockchain.",
+      "categories": [
+        "Agentic AI",
+        "Banking / Finance"
+      ],
+      "summary": "An AI treasury agent investigates supplier invoices inside a system where it has no authority to move money: policy decides, humans approve, and a blockchain makes the audit record tamper-evident.",
+      "problem": "Once an AI agent can act, an organization must be able to answer: who authorized it, what evidence it used, who approved the action, what was executed — and whether the record has been changed since.",
+      "role": "Designed and built the POC.",
+      "implementation": "- Treasury agent with read-only tools and RAG over policies and contracts\n- Deterministic governance engine outside the model: identity, permissions, policy and risk → allow, deny or require approval\n- Human approval with roles, limits and four-eyes checks\n- On-chain agent registry and tamper-evident audit records; idempotent mock payment tool",
+      "technologies": [
+        "Python",
+        "FastAPI",
+        "RAG",
+        "Policy engine",
+        "Smart contracts",
+        "Blockchain"
+      ],
+      "repo_url": "https://github.com/Sherlock2019/AI-blockchain-Gardian"
+    },
+    {
+      "key": "kats-kt-ai-enhanced-ticket-support-system",
+      "demo_url": "",
+      "links": [],
+      "media": [],
+      "architecture": "",
+      "outcomes": "",
+      "featured": false,
+      "related": [],
+      "title": "KATS — KT AI Enhanced Ticket Support System",
+      "subtitle": "AI troubleshooting built on Kepner-Tregoe problem analysis",
+      "context": "Personal project",
+      "status": "POC",
+      "status_note": "Proof of concept. The built-in browser agent is a mock; an optional local RAG backend answers from the real ticket base, and nothing leaves the machine.",
+      "categories": [
+        "Internal Tools",
+        "Agentic AI"
+      ],
+      "summary": "A support-ticket workflow built on a 10-step troubleshooting action plan rooted in Kepner-Tregoe problem analysis, with an AI agent that finds the shortest path to resolution from the knowledge base, customer history and problem register.",
+      "problem": "Ticket tools record what happened to a ticket, but rarely what the problem was — so the same issue is solved again and again, repeat customer issues go unnoticed and engineers duplicate work on the same outage.",
+      "role": "Designed and built the POC.",
+      "implementation": "- Universal Troubleshooting Action Plan: a 10-step method based on Kepner-Tregoe problem analysis\n- AI agent that reads the knowledge base, customer history and problem register — including telling you when not to troubleshoot at all\n- Runs offline in the browser from a single file\n- Optional RAG backend: PostgreSQL/pgvector, a retrieval API and a local LLM",
+      "technologies": [
+        "Kepner-Tregoe",
+        "RAG",
+        "PostgreSQL / pgvector",
+        "Local LLM",
+        "HTML / JavaScript"
+      ],
+      "repo_url": "https://github.com/Sherlock2019/KATS"
+    },
+    {
+      "key": "mlm-meaning-language-model",
+      "demo_url": "",
+      "links": [],
+      "media": [],
+      "architecture": "",
+      "outcomes": "",
+      "featured": false,
+      "related": [],
+      "title": "MLM — Meaning Language Model",
+      "subtitle": "Understand meaning before predicting language",
+      "context": "Personal research project",
+      "status": "POC",
+      "status_note": "Research proof of concept. Every claim is measured on identical input, and the cost is reported next to the benefit.",
+      "categories": [
+        "AI Research"
+      ],
+      "summary": "A research POC that asks what is happening, who is involved and what information is missing — then scores a Transformer's next-token candidates against that structure.",
+      "problem": "A conventional language model only asks which token statistically comes next. MLM tests whether first understanding meaning — roles, places, time — makes predictions better, and measures the cost honestly.",
+      "role": "Designed and built the research prototype.",
+      "implementation": "- Pipeline: language, lexicon, grammar, morphology and syntax → Universal Phrase DNA → context graph → expected semantic slot → linguistic scoring of the Transformer's candidates\n- Every component can be switched off for fair comparison on the same model and hardware\n- Language packs, multimodal input (text, image, video) and AWS EC2 deployment",
+      "technologies": [
+        "Python",
+        "Transformers",
+        "NLP",
+        "Knowledge graph",
+        "AWS EC2"
+      ],
+      "repo_url": "https://github.com/Sherlock2019/NPLM-Next-Phrase-language-model-"
+    },
+    {
+      "key": "acm-actions-consequential-model",
+      "demo_url": "",
+      "links": [],
+      "media": [],
+      "architecture": "",
+      "outcomes": "",
+      "featured": false,
+      "related": [],
+      "title": "ACM — Actions Consequential Model",
+      "subtitle": "See what an action changes before taking it",
+      "context": "Personal research project · builds on MLM",
+      "status": "POC",
+      "status_note": "Research proof of concept.",
+      "categories": [
+        "AI Research",
+        "Agentic AI"
+      ],
+      "summary": "Built on the Meaning Language Model, ACM predicts what an action does: its consequences for the actor, for those it affects and for other actors’ goals — across a blast radius from the place it happens out to society and the earth.",
+      "problem": "AI agents are starting to take actions. Before acting, a system should be able to trace who and what an action will affect — including its own planned actions.",
+      "role": "Designed and built the research prototype.",
+      "implementation": "- Uses MLM’s Universal Phrase DNA (who does what, to whom, where, when, how and why)\n- Builds a graph of the full action in context and predicts consequences circle by circle\n- Blast-radius layers: site, neighbours, organization, city, country, society and earth\n- Stores every node as a vector to compare with past actions",
+      "technologies": [
+        "Python",
+        "Knowledge graph",
+        "Vector search",
+        "NLP"
+      ],
+      "repo_url": "https://github.com/Sherlock2019/ACM"
     }
   ],
   "architectures": [

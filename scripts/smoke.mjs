@@ -72,7 +72,7 @@ async function publicChecks() {
   const project = await req("/projects/banking-ai-copilot-credit-and-asset-appraisal");
   const projectHtml = await project.text();
   check("project detail page renders", project.status === 200);
-  check("project demo links to correct URL, opens safely", projectHtml.includes('href="http://100.31.100.157:8502/credit_appraisal" target="_blank" rel="noopener noreferrer"'));
+  check("project demo links to correct URL, opens safely", projectHtml.includes('href="http://100.31.100.157:8080" target="_blank" rel="noopener noreferrer"'));
   check("project shows POC status, not production", projectHtml.includes(">POC<"));
 
   const archMatch = html.match(/href="\/architectures\/([a-z0-9-]+)"/);
