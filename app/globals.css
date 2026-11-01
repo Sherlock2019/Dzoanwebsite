@@ -163,6 +163,42 @@ img {
   color: #fff;
 }
 
+.sidebar-flags {
+  margin: 0 0 16px;
+  display: grid;
+  gap: 7px;
+  justify-content: center;
+}
+
+.sidebar-flags > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-flags dt {
+  width: 52px;
+  text-align: right;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8a8fa0;
+}
+
+.sidebar-flags dd {
+  margin: 0;
+  display: flex;
+  gap: 6px;
+}
+
+.flag {
+  display: block;
+  width: 24px;
+  height: 16px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
 .social-links {
   list-style: none;
   padding: 0;

@@ -3,6 +3,7 @@ import AdminHotkey from "@/components/layout/AdminHotkey";
 import { chatEnabled } from "@/lib/ai/config";
 import Sidebar, { type NavItem, type Social } from "@/components/layout/Sidebar";
 import { getOwnerSession } from "@/lib/auth/guard";
+import { citizenshipFlags, languageFlags } from "@/lib/flags";
 import { thumbUrl } from "@/lib/media-url";
 import { loadPublicContent } from "@/lib/public-cache";
 import { initials } from "@/lib/text";
@@ -44,6 +45,8 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         imageUrl={thumbUrl(profile.image)}
         initials={initials(profile.name)}
         socials={socials}
+        citizenship={citizenshipFlags(profile.citizenship)}
+        languages={languageFlags(profile.languages)}
         nav={nav}
         isOwner={Boolean(session)}
       />

@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FaGithub, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 import { LuLayoutDashboard, LuMail, LuMenu, LuX } from "react-icons/lu";
+import type { FlagBadge } from "@/lib/flags";
 import { NAV_ICONS } from "@/lib/icons";
+import Flag from "./Flag";
 
 export interface NavItem {
   id: string;
@@ -24,11 +26,13 @@ interface Props {
   imageUrl: string;
   initials: string;
   socials: Social[];
+  citizenship: FlagBadge[];
+  languages: FlagBadge[];
   nav: NavItem[];
   isOwner: boolean;
 }
 
-export default function Sidebar({ name, imageUrl, initials, socials, nav, isOwner }: Props) {
+export default function Sidebar({ name, imageUrl, initials, socials, citizenship, languages, nav, isOwner }: Props) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("home");
   const [imgFailed, setImgFailed] = useState(false);
@@ -97,6 +101,30 @@ export default function Sidebar({ name, imageUrl, initials, socials, nav, isOwne
               {name}
             </Link>
           </h1>
+          {(citizenship.length > 0 || languages.length > 0) && (
+            <dl className="sidebar-flags">
+              {citizenship.length > 0 && (
+                <div>
+                  <dt>Citizen</dt>
+                  <dd>
+                    {citizenship.map((f) => (
+                      <Flag key={f.code} code={f.code} label={`${f.label} citizenship`} />
+                    ))}
+                  </dd>
+                </div>
+              )}
+              {languages.length > 0 && (
+                <div>
+                  <dt>Speaks</dt>
+                  <dd>
+                    {languages.map((f) => (
+                      <Flag key={f.code} code={f.code} label={f.label} />
+                    ))}
+                  </dd>
+                </div>
+              )}
+            </dl>
+          )}
           {socials.length > 0 && (
             <ul className="social-links">
               {socials.map((s) => {
