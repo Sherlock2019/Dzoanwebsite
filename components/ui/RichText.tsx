@@ -22,7 +22,14 @@ export function inline(text: string) {
   });
 }
 
-export default function RichText({ text, className }: { text: string; className?: string }) {
+interface Props {
+  text: string;
+  className?: string;
+  /** Extra content appended to a bullet item, given the item's raw text. */
+  itemExtra?: (item: string) => React.ReactNode;
+}
+
+export default function RichText({ text, className, itemExtra }: Props) {
   if (!text?.trim()) return null;
   const blocks = text.replace(/\r\n/g, "\n").trim().split(/\n\s*\n/);
   return (
@@ -33,9 +40,15 @@ export default function RichText({ text, className }: { text: string; className?
         if (isList) {
           return (
             <ul key={i}>
-              {lines.map((l, j) => (
-                <li key={j}>{inline(l.replace(/^\s*[-•]\s+/, ""))}</li>
-              ))}
+              {lines.map((l, j) => {
+                const item = l.replace(/^\s*[-•]\s+/, "");
+                return (
+                  <li key={j}>
+                    {inline(item)}
+                    {itemExtra?.(item)}
+                  </li>
+                );
+              })}
             </ul>
           );
         }

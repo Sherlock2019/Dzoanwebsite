@@ -1,10 +1,24 @@
 import { LuChevronRight } from "react-icons/lu";
+import Flag from "@/components/layout/Flag";
 import MediaImage from "@/components/ui/MediaImage";
 import RichText from "@/components/ui/RichText";
+import { bioItemFlags } from "@/lib/flags";
 import { fullUrl } from "@/lib/media-url";
 import { hostOf, initials, phoneDigits } from "@/lib/text";
 import type { Profile } from "@/lib/types";
 import SectionTitle from "./SectionTitle";
+
+function bioFlags(item: string) {
+  const flags = bioItemFlags(item);
+  if (!flags.length) return null;
+  return (
+    <span className="bio-flags">
+      {flags.map((f) => (
+        <Flag key={f.code} code={f.code} label={f.label} />
+      ))}
+    </span>
+  );
+}
 
 export default function About({ profile }: { profile: Profile }) {
   const details: { label: string; value: React.ReactNode }[] = [];
@@ -43,7 +57,7 @@ export default function About({ profile }: { profile: Profile }) {
           {profile.bio && (
             <aside className="about-mission bio-box" aria-label={profile.bio_title || "My bio"}>
               <p className="mission-label">{profile.bio_title || "My Bio"}</p>
-              <RichText text={profile.bio} className="bio-text" />
+              <RichText text={profile.bio} className="bio-text" itemExtra={bioFlags} />
             </aside>
           )}
         </div>

@@ -43,3 +43,12 @@ function match(text: string, rules: Rule[]): FlagBadge[] {
 
 export const citizenshipFlags = (text: string) => match(text, CITIZENSHIP_RULES);
 export const languageFlags = (text: string) => match(text, LANGUAGE_RULES);
+
+/** Flags for a bio bullet such as "**Citizenship:** Vietnamese and French" or "**Languages:** …". */
+export function bioItemFlags(item: string): FlagBadge[] {
+  const m = item.match(/^\**\s*(citizenship|nationality|languages?)\s*:?\**\s*:?\s*(.*)$/i);
+  if (!m) return [];
+  return /^lang/i.test(m[1])
+    ? languageFlags(m[2])
+    : citizenshipFlags(m[2]).map((f) => ({ ...f, label: `${f.label} citizenship` }));
+}

@@ -199,6 +199,19 @@ img {
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
 }
 
+.bio-flags {
+  display: inline-flex;
+  gap: 5px;
+  margin-left: 10px;
+  vertical-align: -2px;
+}
+
+.bio-flags .flag {
+  width: 21px;
+  height: 14px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
 .social-links {
   list-style: none;
   padding: 0;
