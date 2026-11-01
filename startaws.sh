@@ -86,6 +86,16 @@ fi
 
 # ---------------------------------------------------------------- 2. website on 127.0.0.1:$PORT
 say "Starting the website on 127.0.0.1:$PORT"
+# start.sh restarts a copy running from THIS folder; anything else on the port must be stopped first,
+# otherwise start.sh moves to the next free port and the proxy would show the other program.
+holder="$(sudo ss -ltnpH "sport = :$PORT" 2>/dev/null | grep -o 'pid=[0-9]*' | head -1 | cut -d= -f2 || true)"
+if [[ -n "$holder" ]]; then
+  holder_dir="$(sudo readlink "/proc/$holder/cwd" 2>/dev/null || true)"
+  if [[ "$holder_dir" != "$PWD" ]]; then
+    warn "Port $PORT is used by another program: pid $holder ($(ps -o args= -p "$holder" | cut -c1-80)), folder ${holder_dir:-?}"
+    die "Stop it first (e.g. run ./stop.sh in ${holder_dir:-that folder}, or: sudo kill $holder), then re-run ./startaws.sh."
+  fi
+fi
 if [[ -f .env.local ]]; then
   if grep -q '^SITE_URL=' .env.local; then
     sed -i "s#^SITE_URL=.*#SITE_URL=$SITE_URL#" .env.local

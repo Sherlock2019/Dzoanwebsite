@@ -164,6 +164,17 @@ On the EC2, `./startaws.sh` does steps 2–4 for the jobsmatchnow.com subdomain.
 The security group needs ports 80 and 443 open. Close 9063 afterwards. Options: `SUBDOMAIN`, `DOMAIN`, `PORT`, `CERT_EMAIL`.
 After `git pull` or a reboot, re-run `./startaws.sh`. Plain `./start.sh` would use port 3100 instead of 9063.
 
+**Publish your real content, not the seed.** The seed images and résumé (`content/seed/assets/`) are private and
+not in git, so a fresh clone only gets the text. Copy the content you edit on your PC to the EC2 instead:
+```bash
+# on the PC (WSL), in ~/Myweb
+tar czf ~/myweb-data.tgz .data/db.json .data/uploads
+scp -i <your-key.pem> ~/myweb-data.tgz ubuntu@<EC2_IP>:~/
+# on the EC2, in the site folder
+./stop.sh; rm -rf .data/db.json .data/uploads; tar xzf ~/myweb-data.tgz; ./startaws.sh
+```
+AI documents (the pgvector index) are not included; upload them again in the AI Inbox.
+
 **sudo asks for a password.** Stock EC2 Ubuntu has password-less sudo for `ubuntu`. If yours asks for a password you
 don't know, restore it in one of these ways:
 - **Session Manager:** in the AWS console, go to EC2 → instance → Connect → *Session Manager*. Its `ssm-user` has

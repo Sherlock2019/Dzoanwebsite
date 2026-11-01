@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import path from "path";
 import { loadEnv } from "./env";
 
@@ -36,6 +36,9 @@ async function main() {
   }
 
   const uploaded = new Map<string, Awaited<ReturnType<typeof storeImage>>>();
+  // The assets folder is private (not in git): on a fresh clone, items whose image is missing are skipped.
+  const hasAsset = (asset: string) => existsSync(path.join(root, "assets", asset));
+  const missing = new Set<string>();
   async function image(asset: string, alt: string, caption?: string) {
     if (!uploaded.has(asset)) {
       const buf = readFileSync(path.join(root, "assets", asset));
@@ -81,7 +84,10 @@ async function main() {
     const { key, related: _related, media, ...rest } = p;
     void _related;
     const mediaItems = [];
-    for (const m of media) mediaItems.push(await image(m.asset, m.alt, m.caption));
+    for (const m of media) {
+      if (hasAsset(m.asset)) mediaItems.push(await image(m.asset, m.alt, m.caption));
+      else missing.add(m.asset);
+    }
     const created = await createEntity("projects", { ...rest, media: mediaItems, visibility: "published", sort_order: i });
     projectIds.set(key, created.id);
   }
@@ -91,6 +97,10 @@ async function main() {
   const archIds = new Map<string, string>();
   for (const [i, a] of (seed.architectures as SeedArchitecture[]).entries()) {
     const { key, asset, alt, related_project, ...rest } = a;
+    if (!hasAsset(asset)) {
+      missing.add(asset);
+      continue;
+    }
     const created = await createEntity("architectures", {
       ...rest,
       image: await image(asset, alt),
@@ -111,6 +121,10 @@ async function main() {
     if (!project) continue;
     project.related_architectures = p.related.map((k) => archIds.get(k)).filter((x): x is string => Boolean(x));
     await repo.save("projects", project);
+  }
+  if (missing.size) {
+    console.warn(`  ${missing.size} image(s) not found in content/seed/assets/ (private, not in git) — those were skipped.`);
+    console.warn("  To publish your full site, copy .data/ from the machine where you edit it (README → EC2).");
   }
   console.log("Seed complete.");
 }
