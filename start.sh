@@ -130,6 +130,7 @@ if [[ -f docker-compose.yml ]] && command -v docker >/dev/null && docker info >/
     flowise_healthy || say "Starting Flowise (Docker; the first run downloads the image, a few minutes)"
     docker compose --env-file .env.local up -d --wait flowise >/dev/null 2>&1 \
       || warn "Flowise did not start (docker logs myweb-flowise). Analysis still works directly with Qwen."
+    flowise_healthy && { bash scripts/flowise-setup.sh || warn "Flowise chatflow setup failed (scripts/flowise-setup.sh)."; }
   fi
 else
   grep -q '^RAG_DATABASE_URL=postgres' .env.local 2>/dev/null || echo "  (Docker not available: AI document features are off. The site works without them.)"
@@ -206,6 +207,8 @@ echo "  Owner dashboard: $SITE_URL/admin"
 echo "  API docs:        $SITE_URL/api-docs   (Swagger UI, owner sign-in)"
 if [[ -n "${FLOWISE_PORT_USED:-}" ]] && flowise_healthy; then
   echo "  Flowise:         http://$HOST_NAME:$FLOWISE_PORT_USED   (API: http://$HOST_NAME:$FLOWISE_PORT_USED/api/v1)"
+  flow_id="$(grep '^FLOWISE_CHATFLOW_ID=' .env.local | tail -1 | cut -d= -f2)"
+  [[ -n "$flow_id" ]] && echo "  Analysis flow:   POST http://$HOST_NAME:$FLOWISE_PORT_USED/api/v1/prediction/$flow_id"
 fi
 [[ "$HOST_NAME" != "localhost" ]] && echo "  On this machine: http://localhost:$PORT_TO_USE"
 if [[ "$HOST_NAME" != "localhost" && "$SITE_URL" == http://* ]]; then

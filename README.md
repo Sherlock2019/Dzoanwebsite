@@ -98,6 +98,7 @@ Everything starts together, and `start.sh` prints the links:
 | Owner dashboard | http://localhost:3100/admin | AI & documents page has *Open Flowise* / *Open Swagger* buttons |
 | API docs (Swagger UI) | http://localhost:3100/api-docs | Owner sign-in required; spec at `/api/openapi.json` |
 | Flowise (UI + backend) | http://localhost:3110 | REST API under `/api/v1`; health: `/api/v1/ping`. Docker service `flowise` |
+| Analysis chatflow API | `POST http://localhost:3110/api/v1/prediction/5f0c2d7e-…` | Installed by `start.sh`; see AI features |
 | Document database | `127.0.0.1:55434` | Docker service `rag-db` (Postgres + pgvector), localhost only |
 | Ollama | http://127.0.0.1:11434 | Installed separately (see AI features) |
 
@@ -214,11 +215,21 @@ dashboard says when a document was longer. If you change `EMBED_MODEL` to one wi
 **Flowise (optional).** `./start.sh` runs Flowise in Docker on port 3110 (`FLOWISE_PORT`) and sets
 `FLOWISE_URL`. It uses host networking so it can reach Ollama at `http://127.0.0.1:11434`. Its chatflows and
 accounts are stored in a separate `flowise` database on `rag-db` (created by `start.sh`), and its keys and files in
-the `myweb-flowise-data` volume. On the first visit Flowise asks you to create its admin account. To orchestrate analysis
-through it instead of calling Ollama directly, create a chatflow that passes `{question}` to a ChatOllama node
-(base URL `http://127.0.0.1:11434`, `qwen2.5:7b`, temperature 0.2, context 16384, JSON output), then set
-`FLOWISE_CHATFLOW_ID` and, if the flow is protected, `FLOWISE_API_KEY`, and restart. The prompt already contains the
-instructions, the current site and the document. On EC2, Flowise listens on all interfaces: keep port 3110 closed in
+the `myweb-flowise-data` volume. On the first visit Flowise asks you to create its admin account.
+
+The analysis chatflow ships with the repo ([flowise/portfolio-document-analyzer.json](flowise/portfolio-document-analyzer.json)):
+ChatOllama (`qwen2.5:7b`, temperature 0.2, context 16384, JSON mode) → LLM Chain ← Prompt Template `{question}`.
+Once the Flowise account exists, `./start.sh` installs it as **Portfolio document analyzer** (via
+`scripts/flowise-setup.sh`) and sets `FLOWISE_CHATFLOW_ID`, so *Analyze* runs through Flowise. Its API:
+
+```bash
+curl -X POST http://localhost:3110/api/v1/prediction/5f0c2d7e-3b1a-4c55-9d1e-6a2f8b7c4e01 \
+  -H 'Content-Type: application/json' -d '{"question": "…"}'
+```
+
+The site sends the whole prompt (instructions, current site, document) as `question`. To use your own flow instead,
+set `FLOWISE_CHATFLOW_ID` (and `FLOWISE_API_KEY` if the flow is protected) and restart; the setup script keeps a
+custom ID. Flowise also shows the endpoint for any flow under the `</>` (API Endpoint) button. On EC2, Flowise listens on all interfaces: keep port 3110 closed in
 the security group and use an SSH tunnel (`ssh -L 3110:localhost:3110 …`).
 
 **How it works.**
