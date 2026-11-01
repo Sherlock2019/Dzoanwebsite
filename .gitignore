@@ -1,0 +1,18 @@
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+
+# Local database and uploads (persistent data — back this folder up, never commit it)
+.data/
+
+# Secrets
+.env
+.env.local
+.env.*.local
+
+# Private seed assets: résumé PDF and full-resolution diagrams stay on this machine
+content/seed/assets/
+
+# Private review notes (client names, unconfirmed facts) — local only
+content/review-notes.md
