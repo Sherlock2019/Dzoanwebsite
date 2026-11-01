@@ -91,6 +91,11 @@ say "Starting the website on 127.0.0.1:$PORT"
 holder="$(sudo ss -ltnpH "sport = :$PORT" 2>/dev/null | grep -o 'pid=[0-9]*' | head -1 | cut -d= -f2 || true)"
 if [[ -n "$holder" ]]; then
   holder_dir="$(sudo readlink "/proc/$holder/cwd" 2>/dev/null || true)"
+  if [[ "$(ps -o comm= -p "$holder")" == docker-proxy* ]]; then
+    container="$(sudo docker ps --filter "publish=$PORT" --format '{{.Names}} (image {{.Image}})' | head -1)"
+    warn "Port $PORT is published by the Docker container: ${container:-unknown}"
+    die "Stop that container (sudo docker stop <name>; sudo docker update --restart=no <name>) or pick another port: PORT=9065 ./startaws.sh"
+  fi
   if [[ "$holder_dir" != "$PWD" ]]; then
     warn "Port $PORT is used by another program: pid $holder ($(ps -o args= -p "$holder" | cut -c1-80)), folder ${holder_dir:-?}"
     die "Stop it first (e.g. run ./stop.sh in ${holder_dir:-that folder}, or: sudo kill $holder), then re-run ./startaws.sh."
