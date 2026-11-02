@@ -1,5 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { promises as fs } from "fs";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
+import { createResetLink, currentPasswordHash, isResetTokenValid, passwordChangedAt, resetPassword } from "@/lib/auth/reset";
 import { createSessionToken, verifySessionToken } from "@/lib/auth/session";
 import { isValidKey } from "@/lib/storage/index";
 import { createLocalStorage } from "@/lib/storage/local";
@@ -41,6 +43,48 @@ describe("password hashing", () => {
   });
   it("refuses short passwords", async () => {
     await expect(hashPassword("short")).rejects.toThrow();
+  });
+});
+
+describe("owner password reset", () => {
+  const dir = path.join(os.tmpdir(), `pf-test-reset-${process.pid}`);
+  const tokenFrom = (link: string) => new URL(link.split("\n")[0]).searchParams.get("token") || "";
+
+  beforeEach(async () => {
+    await fs.rm(dir, { recursive: true, force: true });
+    vi.stubEnv("DATA_DIR", dir);
+    vi.stubEnv("OWNER_PASSWORD_HASH", await hashPassword("original password"));
+  });
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("sets a new password once per link and signs out older sessions", async () => {
+    const linkFile = await createResetLink();
+    const token = tokenFrom(await fs.readFile(linkFile, "utf8"));
+    expect(await isResetTokenValid(token)).toBe(true);
+    expect(await isResetTokenValid(token + "x")).toBe(false);
+
+    expect(await resetPassword(token, "brand new password")).toBe(true);
+    expect(await verifyPassword("brand new password", await currentPasswordHash())).toBe(true);
+    expect(await verifyPassword("original password", await currentPasswordHash())).toBe(false);
+    expect(await passwordChangedAt()).toBeGreaterThan(0);
+    // Used up: the token and the link file are gone.
+    expect(await resetPassword(token, "another new password")).toBe(false);
+    await expect(fs.access(linkFile)).rejects.toThrow();
+  });
+
+  it("rejects expired links and keeps the token when the password is too short", async () => {
+    const token = tokenFrom(await fs.readFile(await createResetLink(), "utf8"));
+    await expect(resetPassword(token, "short")).rejects.toThrow();
+    expect(await isResetTokenValid(token)).toBe(true);
+    expect(await resetPassword(token, "brand new password", Date.now() + 31 * 60_000)).toBe(false);
+  });
+
+  it("lets a new OWNER_PASSWORD_HASH in the environment win over an earlier reset", async () => {
+    const token = tokenFrom(await fs.readFile(await createResetLink(), "utf8"));
+    await resetPassword(token, "brand new password");
+    vi.stubEnv("OWNER_PASSWORD_HASH", await hashPassword("set via env file"));
+    expect(await verifyPassword("set via env file", await currentPasswordHash())).toBe(true);
+    expect(await passwordChangedAt()).toBe(0);
   });
 });
 

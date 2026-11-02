@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { authConfigured, ownerEmail, ownerPasswordHash, sessionSecret, sessionTtlSeconds } from "@/lib/config";
+import { authConfigured, ownerEmail, sessionSecret, sessionTtlSeconds } from "@/lib/config";
 import { isSameOrigin } from "@/lib/auth/guard";
 import { verifyPassword } from "@/lib/auth/password";
 import { clearFailures, clientId, isLocked, recordFailure } from "@/lib/auth/rate-limit";
+import { currentPasswordHash } from "@/lib/auth/reset";
 import { createSessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 
 export const runtime = "nodejs";
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
   }
 
   // Always verify the password so timing doesn't reveal whether the email matched.
-  const passwordOk = await verifyPassword(password, ownerPasswordHash());
+  const passwordOk = await verifyPassword(password, await currentPasswordHash());
   if (!passwordOk || email !== ownerEmail()) {
     recordFailure(id);
     return NextResponse.json({ error: "Email or password is incorrect" }, { status: 401 });

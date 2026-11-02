@@ -9,6 +9,24 @@ export default function LoginForm({ configured }: { configured: boolean }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [resetNote, setResetNote] = useState("");
+  const [resetBusy, setResetBusy] = useState(false);
+
+  async function requestReset() {
+    setResetBusy(true);
+    setError("");
+    setResetNote("");
+    const res = await fetch("/api/auth/reset/request", { method: "POST" });
+    if (res.ok) {
+      setResetNote(
+        "A one-time reset link (valid 30 minutes) was written on the server to .data/PASSWORD_RESET_LINK.txt. Open it there to set a new password.",
+      );
+    } else {
+      const data = await res.json().catch(() => ({}));
+      setError(data.error || "Could not start a password reset");
+    }
+    setResetBusy(false);
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -61,6 +79,14 @@ export default function LoginForm({ configured }: { configured: boolean }) {
       <button type="submit" className="btn btn-primary" disabled={busy || !configured}>
         {busy ? "Signing in…" : "Sign in"}
       </button>
+      <button type="button" className="btn btn-outline" onClick={requestReset} disabled={resetBusy || !configured}>
+        {resetBusy ? "Creating reset link…" : "Forgot password? Reset it"}
+      </button>
+      {resetNote && (
+        <p className="admin-message ok" role="status">
+          {resetNote}
+        </p>
+      )}
       <p className="hint">
         <Link href="/">← Back to the portfolio</Link>
       </p>

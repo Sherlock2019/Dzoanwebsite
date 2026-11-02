@@ -1,13 +1,17 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { authConfigured, ownerEmail, sessionSecret, siteUrl } from "@/lib/config";
+import { passwordChangedAt } from "./reset";
 import { SESSION_COOKIE, verifySessionToken, type SessionPayload } from "./session";
 
 /** Returns the owner session or null. Server-only. */
 export async function getOwnerSession(): Promise<SessionPayload | null> {
   if (!authConfigured()) return null;
   const jar = await cookies();
-  return verifySessionToken(jar.get(SESSION_COOKIE)?.value, sessionSecret(), ownerEmail());
+  const session = verifySessionToken(jar.get(SESSION_COOKIE)?.value, sessionSecret(), ownerEmail());
+  // A password reset signs out every session issued before it.
+  if (session && session.iat < (await passwordChangedAt())) return null;
+  return session;
 }
 
 /**

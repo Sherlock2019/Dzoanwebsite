@@ -187,6 +187,9 @@ button. When you are signed in, an **Admin / Edit** link appears at the bottom o
 
 - Change the password: `npm run hash-password -- 'new long password'`, then paste the output into `OWNER_PASSWORD_HASH`
   and restart.
+- Forgot the password: press **Forgot password? Reset it** on the sign-in page. A one-time link (valid 30 minutes) is
+  written to `.data/PASSWORD_RESET_LINK.txt` on the server — open it to set a new password. The new hash is kept in
+  `.data/owner-password.json` and signs out all other sessions; setting a new `OWNER_PASSWORD_HASH` later takes precedence.
 - Sign out of all devices: change `SESSION_SECRET` and restart.
 
 ## Editing content
