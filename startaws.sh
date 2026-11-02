@@ -7,7 +7,8 @@
 #   1. DNS     — makes dzoannguyentran.jobsmatchnow.com point at this EC2's public IP. With a GoDaddy API key
 #                (GODADDY_API_KEY / GODADDY_API_SECRET) it creates the A record itself; otherwise it
 #                prints the record to add in the GoDaddy DNS page and waits until it is live.
-#   2. Website — starts the site in the background on 127.0.0.1:9065 (private; only the proxy reaches it).
+#   2. Website — starts the site in the background on 127.0.0.1:9065, or the next free port if another
+#                program has it (private; only the proxy reaches it).
 #   3. Proxy   — adds dzoannguyentran.jobsmatchnow.com to the web server already on port 80 (nginx or Caddy)
 #                and gets a free HTTPS certificate (Let's Encrypt).
 #   4. Check   — fetches https://dzoannguyentran.jobsmatchnow.com and prints the result.
@@ -86,22 +87,9 @@ else
 fi
 
 # ---------------------------------------------------------------- 2. website on 127.0.0.1:$PORT
-say "Starting the website on 127.0.0.1:$PORT"
-# start.sh restarts a copy running from THIS folder; anything else on the port must be stopped first,
-# otherwise start.sh moves to the next free port and the proxy would show the other program.
-holder="$(sudo ss -ltnpH "sport = :$PORT" 2>/dev/null | grep -o 'pid=[0-9]*' | head -1 | cut -d= -f2 || true)"
-if [[ -n "$holder" ]]; then
-  holder_dir="$(sudo readlink "/proc/$holder/cwd" 2>/dev/null || true)"
-  if [[ "$(ps -o comm= -p "$holder")" == docker-proxy* ]]; then
-    container="$(sudo docker ps --filter "publish=$PORT" --format '{{.Names}} (image {{.Image}})' | head -1)"
-    warn "Port $PORT is published by the Docker container: ${container:-unknown}"
-    die "Stop that container (sudo docker stop <name>; sudo docker update --restart=no <name>) or pick another port: PORT=9066 ./startaws.sh"
-  fi
-  if [[ "$holder_dir" != "$PWD" ]]; then
-    warn "Port $PORT is used by another program: pid $holder ($(ps -o args= -p "$holder" | cut -c1-80)), folder ${holder_dir:-?}"
-    die "Stop it first (e.g. run ./stop.sh in ${holder_dir:-that folder}, or: sudo kill $holder), then re-run ./startaws.sh."
-  fi
-fi
+say "Starting the website on 127.0.0.1 (port $PORT, or the next free one if another program has it)"
+# start.sh restarts a copy running from THIS folder (freeing its port) and never touches other programs:
+# if $PORT is theirs, it takes the next free port. The proxy below is pointed at whichever port it used.
 if [[ -f .env.local ]]; then
   if grep -q '^SITE_URL=' .env.local; then
     sed -i "s#^SITE_URL=.*#SITE_URL=$SITE_URL#" .env.local
@@ -109,10 +97,15 @@ if [[ -f .env.local ]]; then
     printf '\nSITE_URL=%s\n' "$SITE_URL" >> .env.local
   fi
 fi
+rm -f .data/server.port
 PORT="$PORT" BIND=127.0.0.1 PUBLIC_URL="$SITE_URL" PUBLIC_HOST="$IP" ./start.sh --bg
 grep -q '^SITE_URL=' .env.local || printf '\nSITE_URL=%s\n' "$SITE_URL" >> .env.local   # first run creates .env.local
+used="$(cat .data/server.port 2>/dev/null || true)"
+[[ "$used" =~ ^[0-9]+$ ]] || die "start.sh did not report the port it used (.data/server.port). See .data/server.log."
+[[ "$used" != "$PORT" ]] && warn "Port $PORT is taken by another program — the site runs on $used instead."
+PORT="$used"
 code="$(curl -s -o /dev/null -w '%{http_code}' -m 15 "http://127.0.0.1:$PORT/" || true)"
-[[ "$code" == "200" ]] || die "The site is not answering on 127.0.0.1:$PORT (HTTP $code). Port $PORT may be taken — see .data/server.log."
+[[ "$code" == "200" ]] || die "The site is not answering on 127.0.0.1:$PORT (HTTP $code) — see .data/server.log."
 mkdir -p .data && echo "$PORT" > .data/aws.port   # re-runs (after git pull) reuse this port
 
 # ---------------------------------------------------------------- 3. reverse proxy + HTTPS

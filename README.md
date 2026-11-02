@@ -157,7 +157,7 @@ On the EC2, `./startaws.sh` does steps 2–4 for the jobsmatchnow.com subdomain.
 
 1. **DNS:** it checks that the GoDaddy A record `dzoannguyentran` → the instance's public IP is live. With
    `GODADDY_API_KEY`/`GODADDY_API_SECRET` set, it creates the record itself; otherwise it prints the record and waits.
-2. **Website:** it starts the site in the background on `127.0.0.1:9065`, reachable only through the proxy.
+2. **Website:** it starts the site in the background on `127.0.0.1:9065` (or the next free port if another program has it — the proxy follows), reachable only through the proxy.
 3. **Proxy and HTTPS:** it adds the subdomain to the web server already on port 80 (nginx: a `conf.d` file plus a
    certbot certificate; Caddy: a Caddyfile block). If neither is installed, it installs nginx.
 4. **Check:** it fetches the HTTPS URL.

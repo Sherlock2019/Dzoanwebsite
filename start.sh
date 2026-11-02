@@ -202,6 +202,7 @@ CMD=(node_modules/.bin/next start -H "$BIND" -p "$PORT_TO_USE")
 [[ "$MODE" == "dev" ]] && CMD=(node_modules/.bin/next dev -H "$BIND" -p "$PORT_TO_USE")
 
 echo "$SITE_URL" > "$URL_FILE"
+echo "$PORT_TO_USE" > .data/server.port   # the port actually used (startaws.sh points the proxy at it)
 say "Website:          $SITE_URL"
 echo "  Owner dashboard: $SITE_URL/admin"
 echo "  API docs:        $SITE_URL/api-docs   (Swagger UI, owner sign-in)"
