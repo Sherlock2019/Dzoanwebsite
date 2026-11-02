@@ -14,7 +14,7 @@
 #   4. Check   — fetches https://dzoannguyentran.jobsmatchnow.com and prints the result.
 #
 # Options (environment variables):
-#   SUBDOMAIN=dzoannguyentran  DOMAIN=jobsmatchnow.com  PORT=9065  (a PORT you pick is remembered in .data/aws.port)
+#   SUBDOMAIN=dzoannguyentran  DOMAIN=jobsmatchnow.com  PORT=9065  (first choice; the next free port is used if it's taken)
 #   CERT_EMAIL=you@x.com            Let's Encrypt contact (default: OWNER_EMAIL from .env.local)
 #   GODADDY_API_KEY=… GODADDY_API_SECRET=…   create the DNS record automatically
 #   DNS_WAIT=600                    seconds to wait for the DNS record to become live
@@ -27,7 +27,7 @@ cd "$(dirname "$(readlink -f "$0")")"
 SUBDOMAIN="${SUBDOMAIN:-dzoannguyentran}"
 DOMAIN="${DOMAIN:-jobsmatchnow.com}"
 FQDN="$SUBDOMAIN.$DOMAIN"
-PORT="${PORT:-$(cat .data/aws.port 2>/dev/null || echo 9065)}"
+PORT="${PORT:-9065}"
 [[ "$PORT" =~ ^[0-9]+$ ]] || { echo "PORT must be a number (got '$PORT')"; exit 1; }
 DNS_WAIT="${DNS_WAIT:-600}"
 SITE_URL="https://$FQDN"
@@ -106,8 +106,6 @@ used="$(cat .data/server.port 2>/dev/null || true)"
 PORT="$used"
 code="$(curl -s -o /dev/null -w '%{http_code}' -m 15 "http://127.0.0.1:$PORT/" || true)"
 [[ "$code" == "200" ]] || die "The site is not answering on 127.0.0.1:$PORT (HTTP $code) — see .data/server.log."
-mkdir -p .data && echo "$PORT" > .data/aws.port   # re-runs (after git pull) reuse this port
-
 # ---------------------------------------------------------------- 3. reverse proxy + HTTPS
 CERT_EMAIL="${CERT_EMAIL:-$(grep '^OWNER_EMAIL=' .env.local 2>/dev/null | cut -d= -f2 || true)}"
 CERT_EMAIL="${CERT_EMAIL:-dzoannguyentran@gmail.com}"
