@@ -13,7 +13,7 @@
 #   4. Check   — fetches https://dzoannguyentran.jobsmatchnow.com and prints the result.
 #
 # Options (environment variables):
-#   SUBDOMAIN=dzoannguyentran  DOMAIN=jobsmatchnow.com  PORT=9063
+#   SUBDOMAIN=dzoannguyentran  DOMAIN=jobsmatchnow.com  PORT=9063  (a PORT you pick is remembered in .data/aws.port)
 #   CERT_EMAIL=you@x.com            Let's Encrypt contact (default: OWNER_EMAIL from .env.local)
 #   GODADDY_API_KEY=… GODADDY_API_SECRET=…   create the DNS record automatically
 #   DNS_WAIT=600                    seconds to wait for the DNS record to become live
@@ -26,7 +26,8 @@ cd "$(dirname "$(readlink -f "$0")")"
 SUBDOMAIN="${SUBDOMAIN:-dzoannguyentran}"
 DOMAIN="${DOMAIN:-jobsmatchnow.com}"
 FQDN="$SUBDOMAIN.$DOMAIN"
-PORT="${PORT:-9063}"
+PORT="${PORT:-$(cat .data/aws.port 2>/dev/null || echo 9063)}"
+[[ "$PORT" =~ ^[0-9]+$ ]] || { echo "PORT must be a number (got '$PORT')"; exit 1; }
 DNS_WAIT="${DNS_WAIT:-600}"
 SITE_URL="https://$FQDN"
 
@@ -112,6 +113,7 @@ PORT="$PORT" BIND=127.0.0.1 PUBLIC_URL="$SITE_URL" PUBLIC_HOST="$IP" ./start.sh 
 grep -q '^SITE_URL=' .env.local || printf '\nSITE_URL=%s\n' "$SITE_URL" >> .env.local   # first run creates .env.local
 code="$(curl -s -o /dev/null -w '%{http_code}' -m 15 "http://127.0.0.1:$PORT/" || true)"
 [[ "$code" == "200" ]] || die "The site is not answering on 127.0.0.1:$PORT (HTTP $code). Port $PORT may be taken — see .data/server.log."
+mkdir -p .data && echo "$PORT" > .data/aws.port   # re-runs (after git pull) reuse this port
 
 # ---------------------------------------------------------------- 3. reverse proxy + HTTPS
 CERT_EMAIL="${CERT_EMAIL:-$(grep '^OWNER_EMAIL=' .env.local 2>/dev/null | cut -d= -f2 || true)}"
@@ -155,7 +157,13 @@ case "$web_server" in
     fi
     conf=/etc/nginx/conf.d/myweb-$SUBDOMAIN.conf
     if [[ -f "$conf" ]]; then
-      echo "  nginx already has $conf (kept as is)."
+      # Keep certbot's HTTPS lines, but make sure the proxy points at the port the site runs on now.
+      if sudo grep -q "proxy_pass http://127.0.0.1:$PORT;" "$conf"; then
+        echo "  nginx already has $conf (kept as is)."
+      else
+        say "Pointing $conf at port $PORT"
+        sudo sed -i "s#proxy_pass http://127\.0\.0\.1:[0-9]*;#proxy_pass http://127.0.0.1:$PORT;#" "$conf"
+      fi
     else
       say "Adding $FQDN to nginx ($conf)"
       nginx_conf | sudo tee "$conf" >/dev/null
@@ -179,7 +187,9 @@ case "$web_server" in
   caddy)
     caddyfile=/etc/caddy/Caddyfile
     if sudo grep -q "^$FQDN" "$caddyfile" 2>/dev/null; then
-      echo "  Caddy already serves $FQDN (kept as is)."
+      echo "  Caddy already serves $FQDN; making sure it points at port $PORT."
+      sudo cp "$caddyfile" "$caddyfile.bak.$(date +%Y%m%d%H%M%S)"
+      sudo sed -i "/^${FQDN//./\\.} {/,/^}/ s#reverse_proxy 127\.0\.0\.1:[0-9]*#reverse_proxy 127.0.0.1:$PORT#" "$caddyfile"
     else
       say "Adding $FQDN to Caddy ($caddyfile) — Caddy gets the HTTPS certificate itself"
       sudo cp "$caddyfile" "$caddyfile.bak.$(date +%Y%m%d%H%M%S)"
