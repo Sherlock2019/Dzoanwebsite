@@ -7,18 +7,18 @@
 #   1. DNS     — makes dzoannguyentran.jobsmatchnow.com point at this EC2's public IP. With a GoDaddy API key
 #                (GODADDY_API_KEY / GODADDY_API_SECRET) it creates the A record itself; otherwise it
 #                prints the record to add in the GoDaddy DNS page and waits until it is live.
-#   2. Website — starts the site in the background on 127.0.0.1:9063 (private; only the proxy reaches it).
+#   2. Website — starts the site in the background on 127.0.0.1:9065 (private; only the proxy reaches it).
 #   3. Proxy   — adds dzoannguyentran.jobsmatchnow.com to the web server already on port 80 (nginx or Caddy)
 #                and gets a free HTTPS certificate (Let's Encrypt).
 #   4. Check   — fetches https://dzoannguyentran.jobsmatchnow.com and prints the result.
 #
 # Options (environment variables):
-#   SUBDOMAIN=dzoannguyentran  DOMAIN=jobsmatchnow.com  PORT=9063  (a PORT you pick is remembered in .data/aws.port)
+#   SUBDOMAIN=dzoannguyentran  DOMAIN=jobsmatchnow.com  PORT=9065  (a PORT you pick is remembered in .data/aws.port)
 #   CERT_EMAIL=you@x.com            Let's Encrypt contact (default: OWNER_EMAIL from .env.local)
 #   GODADDY_API_KEY=… GODADDY_API_SECRET=…   create the DNS record automatically
 #   DNS_WAIT=600                    seconds to wait for the DNS record to become live
 #
-# Needs: sudo, and ports 80 + 443 open to the internet in the EC2 security group (9063 stays closed).
+# Needs: sudo, and ports 80 + 443 open to the internet in the EC2 security group (9065 stays closed).
 
 set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")"
@@ -26,7 +26,7 @@ cd "$(dirname "$(readlink -f "$0")")"
 SUBDOMAIN="${SUBDOMAIN:-dzoannguyentran}"
 DOMAIN="${DOMAIN:-jobsmatchnow.com}"
 FQDN="$SUBDOMAIN.$DOMAIN"
-PORT="${PORT:-$(cat .data/aws.port 2>/dev/null || echo 9063)}"
+PORT="${PORT:-$(cat .data/aws.port 2>/dev/null || echo 9065)}"
 [[ "$PORT" =~ ^[0-9]+$ ]] || { echo "PORT must be a number (got '$PORT')"; exit 1; }
 DNS_WAIT="${DNS_WAIT:-600}"
 SITE_URL="https://$FQDN"
@@ -95,7 +95,7 @@ if [[ -n "$holder" ]]; then
   if [[ "$(ps -o comm= -p "$holder")" == docker-proxy* ]]; then
     container="$(sudo docker ps --filter "publish=$PORT" --format '{{.Names}} (image {{.Image}})' | head -1)"
     warn "Port $PORT is published by the Docker container: ${container:-unknown}"
-    die "Stop that container (sudo docker stop <name>; sudo docker update --restart=no <name>) or pick another port: PORT=9065 ./startaws.sh"
+    die "Stop that container (sudo docker stop <name>; sudo docker update --restart=no <name>) or pick another port: PORT=9066 ./startaws.sh"
   fi
   if [[ "$holder_dir" != "$PWD" ]]; then
     warn "Port $PORT is used by another program: pid $holder ($(ps -o args= -p "$holder" | cut -c1-80)), folder ${holder_dir:-?}"

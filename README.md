@@ -157,17 +157,17 @@ On the EC2, `./startaws.sh` does steps 2–4 for the jobsmatchnow.com subdomain.
 
 1. **DNS:** it checks that the GoDaddy A record `dzoannguyentran` → the instance's public IP is live. With
    `GODADDY_API_KEY`/`GODADDY_API_SECRET` set, it creates the record itself; otherwise it prints the record and waits.
-2. **Website:** it starts the site in the background on `127.0.0.1:9063`, reachable only through the proxy.
+2. **Website:** it starts the site in the background on `127.0.0.1:9065`, reachable only through the proxy.
 3. **Proxy and HTTPS:** it adds the subdomain to the web server already on port 80 (nginx: a `conf.d` file plus a
    certbot certificate; Caddy: a Caddyfile block). If neither is installed, it installs nginx.
 4. **Check:** it fetches the HTTPS URL.
 
-The security group needs ports 80 and 443 open. Close 9063 afterwards. Options: `SUBDOMAIN`, `DOMAIN`, `PORT`, `CERT_EMAIL`.
-After `git pull` or a reboot, re-run `./startaws.sh`. Plain `./start.sh` would use port 3100 instead of 9063.
+The security group needs ports 80 and 443 open. Close 9065 afterwards. Options: `SUBDOMAIN`, `DOMAIN`, `PORT`, `CERT_EMAIL`.
+After `git pull` or a reboot, re-run `./startaws.sh`. Plain `./start.sh` would use port 3100 instead of 9065.
 
 **Content travels with git.** The site content (`.data/db.json`, `.data/uploads/`) and the seed assets are
 committed, so a clone is the complete website. Edit on the PC, commit and push, then on the EC2 run
-`git pull && PORT=9065 ./startaws.sh`. Edits made in the EC2's admin change `.data/db.json` there: commit them
+`git pull && ./startaws.sh`. Edits made in the EC2's admin change `.data/db.json` there: commit them
 from the EC2, or `git checkout .data` before pulling, or the pull refuses to overwrite them.
 AI documents (the pgvector index) are not in git; upload them again in the AI Inbox.
 
