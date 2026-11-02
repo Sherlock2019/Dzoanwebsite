@@ -522,6 +522,31 @@
   color: var(--primary);
 }
 
+.admin-list li.admin-group-empty {
+  border-style: dashed;
+  justify-content: center;
+  margin: 0;
+}
+
+.admin-head-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-group-select {
+  height: 34px;
+  max-width: 190px;
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0 8px;
+  border: 1px solid #d3dce8;
+  border-radius: 8px;
+  background: #fff;
+  color: #2b3f57;
+  cursor: pointer;
+}
+
 .admin-list-thumb {
   width: 84px;
   height: 54px;
