@@ -7,16 +7,16 @@
     "value_proposition": "I turn business challenges into practical AI, data and cloud solutions.",
     "hero_description": "Customer-facing architect and hands-on engineer combining AI engineering, enterprise data integration and multi-cloud delivery—from discovery and architecture through prototyping, testing and delivery.",
     "mission": "Build secure, practical and cost-effective technology that helps people work better together, improves business workflows and creates value for both people and organizations.",
-    "how_i_work": "Customer needs → business workflows → AI agents & data → secure APIs → user experience & enterprise integration → evaluation & operation",
+    "how_i_work": "Listen  Customer Goals → Assess business Human workflows Pain points → Propose and Build Together Solutions using AI agents & data Analytics & MLOps AIops Cycle   →  Deploy  Poc MVP to Production MultiCloud Environments >    user experience & enterprise integration > UAT > Cut over > in Production >  Operation & Monitoring & Evaluation & Optmization  &  Add knowledge Base for Next Projects",
     "bio_title": "My Bio",
-    "bio": "**Born in Vietnam, raised in France, college in the USA.** I have worked all my life in companies with an international culture.\n\n- **Citizenship:** Vietnamese and French\n- **Languages:** English, French and Vietnamese at native level, plus good German\n- **My passion:** I play golf one-handed — [watch me on TikTok](https://www.tiktok.com/@onehandedgolfswing)",
+    "bio": "**Born in Vietnam, raised in France, college in the USA.** I have worked all my life in companies with an international culture.\n\n- **Citizenship:** Vietnamese and French\n- **Languages:** English, French and Vietnamese at native level, plus good German\n- **Funny Facts :** I play golf one-handed — [watch me on TikTok](https://www.tiktok.com/@onehandedgolfswing)",
     "positioning": "One person. Three technical strengths. One human-centered mission.",
     "invitation_title": "Let’s build it together",
     "invitation": "Tell me what you do. What are your pain points? What do you want to improve? What better business outcomes are you aiming for — and why not, what world do you want to build?\n\nTalk to me directly, and we will do it together.",
-    "booking_url": "",
+    "booking_url": "https://calendar.app.google/YYHWjNeJAfobwfmo9",
     "booking_label": "Book an interview",
     "about_title": "Professional Profile",
-    "about": "I’m a customer-facing AI solutions architect and hands-on engineer who enjoys turning real business challenges into practical solutions. I work alongside customers and engineering teams from the first conversation through discovery, architecture, building, testing and delivery.\n\nI bring together AI and agentic workflows, enterprise data integration and multi-cloud engineering, using technologies such as RAG, AWS, Azure, GCP, OpenStack, DevOps and MLOps. What matters most to me is finding the right solution for the people who will use it.\n\nSome of my work includes:\n\n- **AI for the People:** Built an agent platform to help customers explore AI use cases and onboard to Rackspace’s GPU-for-rent offering.\n- **YES AI CAN:** Built an internal “customer zero” platform where teams can develop and demonstrate reusable AI capabilities.\n- **Banking AI agents:** Built a credit and asset appraisal POC designed to make reviews faster and more effective while keeping human decision-makers in control.\n- **Supply Chain AI Manager:** Designed an AI solution for a major cosmetics company to support inventory planning and improve logistics speed and costs.\n- **Gameloft:** Improved production cloud and data operations, helping reduce cloud spending by approximately US$40,000 per month.\n\nIn all my projects, I listen to people, understand their pain points and help them build, together, a realistic solution that makes their work easier, faster and more efficient, with better results. This is my passion and my mission. It is what I love to do: not just building products, but building real solutions for human endeavours.",
+    "about": "I’m a customer-facing AI solutions architect and hands-on engineer who enjoys turning real business challenges into practical solutions. I work alongside customers and engineering teams from the first conversation through discovery, architecture, building, testing and delivery.\n\nI bring together AI and agentic workflows, enterprise data integration and multi-cloud engineering, using technologies such as RAG, AWS, Azure, GCP, OpenStack, DevOps and MLOps. What matters most to me is finding the right solution for the people who will use it.\n\nSome of my work includes:\n\n- **READY to Use AIgent MarketPlace for our Customers :** Built an agent platform to help customers explore AI use cases and onboard to Rackspace’s GPU-for-rent offering.\n- ** YES AI CAN :** Built an internal “customer zero” platform where each BU teams painpoints finds internal AI Talents to build the Cure and put in Production  reusable AI  Solutions features for the Next project , creating  a Self improving  Cycle :  Paint-Point > Cure> Solutions in internal production  > add to AI agent library  >  Reuse for next Pain points ....  \n- **Banking AI agents:** Built a credit and asset appraisal POC designed to make reviews faster and more effective while keeping human decision-makers in control.\n- **Supply Chain AI Manager:** Designed an AI solution for a major cosmetics company to support inventory planning and improve logistics speed and costs.\n- **Gameloft:** Improved production cloud and data operations, helping reduce cloud spending by approximately US$40,000 per month.\n\nIn all my projects, I listen to people, understand their pain points and help them build, together, a realistic solution that makes their work easier, faster and more efficient, with better results. This is my passion and my mission. It is what I love to do: not just building products, but building real solutions for human endeavours.",
     "current_role": "a Multi-Cloud AI Solutions Architect & Hands-on Engineer",
     "current_company": "Rackspace Technology",
     "current_company_url": "https://www.rackspace.com",
@@ -42,41 +42,41 @@
       "key": "images/2026/3f93eed6-85a0-4cb7-ad82-a386cf866f8e.webp",
       "thumb": "images/2026/3f93eed6-85a0-4cb7-ad82-a386cf866f8e.thumb.webp",
       "alt": "A businessperson with a briefcase of factories, logistics and growth charts shakes hands with a technologist carrying a toolbox of AI, cloud and code, in front of a city and bridge at sunrise",
-      "caption": "Bridging business and technology — together",
+      "caption": "Bridging Business Goals , Human  Workflows and technology — together",
       "width": 2048,
       "height": 768
     },
     "resume": {
-      "key": "documents/2026/940234b3-ef8f-468a-a061-99f56d5447fe.pdf",
-      "filename": "Dzoan_Nguyen_Tran_Resume_2026.pdf"
+      "key": "documents/2026/ea1120bc-33c0-4a60-92a8-92b2596cb8d6.pdf",
+      "filename": "016-Dzoan_Tran_Senior_AI_LLM_DATA_Cloud_Engineer-2026.pdf"
     },
     "stats": [
       {
         "value": "7+ years",
-        "label": "Cloud / DevOps / data"
+        "label": "Multi Cloud / DevOps /SRE/ data/Finops"
       },
       {
         "value": "3+ years",
-        "label": "AI / GenAI solutions"
+        "label": "AI / Agentic/ Rag/ openSource LLM solutions"
       },
       {
         "value": "~$40K / month",
-        "label": "Cloud savings (Gameloft)"
+        "label": "Cloud savings as Data Eng and Finops  (Gameloft)"
       },
       {
         "value": "200+",
-        "label": "Engineers trained"
+        "label": "Engineers trained by Training Videos and  Training Labs"
       }
     ],
     "seo_title": "Dzoan Nguyen Tran — AI / ML & Multi-Cloud Solutions Architect",
     "seo_description": "Customer-facing AI solutions architect and hands-on engineer: agentic AI, RAG, data integration, multi-cloud, DevOps, MLOps and FinOps. Based in Ho Chi Minh City.",
     "id": "main",
-    "updated_at": "2026-11-01T08:19:28.718Z"
+    "updated_at": "2026-11-04T13:13:37.379Z"
   },
   "projects": [
     {
       "slug": "ai-for-the-people",
-      "title": "AI for the People",
+      "title": "AI for and By The People",
       "subtitle": "Ready-to-use agent marketplace for business verticals",
       "context": "Rackspace Technology",
       "summary": "A no-code, ready-to-use agent library for banking, IT and e-commerce that helps customers discover AI use cases and scope POC, MVP and production pathways — supporting onboarding to Rackspace’s GPU-for-rent offering.",
@@ -97,9 +97,31 @@
         "OpenStack GPU",
         "Kubernetes / OpenCenter"
       ],
-      "media": [],
+      "media": [
+        {
+          "key": "images/2026/11d84b23-4343-4564-8302-769873d86eaf.png",
+          "thumb": "images/2026/11d84b23-4343-4564-8302-769873d86eaf.thumb.webp",
+          "alt": "ai4people",
+          "width": 1643,
+          "height": 887
+        },
+        {
+          "key": "images/2026/76adb9a1-6a8e-4d3e-a53b-a5d48b92f4f9.png",
+          "thumb": "images/2026/76adb9a1-6a8e-4d3e-a53b-a5d48b92f4f9.thumb.webp",
+          "alt": "ai4people2",
+          "width": 1650,
+          "height": 838
+        },
+        {
+          "key": "images/2026/86d1da14-e243-4284-a815-a8fbd3832f52.png",
+          "thumb": "images/2026/86d1da14-e243-4284-a815-a8fbd3832f52.thumb.webp",
+          "alt": "ai4credit",
+          "width": 1829,
+          "height": 897
+        }
+      ],
       "demo_url": "http://100.31.100.157:8502/",
-      "repo_url": "https://github.com/Sherlock2019/AI-AIGENTbythePeoplesANDBOX",
+      "repo_url": "",
       "links": [],
       "related_architectures": [],
       "featured": true,
@@ -107,8 +129,8 @@
       "sort_order": 6,
       "id": "a2170393-f8a1-49b5-8e3a-a86d14d7b511",
       "created_at": "2026-11-01T05:08:24.836Z",
-      "updated_at": "2026-11-01T08:19:27.891Z",
-      "group": "Live AI Demos"
+      "updated_at": "2026-11-02T05:36:46.900Z",
+      "group": "Ready to Use AI Agent  Market"
     },
     {
       "slug": "banking-ai-copilot-credit-and-asset-appraisal",
@@ -144,10 +166,17 @@
           "caption": "Proposed target architecture — not the POC as built",
           "width": 1673,
           "height": 940
+        },
+        {
+          "key": "images/2026/78fcfc4c-adcb-4fcb-a22a-39d9456279c3.png",
+          "thumb": "images/2026/78fcfc4c-adcb-4fcb-a22a-39d9456279c3.thumb.webp",
+          "alt": "lisa",
+          "width": 1903,
+          "height": 876
         }
       ],
       "demo_url": "http://100.31.100.157:8080",
-      "repo_url": "https://github.com/Sherlock2019/CreditpappraisalFlowise",
+      "repo_url": "",
       "links": [],
       "related_architectures": [
         "df7aff5f-f08a-45a2-8830-bebb19f36a30",
@@ -159,11 +188,11 @@
       ],
       "featured": true,
       "visibility": "published",
-      "sort_order": 0,
+      "sort_order": 7,
       "id": "5c89fac0-e8fb-431a-af50-1c791b050e10",
       "created_at": "2026-11-01T05:08:24.943Z",
-      "updated_at": "2026-11-01T08:19:27.829Z",
-      "group": "Live AI Demos"
+      "updated_at": "2026-11-02T06:18:06.818Z",
+      "group": "Bank FinTech Crypto"
     },
     {
       "slug": "sparc-supply-chain-ai-copilot",
@@ -176,7 +205,7 @@
       "implementation": "- Copilot design for supplier/document retrieval, inventory planning and multi-warehouse workflows\n- SAP MM / PP / SD integration design with FastAPI and Flowise\n- Agent recommendations reviewed and approved by people before any action\n- SPARC: a public showcase implementation of the concepts",
       "architecture": "See the Cosmetics Supply Chain AI Copilot Platform diagram: SAP S/4HANA as system of record behind a controlled integration layer, an agent hierarchy, a tool gateway with human approval checkpoints, and private data and MLOps. It is a target design.",
       "outcomes": "",
-      "status": "POC",
+      "status": "Production",
       "status_note": "The FPT Software work was a consulting design. SPARC is a separate public POC/MVP showcase and is not a live customer SAP integration.",
       "categories": [
         "Supply Chain",
@@ -198,21 +227,49 @@
           "caption": "Reference / target architecture (v2)",
           "width": 1672,
           "height": 941
+        },
+        {
+          "key": "images/2026/05b14e14-86e2-4d23-b914-917fc9cd03a7.png",
+          "thumb": "images/2026/05b14e14-86e2-4d23-b914-917fc9cd03a7.thumb.webp",
+          "alt": "sparcmoat",
+          "width": 1902,
+          "height": 883
+        },
+        {
+          "key": "images/2026/00df4f1f-eb9d-4fc3-bb20-1cb70db81d71.png",
+          "thumb": "images/2026/00df4f1f-eb9d-4fc3-bb20-1cb70db81d71.thumb.webp",
+          "alt": "sparcrag",
+          "width": 1874,
+          "height": 866
+        },
+        {
+          "key": "images/2026/01ab3aa0-e2e1-4fe4-9e70-113e5ecf25f0.png",
+          "thumb": "images/2026/01ab3aa0-e2e1-4fe4-9e70-113e5ecf25f0.thumb.webp",
+          "alt": "aparc2",
+          "width": 1747,
+          "height": 806
+        },
+        {
+          "key": "images/2026/62b2636b-8a09-4fb2-a7e2-d65b7b9f62ba.png",
+          "thumb": "images/2026/62b2636b-8a09-4fb2-a7e2-d65b7b9f62ba.thumb.webp",
+          "alt": "sparc1",
+          "width": 1895,
+          "height": 869
         }
       ],
       "demo_url": "http://100.31.100.157:8000",
-      "repo_url": "https://github.com/Sherlock2019/SupplyChain_Predictions",
+      "repo_url": "",
       "links": [],
       "related_architectures": [
         "aaccc5bc-7423-404d-801d-d2452815806a"
       ],
       "featured": true,
       "visibility": "published",
-      "sort_order": 1,
+      "sort_order": 12,
       "id": "b77e2d9b-75c0-4905-accf-9729d05e7ff0",
       "created_at": "2026-11-01T05:08:25.055Z",
-      "updated_at": "2026-11-01T08:19:27.842Z",
-      "group": "Live AI Demos"
+      "updated_at": "2026-11-02T06:17:36.783Z",
+      "group": "Supply Chain Logistic"
     },
     {
       "slug": "yes-ai-can",
@@ -241,18 +298,40 @@
         "Vector retrieval",
         "Ontology"
       ],
-      "media": [],
+      "media": [
+        {
+          "key": "images/2026/e7f568d5-d88c-4a62-baf9-fe8e8b0ba410.png",
+          "thumb": "images/2026/e7f568d5-d88c-4a62-baf9-fe8e8b0ba410.thumb.webp",
+          "alt": "yesaican",
+          "width": 1727,
+          "height": 881
+        },
+        {
+          "key": "images/2026/2f5eed21-17b4-49c1-960c-534301debc60.png",
+          "thumb": "images/2026/2f5eed21-17b4-49c1-960c-534301debc60.thumb.webp",
+          "alt": "yesaicanonotlogy",
+          "width": 1900,
+          "height": 887
+        },
+        {
+          "key": "images/2026/c544b5d1-dd35-42d1-8553-4a18f542857d.png",
+          "thumb": "images/2026/c544b5d1-dd35-42d1-8553-4a18f542857d.thumb.webp",
+          "alt": "yeaican2",
+          "width": 1905,
+          "height": 907
+        }
+      ],
       "demo_url": "http://100.31.100.157:8054",
-      "repo_url": "https://github.com/Sherlock2019/YesAIcancommunity-LAB",
+      "repo_url": "",
       "links": [],
       "related_architectures": [],
       "featured": false,
       "visibility": "published",
-      "sort_order": 3,
+      "sort_order": 15,
       "id": "c9ca78ab-3c5e-4295-bc53-9b6a67a09916",
       "created_at": "2026-11-01T05:08:25.057Z",
-      "updated_at": "2026-11-01T08:19:27.863Z",
-      "group": "Live AI Demos"
+      "updated_at": "2026-11-02T05:57:41.058Z",
+      "group": "Internal AI FACTORY Colab"
     },
     {
       "slug": "ai-model-to-gpu-flavor-calculator",
@@ -277,18 +356,26 @@
         "GPU sizing",
         "FinOps"
       ],
-      "media": [],
+      "media": [
+        {
+          "key": "images/2026/cba08027-8f2b-4481-a5d8-2a23ddbacf6e.png",
+          "thumb": "images/2026/cba08027-8f2b-4481-a5d8-2a23ddbacf6e.thumb.webp",
+          "alt": "gpuai",
+          "width": 1906,
+          "height": 797
+        }
+      ],
       "demo_url": "http://100.31.100.157:8081",
-      "repo_url": "https://github.com/Sherlock2019/AIModelSpecsasGPUFLavor",
+      "repo_url": "",
       "links": [],
       "related_architectures": [],
       "featured": false,
       "visibility": "published",
-      "sort_order": 5,
+      "sort_order": 3,
       "id": "fa27c72a-3874-40ef-9338-489616c18781",
       "created_at": "2026-11-01T05:08:25.060Z",
-      "updated_at": "2026-11-01T08:19:27.881Z",
-      "group": "Live AI Demos"
+      "updated_at": "2026-11-02T05:47:19.534Z",
+      "group": "Cloud, Data & FinOps"
     },
     {
       "slug": "anyclouds-zen2flex-migration-hub",
@@ -321,52 +408,10 @@
       "related_architectures": [],
       "featured": false,
       "visibility": "published",
-      "sort_order": 13,
+      "sort_order": 2,
       "id": "86c01bfd-dcad-406e-95a5-ae600606e384",
       "created_at": "2026-11-01T05:08:25.063Z",
-      "updated_at": "2026-11-01T08:19:27.953Z",
-      "group": "Cloud, Data & FinOps"
-    },
-    {
-      "slug": "cloud-finops-and-data-operations-at-gameloft",
-      "title": "Cloud FinOps & Data Operations at Gameloft",
-      "subtitle": "~US$40K/month cloud savings and faster ETL for a global gaming estate",
-      "context": "Gameloft — contribution within the infrastructure team",
-      "summary": "Production cloud, data engineering, reliability and FinOps work for worldwide mobile-game and digital-marketing infrastructure across a private data center, AWS, Alibaba Cloud, Azure and GCP.",
-      "problem": "A global, multi-cloud gaming estate — a Montreal private data center plus AWS, Alibaba Cloud, Azure and GCP — needed lower cloud costs, faster data processing and reliable operations across the Americas, Europe and Asia.",
-      "role": "Senior DevOps, FinOps & Data Engineer within the infrastructure team (11/2019 – 04/2024).",
-      "implementation": "- FinOps: usage analysis, infrastructure optimization and removal of obsolete data/storage\n- Data engineering: Kafka ingestion, AWS Glue, data lakes and Aurora/Couchbase/BigQuery integration\n- Contributed to the team migration of about two-thirds of a 2,000-server bare-metal estate to AWS and Alibaba Cloud\n- Operated EC2, Docker, Kubernetes/EKS/ECS and SQL/NoSQL environments; supported Helm and Jenkins/GitLab CI",
-      "architecture": "",
-      "outcomes": "- Cloud spend reduced by approximately US$40,000 per month\n- Selected ETL processing times reduced from approximately three days to a few hours\n- Three performance-related promotions",
-      "status": "Production",
-      "status_note": "Production work for an employer; there is no public demo.",
-      "categories": [
-        "Cloud / DevOps"
-      ],
-      "technologies": [
-        "AWS",
-        "Alibaba Cloud",
-        "Kubernetes / EKS",
-        "Kafka",
-        "AWS Glue",
-        "Aurora",
-        "Couchbase",
-        "BigQuery",
-        "Helm",
-        "Jenkins",
-        "FinOps"
-      ],
-      "media": [],
-      "demo_url": "",
-      "repo_url": "",
-      "links": [],
-      "related_architectures": [],
-      "featured": false,
-      "visibility": "published",
-      "sort_order": 14,
-      "id": "f78b670a-8cd4-4cea-9995-5e958130c4cc",
-      "created_at": "2026-11-01T05:08:25.065Z",
-      "updated_at": "2026-11-01T08:19:27.961Z",
+      "updated_at": "2026-11-02T05:18:27.476Z",
       "group": "Cloud, Data & FinOps"
     },
     {
@@ -395,18 +440,26 @@
         "RAG",
         "Docker"
       ],
-      "media": [],
+      "media": [
+        {
+          "key": "images/2026/3b195415-87d4-4a34-8c66-270b3f8e2409.png",
+          "thumb": "images/2026/3b195415-87d4-4a34-8c66-270b3f8e2409.thumb.webp",
+          "alt": "sdlc",
+          "width": 1907,
+          "height": 883
+        }
+      ],
       "demo_url": "http://100.31.100.157:4000",
-      "repo_url": "https://github.com/Sherlock2019/SDLC-AIcopilot",
+      "repo_url": "",
       "links": [],
       "related_architectures": [],
       "featured": false,
       "visibility": "published",
       "id": "ae4832a7-95cc-4c55-9e26-91a8a37e1873",
-      "sort_order": 2,
+      "sort_order": 5,
       "created_at": "2026-11-01T08:13:37.169Z",
-      "updated_at": "2026-11-01T08:19:27.852Z",
-      "group": "Live AI Demos"
+      "updated_at": "2026-11-02T05:55:58.575Z",
+      "group": "Cloud, Data & FinOps"
     },
     {
       "slug": "ev-fleet-ai-manager",
@@ -419,7 +472,7 @@
       "implementation": "- Fleet Command Center: vehicle telemetry (state of health, motor efficiency, tires) and a “needs attention” list\n- Charging network, route intelligence, 24-hour ride demand and a demand forecast model\n- ADAS loop: labeling pipeline, training datasets, model metrics sliced by object class, weather, light and city, and an AI edge-case miner that ranks scenarios by risk\n- AI recommendations and simulation controls",
       "architecture": "",
       "outcomes": "",
-      "status": "Personal project",
+      "status": "Proposed design",
       "status_note": "Portfolio demo lab running on demo data with simulation controls. Not a deployment for any vehicle manufacturer or fleet operator.",
       "categories": [
         "Other"
@@ -433,18 +486,54 @@
         "Leaflet maps",
         "D3"
       ],
-      "media": [],
+      "media": [
+        {
+          "key": "images/2026/1c29d675-eecf-419d-99bb-91ce2775e152.png",
+          "thumb": "images/2026/1c29d675-eecf-419d-99bb-91ce2775e152.thumb.webp",
+          "alt": "Evfleetai",
+          "width": 1911,
+          "height": 885
+        },
+        {
+          "key": "images/2026/9e95e9e1-9b41-4ed1-a059-5e6a1a388341.png",
+          "thumb": "images/2026/9e95e9e1-9b41-4ed1-a059-5e6a1a388341.thumb.webp",
+          "alt": "Evfleetaivision",
+          "width": 1912,
+          "height": 907
+        },
+        {
+          "key": "images/2026/c8fdddcf-f22d-423a-b4e7-3acab16631f3.png",
+          "thumb": "images/2026/c8fdddcf-f22d-423a-b4e7-3acab16631f3.thumb.webp",
+          "alt": "evhealth",
+          "width": 1903,
+          "height": 888
+        },
+        {
+          "key": "images/2026/b0c73b38-6308-4a64-8bfc-094e151dabfc.png",
+          "thumb": "images/2026/b0c73b38-6308-4a64-8bfc-094e151dabfc.thumb.webp",
+          "alt": "evcharger",
+          "width": 1899,
+          "height": 906
+        },
+        {
+          "key": "images/2026/21cb13e9-3e93-4969-ac0b-b968ddcf767b.png",
+          "thumb": "images/2026/21cb13e9-3e93-4969-ac0b-b968ddcf767b.thumb.webp",
+          "alt": "fleetcmd",
+          "width": 1894,
+          "height": 907
+        }
+      ],
       "demo_url": "http://100.31.100.157:9063",
-      "repo_url": "https://github.com/Sherlock2019/EVAIManager",
+      "repo_url": "",
       "links": [],
       "related_architectures": [],
       "featured": false,
       "visibility": "published",
       "id": "8e2264ea-877e-40c7-b13d-c8cb4b56f0d5",
-      "sort_order": 4,
+      "sort_order": 10,
       "created_at": "2026-11-01T08:13:37.178Z",
-      "updated_at": "2026-11-01T08:19:27.872Z",
-      "group": "Live AI Demos"
+      "updated_at": "2026-11-02T06:04:14.978Z",
+      "group": "Multi Model Computer Vision Audio AI"
     },
     {
       "slug": "humanaisentinel",
@@ -481,10 +570,10 @@
       "featured": false,
       "visibility": "published",
       "id": "495436ae-024f-4ff8-b4bc-d15eba2ade44",
-      "sort_order": 10,
+      "sort_order": 13,
       "created_at": "2026-11-01T08:13:37.187Z",
-      "updated_at": "2026-11-01T08:19:27.928Z",
-      "group": "Agentic AI & Governance POCs"
+      "updated_at": "2026-11-02T05:17:33.611Z",
+      "group": "AI Safety Security"
     },
     {
       "slug": "microcredit-advisor",
@@ -511,9 +600,31 @@
         "Human-in-the-loop",
         "AWS EC2"
       ],
-      "media": [],
-      "demo_url": "",
-      "repo_url": "https://github.com/Sherlock2019/MicroCredit-Advisor",
+      "media": [
+        {
+          "key": "images/2026/5ed1b988-d884-413b-85c4-9614eb0bc9c7.png",
+          "thumb": "images/2026/5ed1b988-d884-413b-85c4-9614eb0bc9c7.thumb.webp",
+          "alt": "IFA AI advisor azure",
+          "width": 1267,
+          "height": 715
+        },
+        {
+          "key": "images/2026/4a72b9bb-9daa-49e2-b70d-34a8be75c2c1.png",
+          "thumb": "images/2026/4a72b9bb-9daa-49e2-b70d-34a8be75c2c1.thumb.webp",
+          "alt": "microcredapp",
+          "width": 1803,
+          "height": 733
+        },
+        {
+          "key": "images/2026/881f1a40-9a1f-47c0-a722-24eda310a839.png",
+          "thumb": "images/2026/881f1a40-9a1f-47c0-a722-24eda310a839.thumb.webp",
+          "alt": "microcredit",
+          "width": 1896,
+          "height": 812
+        }
+      ],
+      "demo_url": "http://100.31.100.157:8480/index.html#/",
+      "repo_url": "",
       "links": [],
       "related_architectures": [
         "07ba964f-0a78-474e-9509-723f4a24fb3f"
@@ -521,10 +632,10 @@
       "featured": false,
       "visibility": "published",
       "id": "c223925f-e720-4cff-810f-8dabbffa7906",
-      "sort_order": 7,
+      "sort_order": 8,
       "created_at": "2026-11-01T08:16:11.594Z",
-      "updated_at": "2026-11-01T08:19:27.901Z",
-      "group": "Agentic AI & Governance POCs"
+      "updated_at": "2026-11-02T06:18:42.020Z",
+      "group": "Bank FinTech Crypto"
     },
     {
       "slug": "trustchain-ai",
@@ -559,10 +670,10 @@
       "featured": false,
       "visibility": "published",
       "id": "591c33cb-5ab7-4181-ad4e-dc9dfe1e5b31",
-      "sort_order": 8,
+      "sort_order": 9,
       "created_at": "2026-11-01T08:16:11.603Z",
-      "updated_at": "2026-11-01T08:19:27.911Z",
-      "group": "Agentic AI & Governance POCs"
+      "updated_at": "2026-11-02T05:11:53.365Z",
+      "group": "Bank FinTech Crypto"
     },
     {
       "slug": "kats-kt-ai-enhanced-ticket-support-system",
@@ -588,18 +699,26 @@
         "Local LLM",
         "HTML / JavaScript"
       ],
-      "media": [],
+      "media": [
+        {
+          "key": "images/2026/bc778f9e-e928-4b5b-884a-93269cb03211.png",
+          "thumb": "images/2026/bc778f9e-e928-4b5b-884a-93269cb03211.thumb.webp",
+          "alt": "kats",
+          "width": 1518,
+          "height": 907
+        }
+      ],
       "demo_url": "",
-      "repo_url": "https://github.com/Sherlock2019/KATS",
+      "repo_url": "",
       "links": [],
       "related_architectures": [],
       "featured": false,
       "visibility": "published",
       "id": "787545cc-0b2f-4e18-9b47-237f1443fbd7",
-      "sort_order": 9,
+      "sort_order": 4,
       "created_at": "2026-11-01T08:16:11.611Z",
-      "updated_at": "2026-11-01T08:19:27.920Z",
-      "group": "Agentic AI & Governance POCs"
+      "updated_at": "2026-11-02T06:11:27.457Z",
+      "group": "Cloud, Data & FinOps"
     },
     {
       "slug": "mlm-meaning-language-model",
@@ -612,7 +731,7 @@
       "implementation": "- Pipeline: language, lexicon, grammar, morphology and syntax → Universal Phrase DNA → context graph → expected semantic slot → linguistic scoring of the Transformer's candidates\n- Every component can be switched off for fair comparison on the same model and hardware\n- Language packs, multimodal input (text, image, video) and AWS EC2 deployment",
       "architecture": "",
       "outcomes": "",
-      "status": "POC",
+      "status": "Proposed design",
       "status_note": "Research proof of concept. Every claim is measured on identical input, and the cost is reported next to the benefit.",
       "categories": [
         "AI Research"
@@ -632,9 +751,9 @@
       "featured": false,
       "visibility": "published",
       "id": "6a5b9649-4586-45c5-a420-62ff1fc24fb9",
-      "sort_order": 11,
+      "sort_order": 0,
       "created_at": "2026-11-01T08:16:11.620Z",
-      "updated_at": "2026-11-01T08:19:27.936Z",
+      "updated_at": "2026-11-02T05:15:19.943Z",
       "group": "AI Research"
     },
     {
@@ -668,14 +787,14 @@
       "featured": false,
       "visibility": "published",
       "id": "ca54dbbf-4088-48b9-b088-6f6b21bd5b4e",
-      "sort_order": 12,
+      "sort_order": 1,
       "created_at": "2026-11-01T08:16:11.628Z",
       "updated_at": "2026-11-01T08:19:27.944Z",
       "group": "AI Research"
     },
     {
       "slug": "aifarm",
-      "group": "",
+      "group": "Multi Model Computer Vision Audio AI",
       "title": "AIfarm",
       "subtitle": "AIFARM DOCTOR — chicken influenza early warning for poultry and pig farms",
       "context": "Proof of concept",
@@ -685,7 +804,7 @@
       "implementation": "- Transparent influenza risk score (0–100) per house and day: baseline = median of the previous 21 days, % deviation, per-signal anomaly score, weighted sum → LOW / WATCH / HIGH / CRITICAL\n- Overview and daily brief, risk breakdown with a “why” explanation, response plan and trend charts\n- AI Vision (camera detections, flock movement heatmap) and Sound AI (spectrogram, respiratory events per hour) on synthetic demo data\n- Flock health map with live sensor states, vaccination compliance (due / overdue / missing), biosecurity log (visitors, vehicles, disinfection)\n- Prioritised alerts and “Ask AIFARM DOCTOR”, a farm-health assistant that answers from the computed analysis (no external AI)\n- Classic vs AI comparison, business-impact simulator, data import (manual entry and CSV with column mapping)\n- Animated Day 1 → Day 5 outbreak demo; the same engine switches to a pig farm",
       "architecture": "FastAPI backend (risk engine, farm analysis service, assistant, CSV import) on SQLite, with a demo farm generator rebuilt at each start. React + TypeScript + Tailwind + Recharts frontend built with Vite. Runs fully locally; on a server it is served from a single port.",
       "outcomes": "",
-      "status": "POC",
+      "status": "Public demo",
       "status_note": "Proof of concept on generated demo data; camera and sound screens use synthetic detections. Early-warning and decision support only — it does not replace veterinary diagnosis or laboratory confirmation.",
       "categories": [
         "Other"
@@ -701,21 +820,36 @@
         "Recharts",
         "Vite"
       ],
-      "media": [],
-      "demo_url": "",
-      "repo_url": "https://github.com/Sherlock2019/MAIFARM-Fluenza-Detector",
+      "media": [
+        {
+          "key": "images/2026/f35634a1-7efe-463c-a7f6-e54ea05de97e.png",
+          "thumb": "images/2026/f35634a1-7efe-463c-a7f6-e54ea05de97e.thumb.webp",
+          "alt": "AIFARM",
+          "width": 1885,
+          "height": 873
+        },
+        {
+          "key": "images/2026/bb053e80-74a3-4c83-bc6e-b524bb6fa488.png",
+          "thumb": "images/2026/bb053e80-74a3-4c83-bc6e-b524bb6fa488.thumb.webp",
+          "alt": "aifarmaudio",
+          "width": 1909,
+          "height": 912
+        }
+      ],
+      "demo_url": "http://100.31.100.157:5500/#overview",
+      "repo_url": "",
       "links": [],
       "related_architectures": [],
       "featured": false,
-      "visibility": "draft",
+      "visibility": "published",
       "id": "fe8e60c5-40e1-4d32-894d-f795b57f9cc4",
-      "sort_order": 15,
+      "sort_order": 11,
       "created_at": "2026-11-02T04:56:17.601Z",
-      "updated_at": "2026-11-02T04:56:17.601Z"
+      "updated_at": "2026-11-02T05:28:17.055Z"
     },
     {
       "slug": "ai-training-labs",
-      "group": "",
+      "group": "SDLC Dev Training AI",
       "title": "AI Training Labs",
       "subtitle": "AItrain — OpenCenter hands-on training center, from first cluster to AI services and certification",
       "context": "Hands-on training platform",
@@ -742,99 +876,151 @@
         "Kyverno",
         "pytest"
       ],
-      "media": [],
-      "demo_url": "",
-      "repo_url": "https://github.com/Sherlock2019/AITRAIN",
+      "media": [
+        {
+          "key": "images/2026/0da182fa-2c1d-499c-80ca-56856b01fb34.png",
+          "thumb": "images/2026/0da182fa-2c1d-499c-80ca-56856b01fb34.thumb.webp",
+          "alt": "aitrain1",
+          "width": 1898,
+          "height": 906
+        },
+        {
+          "key": "images/2026/9b414673-6d7d-417f-9cb4-8b511500de57.png",
+          "thumb": "images/2026/9b414673-6d7d-417f-9cb4-8b511500de57.thumb.webp",
+          "alt": "aitrain2",
+          "width": 1879,
+          "height": 886
+        }
+      ],
+      "demo_url": "http://100.31.100.157:5003/",
+      "repo_url": "",
       "links": [],
       "related_architectures": [],
       "featured": false,
       "visibility": "draft",
       "id": "59cea629-4cca-464a-998e-bb4974b80115",
-      "sort_order": 16,
+      "sort_order": 14,
       "created_at": "2026-11-02T04:57:17.768Z",
-      "updated_at": "2026-11-02T04:57:17.768Z"
+      "updated_at": "2026-11-02T06:16:57.530Z"
     },
     {
-      "slug": "opencenter-cli-ai-testing",
-      "group": "",
-      "title": "OpenCenter CLI AI Testing",
-      "subtitle": "openCenter CLI Test Bench — every command judged, the full cluster lifecycle proven, locally and in CI",
-      "context": "Release-quality test bench",
-      "summary": "A test bench that answers two questions about each build of the openCenter CLI: does every command do what its documentation promises, and can the build create, run and remove the Kubernetes platform it manages? It runs the real binary against emulated, Kind or real providers and answers with evidence and a reproduce command for every finding — not just a colour.",
-      "problem": "A CLI can exit 0 while doing the wrong thing, and every command can pass on its own while the full cluster lifecycle fails. Release decisions also need to tell a product defect from a provider outage or a laptop port conflict — otherwise good builds are blocked or broken ones ship.",
-      "role": "Designed and built the test bench: lifecycle engine, command checks, console, CI pipeline and reporting.",
-      "implementation": "- ~388 command invocations across 4 environments in thirty modules, checked against documented behaviour (e.g. --output json must actually parse), not just exit codes\n- 21-phase end-to-end lifecycle on eight profiles: build the CLI from source, configure, validate, generate manifests and Terraform, deploy a real cluster, check Kubernetes and platform health, delete a pod on purpose to prove self-healing, tear down and verify nothing is left behind\n- Findings scored per layer (CLI, Provider, Kubernetes, Platform, Test Bench) and in a fixed set of classes (product defect, regression, provider or environment issue …); verdicts PASS / WARNING / FAIL / INCONCLUSIVE / SIMULATED\n- GitHub Actions testing pyramid in one workflow — fast checks, provider integration in parallel, Kind platform suite, nightly full lifecycle, approved real-infrastructure runs and a gate board that shows NOT RUN explicitly; installable into other repos as a reusable action\n- Web console: pick where, what and against which environment, then run everything or single commands; distinct problems merged across local and CI runs\n- Safety: per-run workspace, environment rebuilt from an allowlist, one redaction chokepoint, canary credentials hunted for after every run, deadlines on every external process, three separate approvals for anything live\n- Reports in HTML, Markdown, JSON, CSV and JUnit; 60 pinned requirements as tests",
-      "architecture": "Go binaries: the command bench, the 21-phase lifecycle engine and the console server. A shared platform suite takes a kubeconfig, so the lifecycle and standalone checks run the same assertions. A composite GitHub Action drives CI with the same binaries and flags as a local run, so results are comparable.",
-      "outcomes": "",
-      "status": "Internal tool",
-      "status_note": "Release-quality tooling for the openCenter CLI; the safe default profile creates no infrastructure.",
+      "slug": "cardiology-iot-ai-assistant",
+      "group": "Medical IOT Hopsital AI assistant",
+      "title": "Cardiology IOT AI assistant",
+      "subtitle": "Cardiology Service AI intelligence Agent",
+      "context": "medical IOT manufacturer  and medical  SAAS",
+      "summary": "Cardiology remote-monitoring platform: cardiac IoT devices stream readings into a secure API, and nurses and doctors get a prioritized command center. It includes a patient app and a governed AI assistant that never invents numbers or gives clinical advice. Built end to end with synthetic data.",
+      "problem": "Patients on cardiac monitoring generate a constant stream of alarms. Most are advisory or technical, so the critical ones get lost and nurses suffer alarm fatigue.\n\nThe context needed to act is spread across systems: conditions, current medications, the monitoring device, the doctor in charge, the family contact. Device failures are silent too: an offline ECG patch looks like a quiet patient.\n\nHospitals and health-tech vendors also ask outcome questions that raw counts can't answer, such as who recovered and who died, by condition, treatment and age. And every new health IoT product tends to rebuild its data pipeline from zero.",
+      "role": "Architect and Builder\n\nTurned written specifications into a working product, from data model and API to three front ends, deployment and documentation\nDefined the architecture (ingestion, alarm rules, analytics, AI layer, AWS target design) and the decision records\nSet the safety and privacy rules: role-based access, engineers isolated from patient data, a tamper-evident audit trail, no clinical advice from AI\nBuilt the whole thing with an AI coding assistant (Claude Code), and wrote the tests and delivery evidence",
+      "implementation": "Idempotent IoT ingestion for five device types (ECG patch, cuffless BP, biosensor ring, bedside monitor, telemetry pack), with data-quality flags and a reusable device-profile model so new devices plug into the same pipeline\nClinical portal styled like a Grafana dashboard, with Nurse, Doctor and Patients views: prioritized patient monitors with live-style ECG traces, an alarm queue, IoT device health, patients by condition with doctor in charge, and a calendar of admissions, discharges and deaths\nHeart Angel, a chat box that answers care-team questions from the record (medications, family contact, doctor on call, current emergencies), routes dosing and diagnosis questions to the physician, and logs every question in the audit trail\nOutcome analytics: stable / at-risk / deceased breakdowns by condition, medication, age, sex and doctor, plus deceased-vs-alive comparisons with confidence intervals\nCardioInsight, a governed AI assistant (Flowise, LangGraph, local Qwen model) with tools for operations insight, IoT ingestion status and knowledge-base search with citations. Code computes every number, AI text with unverifiable numbers is withheld, and recommendations need human approval.\nPatient mobile app (React Native) with oscilloscope-style vitals, medications and daily check-ins\nEngineering Hub: a 7-stage delivery lifecycle with real test results, and a Knowledge Hub with reviewed, cited engineering knowledge\nA one-command launcher (start.sh) that runs locally or on AWS EC2, plus a documented AWS production architecture",
+      "architecture": "┌",
+      "outcomes": "Working end-to-end demo on 1,000 synthetic patients (about 200 monitored at a time) and 207 connected devices\n80 automated tests passing: 65 backend, 13 frontend, 2 end-to-end\nAI safety checks verified by tests: unsupported numbers withheld, clinical-decision questions refused or routed to the physician, every question audited\nRuns with one command on a laptop or a single AWS EC2 instance",
+      "status": "Proposed design",
+      "status_note": "poc",
       "categories": [
-        "Cloud / DevOps",
-        "Internal Tools"
-      ],
-      "technologies": [
-        "Go",
-        "GitHub Actions",
-        "Kubernetes",
-        "Kind",
-        "OpenStack",
-        "VMware",
-        "OpenTofu",
-        "Ansible",
-        "Flux / GitOps"
-      ],
-      "media": [],
-      "demo_url": "",
-      "repo_url": "https://github.com/Sherlock2019/opencli-full-v2",
-      "links": [],
-      "related_architectures": [],
-      "featured": false,
-      "visibility": "draft",
-      "id": "4d3ed1a8-861c-4561-92a9-fabc5959afa1",
-      "sort_order": 17,
-      "created_at": "2026-11-02T04:58:47.922Z",
-      "updated_at": "2026-11-02T04:58:47.922Z"
-    },
-    {
-      "slug": "gitintel-scanner",
-      "group": "",
-      "title": "GitIntel Scanner",
-      "subtitle": "Genestack-dash-INTAIL — paste any Git URL, get a repository intelligence dashboard",
-      "context": "Engineering intelligence dashboard",
-      "summary": "A universal Git repository intelligence dashboard: paste the URL of any GitHub, GitLab, Bitbucket or self-hosted repository and it clones it, extracts commits, contributors, branches and files, scores repository health, inventories component versions (Helm, Docker, OpenStack) and turns it all into findings and recommended actions.",
-      "problem": "Engineering and platform teams need a quick, visual read on a repository — who works on it, which files and branches are risky, how healthy the delivery flow is, and which component versions it ships — without setting up tooling for every repo.",
-      "role": "Designed and built the dashboard and its scanners.",
-      "implementation": "- Universal scanner: enter any Git URL; the repo is cloned and every dashboard section adapts to it, with one-click reset\n- Repo health gauges from real Git data: commit frequency, PR review velocity, code-churn stability\n- Contributor analytics with top-contributor recognition and activity heatmaps; branch intelligence; file volatility and risk\n- Key-metrics overview (share of top 5 files, contributors, branches), “So what” findings and a prioritised “What now” action table\n- Component version inventory and OpenStack release compatibility checks; Kubernetes/Helm configuration drift detection\n- Slack and Microsoft Teams notifications; dark and light themes",
-      "architecture": "Python Streamlit app with Plotly, Matplotlib and Seaborn charts over pandas; Git-based metric calculators, version resolvers and drift detection as separate modules.",
-      "outcomes": "",
-      "status": "Personal project",
-      "status_note": "Findings and recommendations are rule-based analysis of the repository's Git history and files.",
-      "categories": [
-        "Cloud / DevOps",
-        "Internal Tools"
+        "Agentic AI",
+        "Other"
       ],
       "technologies": [
         "Python",
-        "Streamlit",
+        "FastAPI",
+        "SQLAlchemy",
+        "Alembic",
+        "PostgreSQL 16",
         "pandas",
-        "Plotly",
-        "Matplotlib",
-        "Seaborn",
-        "Git",
-        "Helm",
-        "OpenStack"
+        "React 18",
+        "TypeScript",
+        "Vite",
+        "Tailwind CSS",
+        "Recharts",
+        "TanStack Query",
+        "React Native (Expo)",
+        "LangGraph",
+        "Flowise",
+        "Ollama (Qwen 2.5)",
+        "Docker Compose",
+        "nginx",
+        "pytest",
+        "Vitest",
+        "Playwright",
+        "GitHub Actions",
+        "AWS (EC2",
+        "with an ECS Fargate / RDS / SQS / KMS / CloudWatch design)"
       ],
-      "media": [],
-      "demo_url": "",
-      "repo_url": "https://github.com/Sherlock2019/GIT-Dash-IntAIL",
-      "links": [],
+      "media": [
+        {
+          "key": "images/2026/0e041bd9-e8ce-4441-ad35-1e8b8232229a.png",
+          "thumb": "images/2026/0e041bd9-e8ce-4441-ad35-1e8b8232229a.thumb.webp",
+          "alt": "cardioapp",
+          "width": 743,
+          "height": 891
+        },
+        {
+          "key": "images/2026/7bc630c5-0e84-47df-bd41-d6056d9491b5.png",
+          "thumb": "images/2026/7bc630c5-0e84-47df-bd41-d6056d9491b5.thumb.webp",
+          "alt": "cardio1",
+          "width": 1887,
+          "height": 870
+        },
+        {
+          "key": "images/2026/eed9497d-d5f3-4bb9-9545-bda6a19fc68e.png",
+          "thumb": "images/2026/eed9497d-d5f3-4bb9-9545-bda6a19fc68e.thumb.webp",
+          "alt": "cardio2",
+          "width": 1871,
+          "height": 892
+        },
+        {
+          "key": "images/2026/a6f4100f-1a63-4016-a17a-d7c9b321edf0.png",
+          "thumb": "images/2026/a6f4100f-1a63-4016-a17a-d7c9b321edf0.thumb.webp",
+          "alt": "cardio3",
+          "width": 1908,
+          "height": 872
+        },
+        {
+          "key": "images/2026/0f60cea7-bd4e-4975-9984-b65a5e9c0839.png",
+          "thumb": "images/2026/0f60cea7-bd4e-4975-9984-b65a5e9c0839.thumb.webp",
+          "alt": "cardio4",
+          "width": 1875,
+          "height": 894
+        },
+        {
+          "key": "images/2026/5fc74587-3017-4049-b65c-f4601beb2e65.png",
+          "thumb": "images/2026/5fc74587-3017-4049-b65c-f4601beb2e65.thumb.webp",
+          "alt": "CardioWatch on AWS",
+          "width": 1536,
+          "height": 1024
+        },
+        {
+          "key": "images/2026/3b0356a5-c0c7-43fc-a230-4c0e54f07ecd.png",
+          "thumb": "images/2026/3b0356a5-c0c7-43fc-a230-4c0e54f07ecd.thumb.webp",
+          "alt": "CardioWatch GCP Architecture Dzoan",
+          "width": 3840,
+          "height": 2160
+        }
+      ],
+      "demo_url": "http://100.31.100.157:5180/",
+      "repo_url": "",
+      "links": [
+        {
+          "label": "achitecture",
+          "url": "http://100.31.100.157:5180/architecture"
+        },
+        {
+          "label": "Implementation",
+          "url": "http://100.31.100.157:5180/engineering"
+        },
+        {
+          "label": "user mobile app",
+          "url": "http://100.31.100.157:8082/"
+        }
+      ],
       "related_architectures": [],
       "featured": false,
-      "visibility": "draft",
-      "id": "e3592b5b-18b1-4245-8911-980a8e59245f",
-      "sort_order": 18,
-      "created_at": "2026-11-02T05:00:52.636Z",
-      "updated_at": "2026-11-02T05:00:52.636Z"
+      "visibility": "published",
+      "id": "689d92e1-eb33-468b-aed8-11b65ab14547",
+      "sort_order": 16,
+      "created_at": "2026-11-03T16:37:12.742Z",
+      "updated_at": "2026-11-04T04:50:50.812Z"
     }
   ],
   "architectures": [
@@ -1209,6 +1395,68 @@
       "id": "aaccc5bc-7423-404d-801d-d2452815806a",
       "created_at": "2026-11-01T05:08:25.833Z",
       "updated_at": "2026-11-01T05:08:25.833Z"
+    },
+    {
+      "slug": "medical-iot-cardiology-monitoring-ai-assistant",
+      "title": "Medical IOT Cardiology Monitoring",
+      "summary": "IOT cardiology monitoring Agent ",
+      "description": "Turned written specifications into a working product, from data model and API to three front ends, deployment and documentation\nDefined the architecture (ingestion, alarm rules, analytics, AI layer, AWS target design) and the decision records\nSet the safety and privacy rules: role-based access, engineers isolated from patient data, a tamper-evident audit trail, no clinical advice from AI\nBuilt the whole thing with an AI coding assistant (Claude Code), and wrote the tests and delivery evidence\n\nWhat I built or designed\nIdempotent IoT ingestion for five device types (ECG patch, cuffless BP, biosensor ring, bedside monitor, telemetry pack), with data-quality flags and a reusable device-profile model so new devices plug into the same pipeline\nClinical portal styled like a Grafana dashboard, with Nurse, Doctor and Patients views: prioritized patient monitors with live-style ECG traces, an alarm queue, IoT device health, patients by condition with doctor in charge, and a calendar of admissions, discharges and deaths\nHeart Angel, a chat box that answers care-team questions from the record (medications, family contact, doctor on call, current emergencies), routes dosing and diagnosis questions to the physician, and logs every question in the audit trail\nOutcome analytics: stable / at-risk / deceased breakdowns by condition, medication, age, sex and doctor, plus deceased-vs-alive comparisons with confidence intervals\nCardioInsight, a governed AI assistant (Flowise, LangGraph, local Qwen model) with tools for operations insight, IoT ingestion status and knowledge-base search with citations. Code computes every number, AI text with unverifiable numbers is withheld, and recommendations need human approval.\nPatient mobile app (React Native) with oscilloscope-style vitals, medications and daily check-ins\nEngineering Hub: a 7-stage delivery lifecycle with real test results, and a Knowledge Hub with reviewed, cited engineering knowledge\nA one-command launcher (start.sh) that runs locally or on AWS EC2 or GCP ",
+      "business_context": "Hospitals and health-tech vendors also ask outcome questions that raw counts can't answer, such as who recovered and who died, by condition, treatment and age. And every new health IoT product tends to rebuild its data pipeline from zero.",
+      "contribution": "\nMy role & contribution\nArchitect and Builder",
+      "status": "Proposed Design",
+      "tags": [
+        "iot",
+        "medical"
+      ],
+      "technologies": [],
+      "image": {
+        "key": "images/2026/85f2b944-c0b1-4748-80a3-65f863215052.png",
+        "thumb": "images/2026/85f2b944-c0b1-4748-80a3-65f863215052.thumb.webp",
+        "alt": "CardioWatch GCP Architecture Dzoan",
+        "width": 3840,
+        "height": 2160
+      },
+      "related_project": "689d92e1-eb33-468b-aed8-11b65ab14547",
+      "links": [
+        {
+          "label": "apps",
+          "url": "http://100.31.100.157:5180/"
+        }
+      ],
+      "allow_download": true,
+      "visibility": "published",
+      "id": "221b06c0-f2b1-42b4-ae9a-e2cd24bc0796",
+      "sort_order": 9,
+      "created_at": "2026-11-03T17:33:01.456Z",
+      "updated_at": "2026-11-04T04:48:56.030Z"
+    },
+    {
+      "slug": "my-fullstack",
+      "title": "My Fullstack",
+      "summary": "",
+      "description": "",
+      "business_context": "",
+      "contribution": "",
+      "status": "Production",
+      "tags": [
+        "Human business tech"
+      ],
+      "technologies": [],
+      "image": {
+        "key": "images/2026/6ab64fe5-036e-42f7-96ae-873520e1e987.png",
+        "thumb": "images/2026/6ab64fe5-036e-42f7-96ae-873520e1e987.thumb.webp",
+        "alt": "Earth human business AI ISO fullStack",
+        "width": 1221,
+        "height": 1288
+      },
+      "related_project": "",
+      "links": [],
+      "allow_download": false,
+      "visibility": "published",
+      "id": "c79a393e-ffd2-4e5c-9f77-3ddcf71d939a",
+      "sort_order": 10,
+      "created_at": "2026-11-05T16:00:21.489Z",
+      "updated_at": "2026-11-05T16:00:47.096Z"
     }
   ],
   "current": [],
