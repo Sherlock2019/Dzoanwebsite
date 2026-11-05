@@ -18,6 +18,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     { id: "home", label: "Home" },
     { id: "about", label: "About" },
     { id: "skills", label: "Skills" },
+    ...(content.skills.some((s) => s.group !== "technical") ? [{ id: "stacks", label: "Business & Human Stack" }] : []),
     { id: "resume", label: "Résumé" },
     ...(content.projects.length ? [{ id: "projects", label: "Projects" }] : []),
     ...(content.architectures.length ? [{ id: "architectures", label: "Architectures" }] : []),

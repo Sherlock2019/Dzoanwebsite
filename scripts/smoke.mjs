@@ -56,7 +56,7 @@ async function publicChecks() {
   const home = await req("/");
   const html = await home.text();
   check("home page renders (200)", home.status === 200, String(home.status));
-  for (const id of ["home", "about", "skills", "resume", "projects", "architectures", "certifications", "contact"]) {
+  for (const id of ["home", "about", "skills", "stacks", "resume", "projects", "architectures", "certifications", "contact"]) {
     check(`section #${id} present and linked in sidebar`, html.includes(`id="${id}"`) && html.includes(`href="/#${id}"`));
   }
   check("name and headline shown", html.includes("Dzoan Nguyen Tran") && html.includes("AI / ML &amp; Multi-Cloud Solutions Architect"));

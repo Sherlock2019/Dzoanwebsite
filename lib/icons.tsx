@@ -163,6 +163,7 @@ export const NAV_ICONS: Record<string, IconType> = {
   home: LuHouse,
   about: LuUser,
   skills: LuSettings,
+  stacks: LuHeartHandshake,
   resume: LuFileText,
   projects: LuCode,
   architectures: LuNetwork,

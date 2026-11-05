@@ -171,6 +171,7 @@ const skillSchema = z.object({
   description: longText(1000),
   icon: z.enum(SKILL_ICONS).default("other"),
   items: strList(60, 120),
+  image: media.nullable().default(null),
   visibility,
   sort_order: sortOrder,
 });

@@ -1,4 +1,6 @@
+import MediaImage from "@/components/ui/MediaImage";
 import { CATEGORY_ICONS, skillIcon } from "@/lib/icons";
+import { thumbUrl } from "@/lib/media-url";
 import type { Profile, SkillCategory } from "@/lib/types";
 import SectionTitle from "./SectionTitle";
 
@@ -45,7 +47,7 @@ export default function Skills({ profile, skills }: { profile: Profile; skills: 
         </div>
       </section>
       {stacks.length > 0 && (
-        <section className="section" aria-labelledby="stacks-title">
+        <section id="stacks" className="section" aria-labelledby="stacks-title">
           <div className="container">
             <div className="section-title">
               <h2 id="stacks-title">Business &amp; Human Stack</h2>
@@ -60,6 +62,18 @@ export default function Skills({ profile, skills }: { profile: Profile; skills: 
                       <Icon aria-hidden /> {c.title}
                     </h3>
                     {c.description && <p>{c.description}</p>}
+                    {c.image && (
+                      <figure className="stack-image">
+                        <MediaImage
+                          src={thumbUrl(c.image)}
+                          alt={c.image.alt || c.title}
+                          label={c.title}
+                          width={c.image.width}
+                          height={c.image.height}
+                        />
+                        {c.image.caption && <figcaption>{c.image.caption}</figcaption>}
+                      </figure>
+                    )}
                     <ul>
                       {c.items.map((item) => {
                         const ItemIcon = skillIcon(item, c.icon);

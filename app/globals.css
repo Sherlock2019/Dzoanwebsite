@@ -961,6 +961,25 @@ img {
   color: var(--muted);
 }
 
+.stack-image {
+  margin: 0 0 20px;
+}
+
+.stack-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.stack-image figcaption {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
 .stack-card ul {
   list-style: none;
   padding: 0;

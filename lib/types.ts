@@ -149,6 +149,7 @@ export interface SkillCategory extends Base {
   description: string;
   icon: string;
   items: string[];
+  image?: Media | null;
 }
 
 export interface Certification extends Base {
