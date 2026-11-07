@@ -2,8 +2,8 @@
   "version": 1,
   "profile": {
     "name": "Dzoan Nguyen Tran",
-    "headline": "AI / ML & Multi-Cloud Solutions for a Better World Architect",
-    "tagline": "Hands-on AI Engineering · Data & MLOps · Multi-Cloud DevOps · SRE · FinOps",
+    "headline": "AI Data Engineer & Multi-Cloud  Solution Architect",
+    "tagline": "Hands-on AI Engineering · Data & MLOps · Multi-Cloud DevOps · SRE ·",
     "value_proposition": "I turn business challenges into practical AI, data and cloud solutions.",
     "hero_description": "Customer-facing architect and hands-on engineer combining AI engineering, enterprise data integration and multi-cloud delivery—from discovery and architecture through prototyping, testing and delivery.",
     "mission": "Build secure, practical and cost-effective technology that helps people work better together, improves business workflows and creates value for both people and organizations.",
@@ -71,7 +71,7 @@
     "seo_title": "Dzoan Nguyen Tran — AI / ML & Multi-Cloud Solutions Architect",
     "seo_description": "Customer-facing AI solutions architect and hands-on engineer: agentic AI, RAG, data integration, multi-cloud, DevOps, MLOps and FinOps. Based in Ho Chi Minh City.",
     "id": "main",
-    "updated_at": "2026-11-04T13:13:37.379Z"
+    "updated_at": "2026-11-07T02:20:04.427Z"
   },
   "projects": [
     {
@@ -108,16 +108,16 @@
         {
           "key": "images/2026/76adb9a1-6a8e-4d3e-a53b-a5d48b92f4f9.png",
           "thumb": "images/2026/76adb9a1-6a8e-4d3e-a53b-a5d48b92f4f9.thumb.webp",
-          "alt": "ai4people2",
+          "alt": "Ready to us Aigent Market",
           "width": 1650,
           "height": 838
         },
         {
-          "key": "images/2026/86d1da14-e243-4284-a815-a8fbd3832f52.png",
-          "thumb": "images/2026/86d1da14-e243-4284-a815-a8fbd3832f52.thumb.webp",
-          "alt": "ai4credit",
-          "width": 1829,
-          "height": 897
+          "key": "images/2026/cc9f9343-a347-4564-9968-5b3eb59d624a.png",
+          "thumb": "images/2026/cc9f9343-a347-4564-9968-5b3eb59d624a.thumb.webp",
+          "alt": "Credit appraisal example",
+          "width": 1907,
+          "height": 904
         }
       ],
       "demo_url": "http://100.31.100.157:8502/",
@@ -129,7 +129,7 @@
       "sort_order": 6,
       "id": "a2170393-f8a1-49b5-8e3a-a86d14d7b511",
       "created_at": "2026-11-01T05:08:24.836Z",
-      "updated_at": "2026-11-02T05:36:46.900Z",
+      "updated_at": "2026-11-06T08:18:32.915Z",
       "group": "Ready to Use AI Agent  Market"
     },
     {
@@ -1745,10 +1745,10 @@
     {
       "group": "human",
       "title": "Human Stack",
-      "description": "How I work with people — grounded in years of supporting customers, training engineers and working across countries and languages.",
+      "description": "How I work with people — grounded in years of supporting customers, training engineers and working across countries and languages. \nAnh here is my Fullstack",
       "icon": "human",
       "items": [
-        "Human-centered technology",
+        "Humanist  and Business centered technologist",
         "Collaboration & knowledge sharing",
         "Mentoring & training (200+ engineers trained)",
         "Empathy & listening",
@@ -1761,7 +1761,14 @@
       "sort_order": 4,
       "id": "6bca2a9a-0215-4eec-8c03-84d25f4145be",
       "created_at": "2026-11-01T05:08:24.793Z",
-      "updated_at": "2026-11-01T05:08:24.793Z"
+      "updated_at": "2026-11-05T16:31:13.383Z",
+      "image": {
+        "key": "images/2026/72a7d7d0-a05c-4bb4-a80c-79d8ad6f7139.png",
+        "thumb": "images/2026/72a7d7d0-a05c-4bb4-a80c-79d8ad6f7139.thumb.webp",
+        "alt": "My Fullstack",
+        "width": 1221,
+        "height": 1288
+      }
     }
   ],
   "certifications": [
