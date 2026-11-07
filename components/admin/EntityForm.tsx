@@ -6,7 +6,7 @@ import { LuExternalLink, LuSave, LuTrash2 } from "react-icons/lu";
 import { COLLECTION_CONFIG, type Field } from "@/lib/admin/collections";
 import type { CollectionName } from "@/lib/types";
 import { api, ApiError } from "./api";
-import { ImageField, ImagesField, LinesInput, LinksField, RefSelect, RefsChecklist, TagsInput, type RefOption } from "./fields";
+import { EntriesField, ImageField, ImagesField, LinesInput, LinksField, RefSelect, RefsChecklist, TagsInput, type RefOption } from "./fields";
 
 type Item = Record<string, unknown> & { id?: string; slug?: string; visibility?: string };
 
@@ -79,7 +79,10 @@ export default function EntityForm({ collection, initial, refs, existing = {} }:
 
   function issueFor(name: string): string | undefined {
     const key = Object.keys(issues).find((k) => k === name || k.startsWith(`${name}.`));
-    return key ? issues[key] : undefined;
+    if (!key) return undefined;
+    // Point at the entry and field for nested lists, e.g. "Entry 2, url: Must be a full https:// URL".
+    const nested = key.slice(name.length + 1).match(/^(\d+)\.(\w+)/);
+    return nested && name === "entries" ? `Entry ${Number(nested[1]) + 1}, ${nested[2]}: ${issues[key]}` : issues[key];
   }
 
   function renderField(field: Field) {
@@ -136,6 +139,8 @@ export default function EntityForm({ collection, initial, refs, existing = {} }:
         return <RefSelect id={id} value={String(value ?? "")} onChange={(v) => set(field.name, v)} options={refs[field.collection!].filter((o) => o.id !== item.id)} />;
       case "refs":
         return <RefsChecklist value={(value as string[]) || []} onChange={(v) => set(field.name, v)} options={refs[field.collection!]} />;
+      case "entries":
+        return <EntriesField id={id} value={(value as never) || []} onChange={(v) => set(field.name, v)} />;
       default: {
         const suggestions = field.suggestExisting ? existing[field.name] || [] : [];
         return (
@@ -223,7 +228,7 @@ export default function EntityForm({ collection, initial, refs, existing = {} }:
       <div className="admin-fields">
         {config.fields.map((field) => {
           const error = issueFor(field.name);
-          const wide = ["textarea", "images", "image", "links", "lines", "tags", "multiselect", "refs"].includes(field.type);
+          const wide = ["textarea", "images", "image", "links", "lines", "tags", "multiselect", "refs", "entries"].includes(field.type);
           return (
             <div key={field.name} className={`admin-field${wide ? " is-wide" : ""}${error ? " has-error" : ""}`}>
               {field.type !== "checkbox" && (

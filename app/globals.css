@@ -1503,6 +1503,96 @@ button.arch-media {
   box-shadow: var(--shadow);
 }
 
+/* Custom sections (Awards / Recommendations …) */
+.custom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.custom-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+
+.custom-card h3 {
+  color: var(--primary);
+  font-size: 1.15rem;
+  margin-bottom: 4px;
+}
+
+.custom-subtitle {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin: 0 0 12px;
+}
+
+.custom-images {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.custom-images.is-multi {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.custom-images figure {
+  margin: 0;
+}
+
+.custom-images img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 360px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.custom-images figcaption {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.custom-links {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+  display: grid;
+  gap: 8px;
+}
+
+.custom-links a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.93rem;
+  overflow-wrap: anywhere;
+}
+
+.custom-links svg {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+}
+
+.custom-file-kind {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #eef2f7;
+  color: #4a5b70;
+}
+
 .cert-card h3 {
   color: var(--primary);
   font-size: 1.1rem;

@@ -40,6 +40,7 @@ import {
 } from "react-icons/si";
 import {
   LuAward,
+  LuBookOpen,
   LuBot,
   LuBrainCircuit,
   LuBriefcase,
@@ -50,6 +51,7 @@ import {
   LuFileText,
   LuFlaskConical,
   LuGitBranch,
+  LuGlobe,
   LuGraduationCap,
   LuHandshake,
   LuHeart,
@@ -63,11 +65,14 @@ import {
   LuPiggyBank,
   LuPresentation,
   LuPuzzle,
+  LuQuote,
   LuRocket,
   LuSearch,
   LuSettings,
   LuShieldCheck,
   LuSparkles,
+  LuStar,
+  LuTrophy,
   LuUser,
   LuUsers,
   LuWorkflow,
@@ -158,6 +163,18 @@ export function skillIcon(name: string, category = "other"): IconType {
   for (const [re, icon] of SKILL_RULES) if (re.test(name)) return icon;
   return CATEGORY_ICONS[category] || LuSparkles;
 }
+
+/** Icons the owner can pick for a custom section (sidebar link and heading). */
+export const SECTION_ICON_MAP: Record<string, IconType> = {
+  trophy: LuTrophy,
+  award: LuAward,
+  quote: LuQuote,
+  star: LuStar,
+  heart: LuHeart,
+  book: LuBookOpen,
+  file: LuFileText,
+  globe: LuGlobe,
+};
 
 export const NAV_ICONS: Record<string, IconType> = {
   home: LuHouse,

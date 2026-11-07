@@ -98,6 +98,13 @@ export async function buildSiteContext(): Promise<string> {
         .join("\n")}`,
     );
   }
+  for (const s of c.sections) {
+    out.push(
+      `## ${s.title}\n${s.entries
+        .map((e) => [e.title && `### ${e.title}`, e.subtitle, e.text, e.url && `Link: ${e.url}`].filter(Boolean).join("\n"))
+        .join("\n\n")}`,
+    );
+  }
   if (c.current.length) out.push(`## Current projects\n${c.current.map((x) => `### ${x.title} (${x.stage})\n${x.summary}`).join("\n\n")}`);
 
   return out.join("\n\n");

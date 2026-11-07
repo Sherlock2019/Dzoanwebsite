@@ -2031,5 +2031,19 @@
       "created_at": "2026-11-01T05:08:24.834Z",
       "updated_at": "2026-11-01T05:08:24.834Z"
     }
+  ],
+  "sections": [
+    {
+      "title": "Awards / Recommendations",
+      "slug": "awards-recommendations",
+      "icon": "trophy",
+      "intro": "",
+      "entries": [],
+      "visibility": "published",
+      "id": "76af5c0e-a589-4e2e-af89-ff3b4d2497c8",
+      "sort_order": 0,
+      "created_at": "2026-11-07T02:31:37.328Z",
+      "updated_at": "2026-11-07T02:31:37.328Z"
+    }
   ]
 }

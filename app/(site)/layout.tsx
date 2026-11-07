@@ -24,6 +24,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     ...(content.architectures.length ? [{ id: "architectures", label: "Architectures" }] : []),
     ...(content.current.length ? [{ id: "current", label: "Current Projects" }] : []),
     ...(content.certifications.length ? [{ id: "certifications", label: "Certifications & Learning" }] : []),
+    ...content.sections.map((s) => ({ id: s.slug, label: s.title, icon: s.icon })),
     { id: "contact", label: "Contact" },
   ];
 

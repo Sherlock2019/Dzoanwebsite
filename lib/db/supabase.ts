@@ -14,6 +14,7 @@ const TABLE: Record<CollectionName, string> = {
   experience: "experience",
   skills: "skill_categories",
   certifications: "certifications",
+  sections: "custom_sections",
 };
 
 function check<T>(result: { data: T; error: { message: string } | null }): T {

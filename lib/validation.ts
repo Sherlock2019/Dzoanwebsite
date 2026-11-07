@@ -7,6 +7,7 @@ import {
   CERT_STATUSES,
   CURRENT_STAGES,
   PROJECT_STATUSES,
+  SECTION_ICONS,
   SKILL_GROUPS,
   SKILL_ICONS,
 } from "@/lib/options";
@@ -188,6 +189,31 @@ const certificationSchema = z.object({
   sort_order: sortOrder,
 });
 
+const attachment = z.object({
+  key: storageKey.refine((k) => k.startsWith("documents/") && /\.(pdf|docx)$/.test(k), "Only PDF or Word documents"),
+  filename: z.string().trim().min(1).max(150),
+});
+
+const sectionEntrySchema = z.object({
+  title: text(200),
+  subtitle: text(200),
+  text: longText(6000),
+  url: optionalUrl,
+  url_label: text(80),
+  images: z.array(media).max(20).default([]),
+  files: z.array(attachment).max(20).default([]),
+});
+
+const sectionSchema = z.object({
+  slug,
+  title: text(80).pipe(z.string().min(1, "Title required")),
+  icon: z.enum(SECTION_ICONS).default("star"),
+  intro: longText(1000),
+  entries: z.array(sectionEntrySchema).max(100).default([]),
+  visibility,
+  sort_order: sortOrder,
+});
+
 export const collectionSchemas: Record<CollectionName, z.ZodTypeAny> = {
   projects: projectSchema,
   architectures: architectureSchema,
@@ -195,6 +221,7 @@ export const collectionSchemas: Record<CollectionName, z.ZodTypeAny> = {
   experience: experienceSchema,
   skills: skillSchema,
   certifications: certificationSchema,
+  sections: sectionSchema,
 };
 
 export function formatIssues(error: z.ZodError): Record<string, string> {

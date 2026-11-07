@@ -484,6 +484,90 @@
   gap: 6px;
 }
 
+/* Custom-section entries */
+.entries-field {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+
+.entry-card {
+  position: relative;
+  width: 100%;
+  border: 1px solid #dde4ee;
+  border-radius: 12px;
+  background: #fbfcfe;
+  padding: 16px 18px 18px;
+  margin: 0;
+  min-width: 0;
+}
+
+.entry-card legend {
+  font-weight: 700;
+  color: var(--primary);
+  padding: 0 6px;
+}
+
+.entry-actions {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+}
+
+.entry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 18px;
+  margin-top: 26px;
+}
+
+.entry-grid > label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.entry-grid > label input,
+.entry-grid > label textarea {
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+.entry-grid > .is-wide {
+  grid-column: 1 / -1;
+}
+
+.file-rows {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px;
+}
+
+.file-rows .link-row {
+  align-items: center;
+}
+
+.file-row-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.86rem;
+}
+
+.admin-nav-sub a {
+  padding-left: 34px !important;
+  font-size: 0.88rem;
+}
+
+@media (max-width: 720px) {
+  .entry-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .link-row {
   display: grid;
   grid-template-columns: 1fr 2fr auto;

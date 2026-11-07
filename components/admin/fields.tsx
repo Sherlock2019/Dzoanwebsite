@@ -1,10 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { LuArrowDown, LuArrowUp, LuPlus, LuTrash2, LuUpload, LuX } from "react-icons/lu";
+import { LuArrowDown, LuArrowUp, LuFileText, LuPlus, LuTrash2, LuUpload, LuX } from "react-icons/lu";
 import { mediaUrl, thumbUrl } from "@/lib/media-url";
-import type { Link, Media } from "@/lib/types";
-import { altFromName, uploadImage } from "./api";
+import type { Attachment, Link, Media, SectionEntry } from "@/lib/types";
+import { altFromName, uploadDocument, uploadImage } from "./api";
 
 export interface RefOption {
   id: string;
@@ -286,6 +286,150 @@ export function LinksField({ id, value, onChange }: { id: string; value: Link[];
       ))}
       <button type="button" className="btn btn-outline btn-sm" onClick={() => onChange([...value, { label: "", url: "" }])}>
         <LuPlus aria-hidden /> Add link
+      </button>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ Documents (PDF / Word)
+
+export function FilesField({ id, value, onChange }: { id: string; value: Attachment[]; onChange: (f: Attachment[]) => void }) {
+  const input = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function upload(files: FileList | null) {
+    if (!files?.length) return;
+    setBusy(true);
+    setError("");
+    const done: Attachment[] = [];
+    const errors: string[] = [];
+    for (const file of Array.from(files)) {
+      try {
+        done.push(await uploadDocument(file));
+      } catch (e) {
+        errors.push((e as Error).message);
+      }
+    }
+    if (done.length) onChange([...value, ...done]);
+    setError(errors.join(" · "));
+    setBusy(false);
+  }
+  return (
+    <div className="image-field">
+      {value.length > 0 && (
+        <ul className="file-rows">
+          {value.map((f, i) => (
+            <li key={f.key} className="link-row">
+              <a href={mediaUrl(f.key)} target="_blank" rel="noopener noreferrer" className="file-row-kind">
+                <LuFileText aria-hidden /> {f.key.endsWith(".pdf") ? "PDF" : "Word"}
+              </a>
+              <input
+                aria-label="Name shown to visitors"
+                value={f.filename}
+                maxLength={150}
+                onChange={(e) => onChange(value.map((x, j) => (j === i ? { ...x, filename: e.target.value } : x)))}
+              />
+              <button type="button" className="icon-btn danger" aria-label={`Remove ${f.filename}`} onClick={() => onChange(value.filter((_, j) => j !== i))}>
+                <LuTrash2 aria-hidden />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <input
+        ref={input}
+        id={id}
+        type="file"
+        multiple
+        accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        className="sr-only"
+        onChange={(e) => {
+          upload(e.target.files);
+          e.target.value = "";
+        }}
+      />
+      <button type="button" className="btn btn-outline btn-sm" onClick={() => input.current?.click()} disabled={busy}>
+        <LuUpload aria-hidden /> {busy ? "Uploading…" : "Add PDF or Word files"}
+      </button>
+      {error && <p className="field-error" role="alert">{error}</p>}
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ Section entries
+
+const EMPTY_ENTRY: SectionEntry = { title: "", subtitle: "", text: "", url: "", url_label: "", images: [], files: [] };
+
+export function EntriesField({ id, value, onChange }: { id: string; value: SectionEntry[]; onChange: (e: SectionEntry[]) => void }) {
+  const update = (i: number, patch: Partial<SectionEntry>) => onChange(value.map((x, j) => (j === i ? { ...x, ...patch } : x)));
+  const move = (i: number, d: number) => {
+    const next = [...value];
+    [next[i], next[i + d]] = [next[i + d], next[i]];
+    onChange(next);
+  };
+  return (
+    <div className="entries-field" id={id}>
+      {value.length === 0 && <p className="hint">No entries yet. Add one below.</p>}
+      {value.map((e, i) => {
+        const p = `${id}-${i}`;
+        return (
+          <fieldset key={i} className="entry-card">
+            <legend>
+              Entry {i + 1}
+              {e.title && `: ${e.title}`}
+            </legend>
+            <div className="entry-actions">
+              <button type="button" className="icon-btn" disabled={i === 0} onClick={() => move(i, -1)} aria-label="Move entry up">
+                <LuArrowUp aria-hidden />
+              </button>
+              <button type="button" className="icon-btn" disabled={i === value.length - 1} onClick={() => move(i, 1)} aria-label="Move entry down">
+                <LuArrowDown aria-hidden />
+              </button>
+              <button
+                type="button"
+                className="icon-btn danger"
+                aria-label="Remove entry"
+                onClick={() => window.confirm(`Remove entry ${i + 1}${e.title ? ` “${e.title}”` : ""}?`) && onChange(value.filter((_, j) => j !== i))}
+              >
+                <LuTrash2 aria-hidden />
+              </button>
+            </div>
+            <div className="entry-grid">
+              <label htmlFor={`${p}-title`}>
+                Title
+                <input id={`${p}-title`} value={e.title} maxLength={200} onChange={(ev) => update(i, { title: ev.target.value })} />
+              </label>
+              <label htmlFor={`${p}-subtitle`}>
+                Subtitle (e.g. who, organisation, year)
+                <input id={`${p}-subtitle`} value={e.subtitle} maxLength={200} onChange={(ev) => update(i, { subtitle: ev.target.value })} />
+              </label>
+              <label htmlFor={`${p}-text`} className="is-wide">
+                Text
+                <textarea id={`${p}-text`} rows={5} value={e.text} onChange={(ev) => update(i, { text: ev.target.value })} />
+                <span className="hint">Blank line = new paragraph. Start lines with “- ” for a bullet list.</span>
+              </label>
+              <label htmlFor={`${p}-url`}>
+                Link URL
+                <input id={`${p}-url`} type="url" placeholder="https://…" value={e.url} onChange={(ev) => update(i, { url: ev.target.value })} />
+              </label>
+              <label htmlFor={`${p}-url-label`}>
+                Link label (optional)
+                <input id={`${p}-url-label`} value={e.url_label} maxLength={80} onChange={(ev) => update(i, { url_label: ev.target.value })} />
+              </label>
+              <div className="is-wide">
+                <p className="admin-label">Images</p>
+                <ImagesField id={`${p}-images`} value={e.images || []} onChange={(images) => update(i, { images })} />
+              </div>
+              <div className="is-wide">
+                <p className="admin-label">Documents</p>
+                <FilesField id={`${p}-files`} value={e.files || []} onChange={(files) => update(i, { files })} />
+              </div>
+            </div>
+          </fieldset>
+        );
+      })}
+      <button type="button" className="btn btn-outline btn-sm" onClick={() => onChange([...value, { ...EMPTY_ENTRY }])}>
+        <LuPlus aria-hidden /> Add entry
       </button>
     </div>
   );

@@ -57,6 +57,13 @@ export const SKILL_ICONS = ["ai", "data", "cloud", "business", "human", "other"]
 export const CERT_KINDS = ["Certification", "Course", "Training", "Education"] as const;
 export const CERT_STATUSES = ["Completed", "In progress"] as const;
 
+export const SECTION_ICONS = ["trophy", "award", "quote", "star", "heart", "book", "file", "globe"] as const;
+
+/** Anchor ids used by built-in parts of the home page; custom sections never take these. */
+export const RESERVED_SECTION_SLUGS = [
+  "home", "about", "skills", "stacks", "resume", "projects", "architectures", "current", "certifications", "contact", "main", "site-sidebar",
+];
+
 export const VISIBILITIES = ["published", "draft"] as const;
 
 /** Visual tone per status — used for badges. */

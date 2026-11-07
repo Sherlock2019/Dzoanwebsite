@@ -1,5 +1,5 @@
 import { getOwnerSession } from "@/lib/auth/guard";
-import { getProfile, publicMediaKeys } from "@/lib/content";
+import { documentFilename, publicMediaKeys } from "@/lib/content";
 import { getStorage, isValidKey } from "@/lib/storage/index";
 
 export const runtime = "nodejs";
@@ -26,10 +26,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ key: str
   });
 
   const download = new URL(req.url).searchParams.get("download") === "1";
-  if (file.contentType === "application/pdf" || download) {
-    const profile = await getProfile();
-    const name = profile.resume?.key === key ? profile.resume.filename : key.split("/").pop() || "file";
-    headers.set("Content-Disposition", `${download ? "attachment" : "inline"}; filename="${name.replace(/"/g, "")}"`);
+  const isImage = file.contentType.startsWith("image/");
+  if (!isImage || download) {
+    // PDFs open in the browser; Word and other documents are always downloaded, never rendered.
+    const name = (await documentFilename(key)) || key.split("/").pop() || "file";
+    const inline = file.contentType === "application/pdf" && !download;
+    headers.set("Content-Disposition", `${inline ? "inline" : "attachment"}; filename="${name.replace(/["\\\r\n]/g, "")}"`);
   }
 
   return new Response(new Uint8Array(file.body), { status: 200, headers });

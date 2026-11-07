@@ -6,6 +6,7 @@ import {
   CURRENT_STAGES,
   PROJECT_CATEGORIES,
   PROJECT_STATUSES,
+  SECTION_ICONS,
   SKILL_GROUPS,
   SKILL_ICONS,
   VISIBILITIES,
@@ -30,7 +31,8 @@ export type FieldType =
   | "images"
   | "links"
   | "ref"
-  | "refs";
+  | "refs"
+  | "entries";
 
 export interface Field {
   name: string;
@@ -225,6 +227,29 @@ export const COLLECTION_CONFIG: Record<CollectionName, CollectionConfig> = {
       { name: "year", label: "Year", type: "text" },
       { name: "url", label: "Verification or course URL", type: "url" },
       visibility,
+    ],
+  },
+  sections: {
+    name: "sections",
+    label: "Custom sections",
+    singular: "section",
+    description:
+      "Your own home-page sections, e.g. Awards / Recommendations. Each published section with at least one entry gets a link in the site's left menu, after Certifications. Use the arrows to set their order.",
+    titleField: "title",
+    subtitleField: "slug",
+    defaults: { icon: "star", visibility: "draft", intro: "", entries: [] },
+    fields: [
+      { name: "title", label: "Section title (also the menu label)", type: "text", required: true },
+      { name: "slug", label: "Link anchor", type: "text", help: "The page address becomes /#anchor. Leave blank to generate from the title." },
+      { name: "icon", label: "Menu icon", type: "select", options: SECTION_ICONS },
+      visibility,
+      { name: "intro", label: "Intro text (under the title)", type: "textarea", rows: 2 },
+      {
+        name: "entries",
+        label: "Entries",
+        type: "entries",
+        help: "Each entry is a card: title, text, a link, images, and PDF or Word (.docx) files. Files are visible only once the section is published.",
+      },
     ],
   },
 };

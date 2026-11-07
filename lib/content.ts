@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { getRepo } from "@/lib/db/index";
+import { RESERVED_SECTION_SLUGS } from "@/lib/options";
 import { getStorage, isValidKey } from "@/lib/storage/index";
 import { slugify } from "@/lib/text";
 import { collectionSchemas, formatIssues } from "@/lib/validation";
@@ -8,6 +9,7 @@ import type {
   Certification,
   CollectionName,
   CurrentProject,
+  CustomSection,
   EntityMap,
   Experience,
   Profile,
@@ -27,6 +29,8 @@ export interface PublicContent {
   experience: Experience[];
   skills: SkillCategory[];
   certifications: Certification[];
+  /** Published custom sections that have at least one entry. */
+  sections: CustomSection[];
 }
 
 export function defaultProfile(): Profile {
@@ -87,7 +91,7 @@ export async function getProfile(): Promise<Profile> {
 
 export async function getPublicContent(): Promise<PublicContent> {
   const repo = await getRepo();
-  const [profile, projects, architectures, current, experience, skills, certifications] = await Promise.all([
+  const [profile, projects, architectures, current, experience, skills, certifications, sections] = await Promise.all([
     getProfile(),
     repo.list("projects"),
     repo.list("architectures"),
@@ -95,6 +99,7 @@ export async function getPublicContent(): Promise<PublicContent> {
     repo.list("experience"),
     repo.list("skills"),
     repo.list("certifications"),
+    repo.list("sections"),
   ]);
   return {
     profile: publicProfile(profile),
@@ -104,7 +109,22 @@ export async function getPublicContent(): Promise<PublicContent> {
     experience: published(experience),
     skills: published(skills),
     certifications: published(certifications),
+    sections: published(sections).filter((s) => s.entries?.length),
   };
+}
+
+/** Original filename of an uploaded document (résumé or a custom-section file), for downloads. */
+export async function documentFilename(key: string): Promise<string | null> {
+  const repo = await getRepo();
+  const profile = await repo.getProfile();
+  if (profile?.resume?.key === key) return profile.resume.filename;
+  for (const s of await repo.list("sections")) {
+    for (const e of s.entries || []) {
+      const f = e.files?.find((x) => x.key === key);
+      if (f) return f.filename;
+    }
+  }
+  return null;
 }
 
 /** Strip fields the owner chose not to publish. */
@@ -171,10 +191,15 @@ async function uniqueSlug(collection: CollectionName, wanted: string, selfId?: s
   const taken = new Set(
     (await repo.list(collection)).filter((x) => x.id !== selfId).map((x) => (x as { slug?: string }).slug),
   );
-  let slug = wanted;
+  // Section slugs are page anchors (/#slug), so they must not clash with built-in sections.
+  if (collection === "sections") for (const r of RESERVED_SECTION_SLUGS) taken.add(r);
+  let slug = wanted || "section";
   for (let i = 2; taken.has(slug); i++) slug = `${wanted}-${i}`;
   return slug;
 }
+
+/** Detail-page collections plus custom sections (whose slug is the home-page anchor). */
+const hasSlug = (collection: CollectionName) => SLUGGED.includes(collection) || collection === "sections";
 
 function parse(collection: CollectionName, input: unknown) {
   const result = collectionSchemas[collection].safeParse(input);
@@ -194,7 +219,7 @@ export async function createEntity<C extends CollectionName>(collection: C, inpu
     created_at: now,
     updated_at: now,
   };
-  if (SLUGGED.includes(collection)) {
+  if (hasSlug(collection)) {
     item.slug = await uniqueSlug(collection, (data.slug as string) || slugify(String(data.title)));
   }
   return repo.save(collection, item as unknown as EntityMap[C]);
@@ -217,7 +242,7 @@ export async function updateEntity<C extends CollectionName>(
     created_at: existing.created_at,
     updated_at: new Date().toISOString(),
   };
-  if (SLUGGED.includes(collection)) {
+  if (hasSlug(collection)) {
     item.slug = await uniqueSlug(collection, (data.slug as string) || slugify(String(data.title)), id);
   }
   const saved = await repo.save(collection, item as unknown as EntityMap[C]);

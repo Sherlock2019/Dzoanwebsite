@@ -52,6 +52,16 @@ export async function uploadPdf(file: File): Promise<{ key: string; filename: st
   return api("/api/admin/upload", { method: "POST", body: form });
 }
 
+/** Upload a PDF or Word (.docx) document; the server checks the real file type. */
+export async function uploadDocument(file: File): Promise<{ key: string; filename: string }> {
+  if (file.size > MAX_BYTES) throw new ApiError(`${file.name} is larger than 15 MB`, 413);
+  if (!/\.(pdf|docx)$/i.test(file.name)) throw new ApiError(`${file.name}: only PDF or Word (.docx) files`, 415);
+  const form = new FormData();
+  form.set("file", file);
+  form.set("kind", "document");
+  return api("/api/admin/upload", { method: "POST", body: form });
+}
+
 /** Turn a filename into readable default alt text. */
 export function altFromName(name: string): string {
   return name

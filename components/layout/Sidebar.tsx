@@ -5,12 +5,14 @@ import { useEffect, useRef, useState } from "react";
 import { FaGithub, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 import { LuLayoutDashboard, LuMail, LuMenu, LuX } from "react-icons/lu";
 import type { FlagBadge } from "@/lib/flags";
-import { NAV_ICONS } from "@/lib/icons";
+import { NAV_ICONS, SECTION_ICON_MAP } from "@/lib/icons";
 import Flag from "./Flag";
 
 export interface NavItem {
   id: string;
   label: string;
+  /** Icon key from SECTION_ICON_MAP (custom sections); built-in links use their id. */
+  icon?: string;
 }
 
 export interface Social {
@@ -150,7 +152,7 @@ export default function Sidebar({ name, imageUrl, initials, socials, citizenship
         <nav aria-label="Main" className="sidebar-nav">
           <ul>
             {nav.map((item) => {
-              const Icon = NAV_ICONS[item.id];
+              const Icon = (item.icon && SECTION_ICON_MAP[item.icon]) || NAV_ICONS[item.id];
               const isActive = active === item.id;
               return (
                 <li key={item.id}>

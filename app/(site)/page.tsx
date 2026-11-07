@@ -3,6 +3,7 @@ import Architectures from "@/components/sections/Architectures";
 import Certifications from "@/components/sections/Certifications";
 import Contact from "@/components/sections/Contact";
 import CurrentProjects from "@/components/sections/CurrentProjects";
+import CustomSections from "@/components/sections/CustomSections";
 import Hero from "@/components/sections/Hero";
 import Projects from "@/components/sections/Projects";
 import Resume from "@/components/sections/Resume";
@@ -23,6 +24,7 @@ export default async function HomePage() {
       <Architectures architectures={c.architectures} projects={c.projects} />
       <CurrentProjects items={c.current} />
       <Certifications items={c.certifications} />
+      <CustomSections sections={c.sections} />
       <Contact profile={c.profile} />
     </>
   );

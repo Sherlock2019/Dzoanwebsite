@@ -162,6 +162,31 @@ export interface Certification extends Base {
   url: string;
 }
 
+/** An uploaded PDF or Word document (stored under documents/). */
+export interface Attachment {
+  key: string;
+  filename: string;
+}
+
+export interface SectionEntry {
+  title: string;
+  subtitle: string;
+  text: string;
+  url: string;
+  url_label: string;
+  images: Media[];
+  files: Attachment[];
+}
+
+/** Owner-defined home-page section (e.g. Awards / Recommendations) with its own sidebar link. */
+export interface CustomSection extends Base {
+  slug: string;
+  title: string;
+  icon: string;
+  intro: string;
+  entries: SectionEntry[];
+}
+
 export interface EntityMap {
   projects: Project;
   architectures: Architecture;
@@ -169,6 +194,7 @@ export interface EntityMap {
   experience: Experience;
   skills: SkillCategory;
   certifications: Certification;
+  sections: CustomSection;
 }
 
 export type CollectionName = keyof EntityMap;
@@ -181,6 +207,7 @@ export const COLLECTIONS: CollectionName[] = [
   "experience",
   "skills",
   "certifications",
+  "sections",
 ];
 
 export function isCollection(value: string): value is CollectionName {

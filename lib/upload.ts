@@ -89,10 +89,36 @@ export async function storePdf(buf: Buffer, declaredMime: string): Promise<strin
   return key;
 }
 
+const DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
+/** A .docx is a ZIP whose entries include word/document.xml. Macro-enabled files are refused. */
+function isDocx(buf: Buffer): boolean {
+  if (buf.length < 4 || buf.readUInt32LE(0) !== 0x04034b50) return false;
+  return buf.includes("word/document.xml") && !buf.includes("vbaProject.bin");
+}
+
+/** Validate and store a PDF or Word (.docx) document attached to a custom section. */
+export async function storeDocument(buf: Buffer, name: string): Promise<{ key: string; filename: string }> {
+  if (buf.length === 0) throw new UploadError("Empty file");
+  if (buf.length > MAX_PDF_BYTES) throw new UploadError("Document is larger than 15 MB");
+  const storage = await getStorage();
+  if (sniffType(buf) === "pdf") {
+    const { key } = newKey("documents", "pdf");
+    await storage.put(key, buf, MIME.pdf);
+    return { key, filename: safeFilename(name, "document.pdf") };
+  }
+  if (isDocx(buf)) {
+    const key = `documents/${new Date().getUTCFullYear()}/${randomUUID()}.docx`;
+    await storage.put(key, buf, DOCX_MIME);
+    return { key, filename: safeFilename(name, "document.docx", "docx") };
+  }
+  throw new UploadError("Only PDF or Word (.docx) files are accepted. Save older .doc files as .docx first.");
+}
+
 /** Make a safe download filename from user input. */
-export function safeFilename(name: string, fallback = "resume.pdf"): string {
+export function safeFilename(name: string, fallback = "resume.pdf", ext = "pdf"): string {
   const base = name.split(/[\\/]/).pop() || "";
   const cleaned = base.replace(/[^\w .()-]+/g, "_").replace(/^\.+/, "").slice(0, 120).trim();
   if (!cleaned) return fallback;
-  return /\.pdf$/i.test(cleaned) ? cleaned : `${cleaned}.pdf`;
+  return new RegExp(`\\.${ext}$`, "i").test(cleaned) ? cleaned : `${cleaned}.${ext}`;
 }
