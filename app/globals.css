@@ -1520,16 +1520,93 @@ button.arch-media {
   min-width: 0;
 }
 
+.custom-card-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.custom-badge {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  color: var(--primary);
+  background: #eaf1fb;
+  border: 2px solid #c9dbf2;
+}
+
+/* Medal of honour (components/ui/Medal.tsx) on trophy / medal / award / star sections. */
+.custom-medal {
+  flex-shrink: 0;
+  width: 46px;
+  height: 63px;
+  margin-top: -4px;
+  filter: drop-shadow(0 2px 3px rgba(120, 80, 0, 0.25));
+}
+
+.custom-reco {
+  flex-shrink: 0;
+  width: 50px;
+  height: 59px;
+  margin-top: -4px;
+  color: var(--primary);
+}
+
 .custom-card h3 {
   color: var(--primary);
   font-size: 1.15rem;
-  margin-bottom: 4px;
+  margin: 2px 0 4px;
 }
 
 .custom-subtitle {
   color: var(--muted);
   font-size: 0.92rem;
-  margin: 0 0 12px;
+  margin: 0;
+}
+
+.section-title .custom-intro p + p,
+.section-title .custom-intro p + ul,
+.section-title .custom-intro ul + p {
+  margin-top: 10px;
+}
+
+.section-title .custom-intro ul {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  max-width: 820px;
+  color: var(--muted);
+}
+
+.section-title .custom-intro li {
+  position: relative;
+  padding-left: 26px;
+  margin: 6px 0;
+}
+
+.section-title .custom-intro li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.55em;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.section-title .custom-intro.is-honor li::before {
+  width: 12px;
+  height: 12px;
+  left: 2px;
+  top: 0.45em;
+  background: radial-gradient(circle at 35% 30%, #fff4c2 0%, #f6cf55 45%, #d79e1c 100%);
+  box-shadow: 0 0 0 1px #b8860b;
 }
 
 .custom-images {
@@ -1581,6 +1658,43 @@ button.arch-media {
 .custom-links svg {
   flex-shrink: 0;
   font-size: 1.1rem;
+}
+
+.custom-previews {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.custom-preview {
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  text-decoration: none;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.custom-preview:hover,
+.custom-preview:focus-visible {
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+.custom-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.custom-preview span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 0.86rem;
 }
 
 .custom-file-kind {

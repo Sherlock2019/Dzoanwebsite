@@ -13,6 +13,8 @@
 #   BIND=127.0.0.1 ./start.sh          listen on one interface only (default 0.0.0.0 = all).
 #   OWNER_EMAIL=you@x.com ./start.sh   owner login created on the very first run.
 #   FLOWISE=0 ./start.sh               don't start the Flowise container (Docker) alongside the site.
+#   AI_DISABLED=1 ./start.sh           no AI at all: no chat, no Docker (Flowise + document DB stopped).
+#                                      ./startsimple.sh does this for you.
 #
 # First run only: installs Node.js if needed (via nvm, no sudo), installs dependencies,
 # creates .env.local with a one-time owner password (.data/OWNER_PASSWORD.txt) and loads the seed content.
@@ -101,7 +103,17 @@ fi
 
 # ---------------------------------------------------------------- AI document database (optional, Docker)
 flowise_healthy() { [[ "$(docker inspect -f '{{.State.Health.Status}}' myweb-flowise 2>/dev/null)" == "healthy" ]]; }
-if [[ -f docker-compose.yml ]] && command -v docker >/dev/null && docker info >/dev/null 2>&1; then
+if [[ "${AI_DISABLED:-0}" =~ ^(1|true|yes)$ ]]; then
+  say "AI disabled (AI_DISABLED=1): no chat, no Flowise, no document database"
+  # Free their memory if an earlier run started them. Data volumes are kept.
+  if command -v docker >/dev/null && docker info >/dev/null 2>&1; then
+    for c in myweb-flowise myweb-rag-db; do
+      if docker ps --format '{{.Names}}' | grep -qx "$c"; then
+        if docker stop "$c" >/dev/null; then echo "  Stopped $c (data kept)."; else warn "Could not stop $c."; fi
+      fi
+    done
+  fi
+elif [[ -f docker-compose.yml ]] && command -v docker >/dev/null && docker info >/dev/null 2>&1; then
   if ! grep -q '^RAG_DATABASE_URL=postgres' .env.local; then
     pw="$(head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \n')"
     printf '\n# AI document database (docker compose service "rag-db", created by start.sh)\nRAG_DB_PASSWORD=%s\nRAG_DATABASE_URL=postgres://myweb:%s@127.0.0.1:55434/myweb\n' "$pw" "$pw" >> .env.local

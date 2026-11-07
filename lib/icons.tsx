@@ -60,6 +60,7 @@ import {
   LuLanguages,
   LuLightbulb,
   LuMail,
+  LuMedal,
   LuMessagesSquare,
   LuNetwork,
   LuPiggyBank,
@@ -167,6 +168,7 @@ export function skillIcon(name: string, category = "other"): IconType {
 /** Icons the owner can pick for a custom section (sidebar link and heading). */
 export const SECTION_ICON_MAP: Record<string, IconType> = {
   trophy: LuTrophy,
+  medal: LuMedal,
   award: LuAward,
   quote: LuQuote,
   star: LuStar,
@@ -175,6 +177,9 @@ export const SECTION_ICON_MAP: Record<string, IconType> = {
   file: LuFileText,
   globe: LuGlobe,
 };
+
+/** Section icons shown in gold, as honours. */
+export const HONOR_ICONS = ["trophy", "medal", "award", "star"];
 
 export const NAV_ICONS: Record<string, IconType> = {
   home: LuHouse,

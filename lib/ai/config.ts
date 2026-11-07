@@ -16,16 +16,22 @@ export const aiConfig = {
   chatDailyLimit: () => Math.max(1, Number(process.env.CHAT_DAILY_LIMIT || 1000)),
 };
 
+/** AI_DISABLED=1 (set by ./startsimple.sh) turns off every AI feature: chat, documents, Flowise. */
+export function aiDisabled(): boolean {
+  return ["1", "true", "yes"].includes((process.env.AI_DISABLED || "").toLowerCase());
+}
+
 export function ragEnabled(): boolean {
-  return Boolean(aiConfig.ragDatabaseUrl());
+  return !aiDisabled() && Boolean(aiConfig.ragDatabaseUrl());
 }
 
 export function flowiseEnabled(): boolean {
-  return Boolean(aiConfig.flowiseUrl() && aiConfig.flowiseChatflowId());
+  return !aiDisabled() && Boolean(aiConfig.flowiseUrl() && aiConfig.flowiseChatflowId());
 }
 
 /** The public chat needs Anthropic credentials (API key or auth token) and can be switched off. */
 export function chatEnabled(): boolean {
+  if (aiDisabled()) return false;
   if ((process.env.CHAT_ENABLED || "true").toLowerCase() === "false") return false;
   return Boolean(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN);
 }

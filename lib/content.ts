@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { getRepo } from "@/lib/db/index";
 import { RESERVED_SECTION_SLUGS } from "@/lib/options";
+import { withPdfPreviews } from "@/lib/pdf-preview";
 import { getStorage, isValidKey } from "@/lib/storage/index";
 import { slugify } from "@/lib/text";
 import { collectionSchemas, formatIssues } from "@/lib/validation";
@@ -14,6 +15,7 @@ import type {
   Experience,
   Profile,
   Project,
+  SectionEntry,
   SkillCategory,
 } from "@/lib/types";
 import { COLLECTIONS, SLUGGED } from "@/lib/types";
@@ -201,15 +203,21 @@ async function uniqueSlug(collection: CollectionName, wanted: string, selfId?: s
 /** Detail-page collections plus custom sections (whose slug is the home-page anchor). */
 const hasSlug = (collection: CollectionName) => SLUGGED.includes(collection) || collection === "sections";
 
-function parse(collection: CollectionName, input: unknown) {
+async function parse(collection: CollectionName, input: unknown) {
   const result = collectionSchemas[collection].safeParse(input);
   if (!result.success) throw new ValidationError(formatIssues(result.error));
-  return result.data as Record<string, unknown>;
+  const data = result.data as Record<string, unknown>;
+  if (collection === "sections") {
+    // Server-made page-1 previews for attached PDFs (also fills in older uploads on the next save).
+    const entries = data.entries as SectionEntry[];
+    data.entries = await Promise.all(entries.map(async (e) => ({ ...e, files: await withPdfPreviews(e.files) })));
+  }
+  return data;
 }
 
 export async function createEntity<C extends CollectionName>(collection: C, input: unknown): Promise<EntityMap[C]> {
   const repo = await getRepo();
-  const data = parse(collection, input);
+  const data = await parse(collection, input);
   const now = new Date().toISOString();
   const existing = await repo.list(collection);
   const item: Record<string, unknown> = {
@@ -233,7 +241,7 @@ export async function updateEntity<C extends CollectionName>(
   const repo = await getRepo();
   const existing = await repo.get(collection, id);
   if (!existing) return null;
-  const data = parse(collection, input);
+  const data = await parse(collection, input);
   const item: Record<string, unknown> = {
     ...existing,
     ...data,

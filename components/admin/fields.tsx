@@ -358,7 +358,7 @@ export function FilesField({ id, value, onChange }: { id: string; value: Attachm
 
 // ------------------------------------------------------------------ Section entries
 
-const EMPTY_ENTRY: SectionEntry = { title: "", subtitle: "", text: "", url: "", url_label: "", images: [], files: [] };
+const EMPTY_ENTRY: SectionEntry = { badge: "auto", title: "", subtitle: "", text: "", url: "", url_label: "", images: [], files: [] };
 
 export function EntriesField({ id, value, onChange }: { id: string; value: SectionEntry[]; onChange: (e: SectionEntry[]) => void }) {
   const update = (i: number, patch: Partial<SectionEntry>) => onChange(value.map((x, j) => (j === i ? { ...x, ...patch } : x)));
@@ -402,6 +402,15 @@ export function EntriesField({ id, value, onChange }: { id: string; value: Secti
               <label htmlFor={`${p}-subtitle`}>
                 Subtitle (e.g. who, organisation, year)
                 <input id={`${p}-subtitle`} value={e.subtitle} maxLength={200} onChange={(ev) => update(i, { subtitle: ev.target.value })} />
+              </label>
+              <label htmlFor={`${p}-badge`}>
+                Badge on the card
+                <select id={`${p}-badge`} value={e.badge || "auto"} onChange={(ev) => update(i, { badge: ev.target.value as SectionEntry["badge"] })}>
+                  <option value="auto">Automatic (medal on award sections)</option>
+                  <option value="medal">Medal (award)</option>
+                  <option value="recommendation">Recommendation (rosette on hand)</option>
+                  <option value="none">None</option>
+                </select>
               </label>
               <label htmlFor={`${p}-text`} className="is-wide">
                 Text

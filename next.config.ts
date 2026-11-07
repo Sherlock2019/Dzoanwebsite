@@ -20,7 +20,7 @@ const csp = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  serverExternalPackages: ["sharp", "pg", "mammoth", "unpdf"],
+  serverExternalPackages: ["sharp", "pg", "mammoth", "unpdf", "@napi-rs/canvas"],
   async headers() {
     const headers = [
       { key: "X-Content-Type-Options", value: "nosniff" },

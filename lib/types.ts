@@ -166,9 +166,13 @@ export interface Certification extends Base {
 export interface Attachment {
   key: string;
   filename: string;
+  /** Page-1 preview image of a PDF (documents/…/<uuid>.thumb.webp), made by the server on save. */
+  preview?: string;
 }
 
 export interface SectionEntry {
+  /** Icon on the card. "auto" = gold medal on honour sections, else the section icon. */
+  badge?: "auto" | "medal" | "recommendation" | "none";
   title: string;
   subtitle: string;
   text: string;

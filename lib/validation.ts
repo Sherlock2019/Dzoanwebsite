@@ -6,6 +6,7 @@ import {
   CERT_KINDS,
   CERT_STATUSES,
   CURRENT_STAGES,
+  ENTRY_BADGES,
   PROJECT_STATUSES,
   SECTION_ICONS,
   SKILL_GROUPS,
@@ -192,9 +193,12 @@ const certificationSchema = z.object({
 const attachment = z.object({
   key: storageKey.refine((k) => k.startsWith("documents/") && /\.(pdf|docx)$/.test(k), "Only PDF or Word documents"),
   filename: z.string().trim().min(1).max(150),
+  // Accepted for round-trips from the form; the server always re-derives it (lib/pdf-preview.ts).
+  preview: storageKey.optional(),
 });
 
 const sectionEntrySchema = z.object({
+  badge: z.enum(ENTRY_BADGES).default("auto"),
   title: text(200),
   subtitle: text(200),
   text: longText(6000),

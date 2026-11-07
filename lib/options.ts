@@ -57,7 +57,9 @@ export const SKILL_ICONS = ["ai", "data", "cloud", "business", "human", "other"]
 export const CERT_KINDS = ["Certification", "Course", "Training", "Education"] as const;
 export const CERT_STATUSES = ["Completed", "In progress"] as const;
 
-export const SECTION_ICONS = ["trophy", "award", "quote", "star", "heart", "book", "file", "globe"] as const;
+export const ENTRY_BADGES = ["auto", "medal", "recommendation", "none"] as const;
+
+export const SECTION_ICONS =["trophy", "medal", "award", "quote", "star", "heart", "book", "file", "globe"] as const;
 
 /** Anchor ids used by built-in parts of the home page; custom sections never take these. */
 export const RESERVED_SECTION_SLUGS = [
