@@ -2044,13 +2044,42 @@
       "title": "Awards / Recommendations",
       "slug": "awards-recommendations",
       "icon": "trophy",
-      "intro": "",
-      "entries": [],
+      "intro": "Polycom : Employee of Year in Polycom after creating a Technical Video DVD training for training 200 engineers\nGameloft : 2  times promotions in 5 years \nRackspace : 5 Recognitions Awards for building awesome tools , Ai cloud products and Trainings for the Team .",
+      "entries": [
+        {
+          "title": "Recognition  Gameloft Worldwide infra manager",
+          "subtitle": "",
+          "text": "",
+          "url": "",
+          "url_label": "",
+          "images": [],
+          "files": [
+            {
+              "key": "documents/2026/b7e999e8-0a28-4ae4-911b-50073b77d516.pdf",
+              "filename": "01recomGLDaryl.pdf"
+            }
+          ]
+        },
+        {
+          "title": "Recognition RACKSPACE",
+          "subtitle": "",
+          "text": "",
+          "url": "",
+          "url_label": "",
+          "images": [],
+          "files": [
+            {
+              "key": "documents/2026/61d10176-e2ef-45c8-9748-3e31af9dbbe7.pdf",
+              "filename": "recooper.pdf"
+            }
+          ]
+        }
+      ],
       "visibility": "published",
       "id": "76af5c0e-a589-4e2e-af89-ff3b4d2497c8",
       "sort_order": 0,
       "created_at": "2026-11-07T02:31:37.328Z",
-      "updated_at": "2026-11-07T02:31:37.328Z"
+      "updated_at": "2026-11-07T03:09:11.951Z"
     }
   ]
 }
