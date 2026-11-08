@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { LuCalendarCheck, LuChevronLeft, LuChevronRight, LuPause, LuPlay, LuSkipForward } from "react-icons/lu";
+import { LuArrowRight, LuCalendarCheck, LuChevronLeft, LuChevronRight, LuPause, LuPlay, LuSkipForward } from "react-icons/lu";
 import {
   BANNER_CAPTION,
   BOOKING,
@@ -17,6 +17,8 @@ import {
   type IntroSection,
   type Invitation,
 } from "@/lib/hero-intro";
+import type { Slide1Bg } from "@/lib/slide1-bg";
+import Slide1Backdrop from "./Slide1Backdrop";
 
 export interface BannerImage {
   src: string;
@@ -90,7 +92,7 @@ function BarInvite({ inv, booking }: { inv: Invitation; booking: Booking }) {
  * (with a red typing cursor); a stanza shows its first two lines in red, the rest in white; a
  * closing shows its headline, lines and "Then we really need to talk."
  */
-function Section({ section, typed }: { section: IntroSection; typed?: number }) {
+function Section({ section, typed, onTalk }: { section: IntroSection; typed?: number; onTalk?: () => void }) {
   if (section.kind === "qa") {
     const shown = typed === undefined ? section.answer : section.answer.slice(0, typed);
     const typing = typed !== undefined;
@@ -132,194 +134,14 @@ function Section({ section, typed }: { section: IntroSection; typed?: number }) 
           {lines(b)}
         </p>
       ))}
-      {section.talk && <p className="intro-talk">{section.talk}</p>}
+      {/* "Then we really need to talk. →": leads to slide 2 and its calendar invitation. */}
+      {section.talk && (
+        <button type="button" className="intro-talk-btn" onClick={onTalk}>
+          {section.talk} <LuArrowRight aria-hidden />
+        </button>
+      )}
     </>
   );
-}
-
-/** Aspect ratio of humanaibrain (2752 × 1536). */
-const BRAIN_RATIO = 2752 / 1536;
-/** Places in the image, as fractions of its width and height. */
-const P = (x: number, y: number) => [x / 2000, y / 1116] as const;
-const NEURONS = [P(565, 340), P(565, 492), P(880, 447), P(942, 348), P(413, 573), P(860, 750), P(905, 803)];
-const SPARK = P(1140, 540);
-const HUMAN_ENDS = [P(960, 352), P(905, 575), P(1010, 640), P(1000, 775), P(930, 470)];
-const AI_ENDS = [P(1330, 385), P(1395, 700), P(1300, 560), P(1280, 470), P(1360, 640)];
-
-/**
- * Light drawn over the brain image: the red neurons of the human brain pulse, signals travel
- * along the fibres to the AI brain (warm) and back (cool), the central spark flares as they pass,
- * sparks drift away from it and bokeh floats. Positions follow the image's cover/position crop.
- */
-function BrainLights({ running }: { running: boolean }) {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const canvas = ref.current;
-    const ctx = canvas?.getContext("2d");
-    const holder = canvas?.parentElement;
-    if (!canvas || !ctx || !holder) return;
-
-    interface Fibre {
-      a: readonly [number, number];
-      c: readonly [number, number];
-      b: readonly [number, number];
-    }
-    interface Pulse {
-      f: Fibre;
-      start: number;
-      dur: number;
-      back: boolean;
-    }
-    interface Mote {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      born: number;
-      life: number;
-    }
-    let w = 0;
-    let h = 0;
-    // Image placement on the canvas (cover + background-position).
-    let ix = 0;
-    let iy = 0;
-    let iw = 0;
-    let ih = 0;
-    let frame = 0;
-    let pulses: Pulse[] = [];
-    let sparks: Mote[] = [];
-    let nextPulse = 0;
-    const phases = NEURONS.map(() => Math.random() * Math.PI * 2);
-    const fibres: Fibre[] = [];
-    HUMAN_ENDS.forEach((a, i) => {
-      for (let k = 0; k < 2; k++) {
-        const b = AI_ENDS[(i + k * 2) % AI_ENDS.length];
-        const c = [SPARK[0] + (Math.random() - 0.5) * 0.03, SPARK[1] + (Math.random() - 0.5) * 0.08] as const;
-        fibres.push({ a, c, b });
-      }
-    });
-    const bokeh = Array.from({ length: 14 }, () => ({
-      x: 0.62 + Math.random() * 0.38,
-      y: Math.random(),
-      r: 0.006 + Math.random() * 0.016,
-      vy: -(0.000004 + Math.random() * 0.000008),
-      ph: Math.random() * Math.PI * 2,
-    }));
-
-    const px = (p: readonly [number, number]) => [ix + p[0] * iw, iy + p[1] * ih] as const;
-    const bez = (f: Fibre, t: number) => {
-      const [ax, ay] = px(f.a);
-      const [cx, cy] = px(f.c);
-      const [bx, by] = px(f.b);
-      const u = 1 - t;
-      return [u * u * ax + 2 * u * t * cx + t * t * bx, u * u * ay + 2 * u * t * cy + t * t * by] as const;
-    };
-
-    function glow(x: number, y: number, r: number, rgb: string, alpha: number) {
-      const g = ctx!.createRadialGradient(x, y, 0, x, y, r);
-      g.addColorStop(0, `rgba(${rgb}, ${alpha})`);
-      g.addColorStop(1, `rgba(${rgb}, 0)`);
-      ctx!.fillStyle = g;
-      ctx!.beginPath();
-      ctx!.arc(x, y, r, 0, Math.PI * 2);
-      ctx!.fill();
-    }
-
-    function layout() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = canvas!.clientWidth;
-      h = canvas!.clientHeight;
-      canvas!.width = Math.round(w * dpr);
-      canvas!.height = Math.round(h * dpr);
-      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-      // Same crop as the CSS: cover, then background-position (percentages).
-      const scale = Math.max(w / BRAIN_RATIO, h);
-      iw = scale * BRAIN_RATIO;
-      ih = scale;
-      const pos = getComputedStyle(holder!).backgroundPosition.split(" ").map((v) => parseFloat(v) / 100);
-      ix = (w - iw) * (Number.isFinite(pos[0]) ? pos[0] : 0.5);
-      iy = (h - ih) * (Number.isFinite(pos[1]) ? pos[1] : 0.5);
-    }
-
-    function draw(now: number) {
-      ctx!.clearRect(0, 0, w, h);
-      ctx!.globalCompositeOperation = "lighter";
-      const unit = iw / 100; // 1% of the image width
-
-      // Bokeh floating on the AI side.
-      for (const b of bokeh) {
-        b.y += b.vy * 16;
-        if (b.y < -0.05) b.y = 1.05;
-        const [x, y] = px([b.x, b.y]);
-        glow(x, y, b.r * iw, "150, 190, 230", 0.05 + 0.04 * Math.sin(now * 0.0007 + b.ph));
-      }
-
-      // Neurons of the human brain breathing.
-      NEURONS.forEach((n, i) => {
-        const [x, y] = px(n);
-        const s = 0.5 + 0.5 * Math.sin(now * 0.0016 + phases[i]);
-        glow(x, y, unit * (1.6 + 1.6 * s), "255, 92, 60", 0.22 + 0.33 * s);
-      });
-
-      // Signals along the fibres.
-      if (now >= nextPulse) {
-        const back = Math.random() < 0.35;
-        pulses.push({ f: fibres[Math.floor(Math.random() * fibres.length)], start: now, dur: 1700 + Math.random() * 900, back });
-        nextPulse = now + 220 + Math.random() * 380;
-      }
-      let flare = 0;
-      pulses = pulses.filter((p) => {
-        const t = (now - p.start) / p.dur;
-        if (t >= 1) return false;
-        const along = p.back ? 1 - t : t;
-        if (Math.abs(along - 0.5) < 0.08) flare = Math.max(flare, 1 - Math.abs(along - 0.5) / 0.08);
-        // Warm leaving the human brain, cooling towards the AI brain.
-        const k = along;
-        const rgb = p.back ? "120, 205, 255" : `${Math.round(255 - 120 * k)}, ${Math.round(150 + 60 * k)}, ${Math.round(80 + 175 * k)}`;
-        for (let j = 0; j < 6; j++) {
-          const q = Math.max(0, Math.min(1, along + (p.back ? 1 : -1) * j * 0.018));
-          const [x, y] = bez(p.f, q);
-          glow(x, y, unit * (0.55 - j * 0.06), rgb, 0.75 - j * 0.11);
-        }
-        return true;
-      });
-
-      // The central spark, flaring as signals pass through it, and sparks drifting away.
-      const [sx, sy] = px(SPARK);
-      const breathe = 0.5 + 0.5 * Math.sin(now * 0.0011);
-      glow(sx, sy, unit * (3.5 + 2 * breathe + 4 * flare), "255, 236, 205", 0.18 + 0.12 * breathe + 0.3 * flare);
-      if (Math.random() < 0.25 + flare * 0.5) {
-        const ang = Math.random() * Math.PI * 2;
-        const sp = 0.012 + Math.random() * 0.03;
-        sparks.push({ x: sx, y: sy, vx: Math.cos(ang) * sp * unit, vy: Math.sin(ang) * sp * unit, born: now, life: 1600 + Math.random() * 1800 });
-      }
-      sparks = sparks.filter((m) => {
-        const age = (now - m.born) / m.life;
-        if (age >= 1) return false;
-        m.x += m.vx;
-        m.y += m.vy;
-        glow(m.x, m.y, unit * 0.35, "255, 214, 160", 0.8 * (1 - age));
-        return true;
-      });
-      ctx!.globalCompositeOperation = "source-over";
-    }
-
-    function tick(now: number) {
-      draw(now);
-      frame = requestAnimationFrame(tick);
-    }
-
-    layout();
-    const ro = new ResizeObserver(layout);
-    ro.observe(canvas);
-    if (running) frame = requestAnimationFrame(tick);
-    return () => {
-      cancelAnimationFrame(frame);
-      ro.disconnect();
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    };
-  }, [running]);
-  return <canvas ref={ref} aria-hidden />;
 }
 
 function usePrefersReducedMotion(): boolean {
@@ -359,10 +181,13 @@ export default function HeroCarousel({
   banner,
   kicker,
   bookingUrl,
+  background,
 }: {
   banner: BannerImage | null;
   kicker: string;
   bookingUrl: string;
+  /** Slide 1 background, as published in the dashboard. */
+  background: Slide1Bg;
 }) {
   const [slide, setSlide] = useState<0 | 1>(0);
   // The server always renders the default style; the saved one is applied after mount.
@@ -373,6 +198,8 @@ export default function HeroCarousel({
   const isQa = variant.id === "qa";
   /** Off only when the visitor presses Pause or picks a topic; Play turns it back on. */
   const [playing, setPlaying] = useState(true);
+  /** The Pause button also stills the background animation (picking a topic doesn't). */
+  const [motionPaused, setMotionPaused] = useState(false);
   /** Short hold that ends by itself: the visitor scrolling the poem by hand. */
   const [reading, setReading] = useState(false);
   const readingTimer = useRef(0);
@@ -556,10 +383,7 @@ export default function HeroCarousel({
           aria-hidden={slide !== 0}
           inert={slide !== 0}
         >
-          <div className="intro-bg" aria-hidden>
-            <BrainLights running={slide === 0 && !hidden && !reduced} />
-          </div>
-          <div className="intro-shade" aria-hidden />
+          <Slide1Backdrop bg={background} running={slide === 0 && !hidden && !reduced && !motionPaused} />
           <div className="intro-head">
             {(kicker || INTRO_ROLE) && (
               <div className="intro-id">
@@ -606,7 +430,7 @@ export default function HeroCarousel({
               <div className="qa-stage">
                 {qaCurrent && (
                   <article key={qaIndex} className={`intro-block is-current is-${qaCurrent.kind}`}>
-                    <Section section={qaCurrent} typed={qaCurrent.kind === "qa" ? typed : undefined} />
+                    <Section section={qaCurrent} typed={qaCurrent.kind === "qa" ? typed : undefined} onTalk={() => setSlide(1)} />
                   </article>
                 )}
               </div>
@@ -624,10 +448,8 @@ export default function HeroCarousel({
                 if ((e.deltaY > 0 && b.scrollTop + b.clientHeight < b.scrollHeight - 1) || (e.deltaY < 0 && b.scrollTop > 0)) manual();
               }}
               onTouchMove={manual}
-              onPointerDown={(e) => {
-                // Dragging the scrollbar (not clicking a link) counts as manual scrolling.
-                if (e.target === e.currentTarget) manual();
-              }}
+              // A click (or a drag of the scrollbar) holds the poem for a few seconds too.
+              onPointerDown={manual}
               onKeyDown={(e) => {
                 if (SCROLL_KEYS.has(e.key) && (e.target === e.currentTarget || e.key !== " ")) manual();
               }}
@@ -644,7 +466,7 @@ export default function HeroCarousel({
                   }}
                   className={`intro-block is-${s.kind}`}
                 >
-                  <Section section={s} />
+                  <Section section={s} onTalk={() => setSlide(1)} />
                 </article>
               ))}
             </div>
@@ -710,7 +532,10 @@ export default function HeroCarousel({
                 className="hc-btn"
                 aria-pressed={!playing}
                 aria-label={playing ? "Pause" : "Play"}
-                onClick={() => setPlaying((p) => !p)}
+                onClick={() => {
+                  setMotionPaused(playing);
+                  setPlaying(!playing);
+                }}
               >
                 {playing ? <LuPause aria-hidden /> : <LuPlay aria-hidden />}
               </button>

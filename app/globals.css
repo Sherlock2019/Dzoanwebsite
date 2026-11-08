@@ -597,54 +597,6 @@ img {
   background-color: #050b16;
 }
 
-/* Decorative, animated background (human ↔ AI brains): the image, the light animation drawn
-   over it (canvas), then a light shade for readability. It belongs to the slide, not the
-   scrolling text, so it stays put while the sequence scrolls over it. */
-.intro-bg,
-.intro-shade {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.intro-bg {
-  background-image: url("/humanaibrain-2400.webp");
-  background-size: cover;
-  background-repeat: no-repeat;
-  /* Keep the meeting point of the two brains (about 57% across) in view. */
-  background-position: 60% 50%;
-  /* A very slow breathing zoom, centred on the spark between the brains. */
-  transform-origin: 57% 48%;
-  animation: intro-breathe 22s ease-in-out infinite alternate;
-}
-
-.intro-bg canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-@keyframes intro-breathe {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.045);
-  }
-}
-
-/* The image is already dark: only the text side is darkened a little. */
-.intro-shade {
-  background-image:
-    linear-gradient(90deg, rgba(3, 8, 18, 0.62) 0%, rgba(3, 8, 18, 0.4) 42%, rgba(3, 8, 18, 0.08) 72%, transparent 100%),
-    linear-gradient(180deg, rgba(3, 8, 18, 0.35) 0%, transparent 22%, transparent 80%, rgba(3, 8, 18, 0.45) 100%);
-}
-
-.is-reduced .intro-bg {
-  animation: none;
-}
-
 /* Header row (name + intro style) and the text column share one left edge. */
 .intro-head,
 .intro-block,
@@ -933,10 +885,14 @@ img {
 
 /* Slide 1's last line: "Then we really need to talk." */
 /* ---------- Q&A mode: "How can I help a …" topic buttons ---------- */
+/* The topic buttons span the whole slide width (one row on wide screens). */
 .qa-nav {
   position: relative;
   z-index: 1;
+  width: auto;
+  max-width: none;
   padding-top: 14px;
+  padding-right: 16px;
 }
 
 .qa-nav-title {
@@ -950,19 +906,19 @@ img {
 .qa-nav-btns {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
 }
 
 /* Small rounded blue buttons, matching "Book my calendar". */
 .qa-nav-btn {
   min-height: 30px;
-  padding: 0 12px;
+  padding: 0 9px;
   border: 1px solid rgba(34, 181, 255, 0.55);
   border-radius: 999px;
   background: rgba(5, 99, 187, 0.55);
   color: #e3ecf7;
   font: inherit;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -1066,15 +1022,50 @@ img {
   font-weight: 600;
 }
 
-.intro-talk {
-  margin: 14px 0 0;
-  padding-left: 16px;
-  border-left: 3px solid #22b5ff;
+/* "Then we really need to talk. →": a call-to-action leading to slide 2 (calendar invitation). */
+.intro-talk-btn {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 24px;
+  border: 1px solid #22b5ff;
+  border-radius: 999px;
+  background: rgba(5, 99, 187, 0.88);
+  color: #fff;
   font-family: var(--font-heading);
-  font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
   font-weight: 800;
   line-height: 1.25;
-  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(5, 99, 187, 0.35);
+  transition: background 0.2s;
+}
+
+.intro-talk-btn:hover {
+  background: #0a74d6;
+}
+
+.intro-talk-btn svg {
+  flex: none;
+  transition: transform 0.2s;
+}
+
+.intro-talk-btn:hover svg {
+  transform: translateX(3px);
+}
+
+.intro-talk-btn:focus-visible {
+  outline: 3px solid #9fd8ff;
+  outline-offset: 3px;
+}
+
+/* The poem's scrollbar stays visible, to drag up or down. */
+.intro-scroll.is-poem {
+  scrollbar-width: auto;
+  scrollbar-color: rgba(159, 216, 255, 0.7) rgba(255, 255, 255, 0.06);
 }
 
 /* Slide 2: the invitation in the bar, left of the arrows. */
@@ -1239,15 +1230,6 @@ img {
 @media (max-width: 767px) {
   .intro-slide {
     height: clamp(480px, 74svh, 660px);
-  }
-  /* Smaller image file; centred on the spark between the two brains. */
-  .intro-bg {
-    background-image: url("/humanaibrain-1280.webp");
-    background-position: 57% 50%;
-  }
-  /* Text spans the whole width here: an even, light overlay. */
-  .intro-shade {
-    background-image: linear-gradient(180deg, rgba(3, 8, 18, 0.5) 0%, rgba(3, 8, 18, 0.42) 50%, rgba(3, 8, 18, 0.55) 100%);
   }
   .intro-head,
   .intro-block,

@@ -263,8 +263,8 @@ export const INTRO_TIMING = {
   poemScrollPxPerSec: 26,
   /** Poem: pause on its last line before moving to slide 2. */
   poemEndHoldMs: 5000,
-  /** After the visitor scrolls the poem by hand, automatic scrolling resumes this long after. */
-  resumeAfterMs: 6000,
+  /** After the visitor clicks or scrolls the poem by hand, automatic scrolling resumes this long after. */
+  resumeAfterMs: 5000,
   /** Cross-fade between slides. */
   slideFadeMs: 700,
 };

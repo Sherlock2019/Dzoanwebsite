@@ -4,6 +4,8 @@ import RichText, { inline } from "@/components/ui/RichText";
 import HeroCarousel from "./HeroCarousel";
 import Mission from "./Mission";
 import { fullUrl, mediaUrl, thumbUrl } from "@/lib/media-url";
+import { SITE_VERSION } from "@/lib/site-version";
+import { resolveSlide1Bg } from "@/lib/slide1-bg";
 import { phoneDigits } from "@/lib/text";
 import type { Profile } from "@/lib/types";
 
@@ -24,6 +26,7 @@ export default function Hero({
       <HeroCarousel
         kicker={profile.name}
         bookingUrl={profile.booking_url}
+        background={resolveSlide1Bg(profile.slide1_bg, SITE_VERSION)}
         banner={
           profile.hero_image
             ? {
