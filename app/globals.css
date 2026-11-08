@@ -565,14 +565,18 @@ img {
 }
 
 /* Both slides share one grid cell: the carousel is as tall as the taller slide, so no jumps. */
+/* Only the shown slide takes space (each slide is as tall as its content); the hidden one is laid
+   over it, invisible, so the two can cross-fade. The clip only ever cuts the hidden slide. */
 .hero-slides {
-  display: grid;
-  /* minmax(0, …): never let the banner's intrinsic 2048px width widen the page on phones. */
-  grid-template-columns: minmax(0, 1fr);
+  position: relative;
+  overflow: hidden;
 }
 
 .hero-slide {
-  grid-area: 1 / 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   min-width: 0;
   opacity: 0;
   visibility: hidden;
@@ -582,17 +586,16 @@ img {
 }
 
 .hero-slide.is-active {
+  position: relative;
   opacity: 1;
   visibility: visible;
   transition: opacity 0.7s ease;
 }
 
+/* (No `position` here: .hero-slide places the shown slide in the flow and lays the hidden one
+   over it.) */
 .intro-slide {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  /* Fixed height: the sequence scrolls inside, so the carousel never changes size. */
-  height: clamp(480px, 72vh, 720px);
+  min-height: clamp(480px, 72vh, 760px);
   overflow: hidden;
   background-color: #050b16;
 }
@@ -635,10 +638,184 @@ img {
 }
 
 /* The image is already dark: only the text side is darkened a little. */
+/* Text covers the whole slide: an even, subtle shade (the image is already dark). */
 .intro-shade {
-  background-image:
-    linear-gradient(90deg, rgba(3, 8, 18, 0.62) 0%, rgba(3, 8, 18, 0.4) 42%, rgba(3, 8, 18, 0.08) 72%, transparent 100%),
-    linear-gradient(180deg, rgba(3, 8, 18, 0.35) 0%, transparent 22%, transparent 80%, rgba(3, 8, 18, 0.45) 100%);
+  background-image: linear-gradient(180deg, rgba(3, 8, 18, 0.62) 0%, rgba(3, 8, 18, 0.5) 50%, rgba(3, 8, 18, 0.66) 100%);
+}
+
+/* ---------- Slide 1 content (all Q&A, or the whole poem) ---------- */
+.hc-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 20px clamp(16px, 3vw, 40px) 26px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55), 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+.hc-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  margin-bottom: 14px;
+}
+
+/* All questions with their answers: 3 columns on desktop, 2 on tablet, 1 on phones. */
+.qa-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 32px;
+}
+
+.qa-item {
+  min-width: 0;
+}
+
+.qa-topic {
+  margin: 0 0 4px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #22b5ff;
+}
+
+.qa-q {
+  margin: 0 0 6px;
+  font-family: var(--font-heading);
+  font-size: 1.08rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #fff;
+}
+
+.qa-a {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  color: #e3ecf7;
+}
+
+/* The closing fills the rest of the last row (beside the 10th question) on desktop. */
+.qa-summary {
+  grid-column: span 2;
+  padding-left: 22px;
+  border-left: 3px solid #22b5ff;
+}
+
+.qa-summary .hc-talk-btn {
+  margin-top: 10px;
+}
+
+.qa-summary-title {
+  margin: 0 0 6px;
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  font-weight: 800;
+  line-height: 1.25;
+  color: #fff;
+}
+
+.qa-summary-sub,
+.qa-summary-body {
+  margin: 0 0 8px;
+  font-size: 1.02rem;
+  line-height: 1.5;
+  color: #e3ecf7;
+}
+
+.qa-summary .intro-skills {
+  margin: 0 0 8px;
+}
+
+/* The whole poem: intact stanzas in 3 columns read top to bottom (2 on tablet, 1 on phones). */
+.poem-head .intro-poem-title {
+  margin-bottom: 14px;
+}
+
+.poem-cols {
+  column-count: 3;
+  column-gap: 36px;
+}
+
+.poem-stanza {
+  break-inside: avoid;
+  margin: 0 0 16px;
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: #e3ecf7;
+}
+
+.poem-stanza .intro-stanza-lead {
+  display: inline;
+  margin: 0;
+  font-size: 1em;
+}
+
+/* "Then we really need to talk. →": the end of slide 1, leading to slide 2. */
+.hc-talk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 12px 22px;
+  border: 1px solid #22b5ff;
+  border-radius: 999px;
+  background: rgba(5, 99, 187, 0.85);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(5, 99, 187, 0.35);
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.hc-talk-btn:hover {
+  background: #0a74d6;
+}
+
+.hc-talk-btn:hover svg {
+  transform: translateX(3px);
+}
+
+.hc-talk-btn svg {
+  transition: transform 0.2s;
+}
+
+.hc-talk-btn:focus-visible {
+  outline: 3px solid #9fd8ff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 1100px) {
+  .qa-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .qa-summary {
+    grid-column: 1 / -1;
+  }
+  .poem-cols {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 700px) {
+  .qa-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .poem-cols {
+    column-count: 1;
+  }
+  .hc-talk-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .is-reduced .intro-bg {
@@ -926,7 +1103,6 @@ img {
 
 /* The banner fills the slide (which is as tall as the intro slide). */
 .banner-slide {
-  position: relative;
   background: #061426;
 }
 
@@ -974,7 +1150,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  min-height: 420px;
   padding: 32px;
   background: linear-gradient(135deg, #061426 0%, #0a2c55 55%, #0b3d73 100%);
 }
@@ -1099,7 +1275,7 @@ img {
 
 @media (max-width: 767px) {
   .intro-slide {
-    height: clamp(480px, 74svh, 660px);
+    min-height: 0;
   }
   /* Smaller image file; centred on the spark between the two brains. */
   .intro-bg {

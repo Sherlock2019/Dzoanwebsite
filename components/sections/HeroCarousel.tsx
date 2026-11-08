@@ -1,19 +1,22 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { LuCalendarCheck, LuChevronLeft, LuChevronRight, LuPause, LuPlay, LuSkipForward } from "react-icons/lu";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
+import { LuArrowRight, LuCalendarCheck, LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import {
   BANNER_CAPTION,
   BOOKING,
-  DEFAULT_VARIANT_ID,
   INTRO_ROLE,
-  INTRO_TIMING,
   INTRO_VARIANTS,
-  introStep,
+  INVITATION,
+  POEM,
+  QA_CLOSING,
+  QA_ITEMS,
   resolveVariant,
+  SLIDE_NAMES,
+  TALK,
   VARIANT_STORAGE_KEY,
-  type IntroSection,
   type Invitation,
+  type VariantId,
 } from "@/lib/hero-intro";
 
 export interface BannerImage {
@@ -25,9 +28,6 @@ export interface BannerImage {
   caption?: string;
 }
 
-const SLIDE_NAMES = ["Introduction", "Banner"] as const;
-/** Keys that scroll the sequence by hand. */
-const SCROLL_KEYS = new Set(["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "]);
 
 /** Text with "\n" as line breaks. */
 function lines(text: string): ReactNode {
@@ -39,92 +39,11 @@ function lines(text: string): ReactNode {
   ));
 }
 
-/** The saved intro style, if storage is available. */
-function readSavedVariant(): string | null {
-  try {
-    return window.localStorage.getItem(VARIANT_STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
-function saveVariant(id: string) {
-  try {
-    window.localStorage.setItem(VARIANT_STORAGE_KEY, id);
-  } catch {
-    // Private mode or blocked storage: the choice just isn't remembered.
-  }
-}
 
 interface Booking {
   href: string;
   props: { target?: string; rel?: string };
   label: string;
-}
-
-/**
- * The invitation in the bar under slide 2 (beside the arrows and the Book my calendar button):
- * "I'm here. Just book a moment in my calendar—" / "I'll be listening." and the postscript.
- */
-function BarInvite({ inv, booking }: { inv: Invitation; booking: Booking }) {
-  const flat = (t: string) => t.replace(/\n/g, " ");
-  return (
-    <div className="hc-invite">
-      <p>
-        {flat(inv.before)}
-        <a className="intro-cta" href={booking.href} {...booking.props}>
-          {inv.link}
-        </a>
-        {lines(inv.after)}
-        {inv.end && <strong>{inv.end}</strong>}
-      </p>
-      <p className="hc-ps">{inv.postscript}</p>
-    </div>
-  );
-}
-
-/** One section of the scrolling sequence. */
-function Section({ section }: { section: IntroSection }) {
-  if (section.kind === "qa") {
-    return (
-      <>
-        <p className="intro-topic">{section.topic}</p>
-        <h3 className="intro-q">{lines(section.question)}</h3>
-        <p className="intro-a">{lines(section.answer)}</p>
-      </>
-    );
-  }
-  if (section.kind === "stanza") {
-    const [first, ...rest] = section.text.split("\n");
-    return (
-      <>
-        {section.title && <h3 className="intro-poem-title">{section.title}</h3>}
-        {section.note && <p className="intro-poem-note">{section.note}</p>}
-        <p className="intro-stanza">
-          {section.plainLead ? first : <strong className="intro-stanza-lead">{first}</strong>}
-          {rest.map((line, i) => (
-            <Fragment key={i}>
-              <br />
-              {line}
-            </Fragment>
-          ))}
-        </p>
-      </>
-    );
-  }
-  return (
-    <>
-      {section.headline && <h3 className="intro-q">{section.headline}</h3>}
-      {section.subhead && <p className="intro-a intro-subhead">{lines(section.subhead)}</p>}
-      {section.skills && <p className="intro-skills">{section.skills}</p>}
-      {section.body?.map((b, i) => (
-        <p key={i} className="intro-body">
-          {lines(b)}
-        </p>
-      ))}
-      {section.talk && <p className="intro-talk">{section.talk}</p>}
-    </>
-  );
 }
 
 /** Aspect ratio of humanaibrain (2752 × 1536). */
@@ -335,12 +254,107 @@ function useTabHidden(): boolean {
   return hidden;
 }
 
+/** Text with its "\n" turned into spaces, for text that flows in a grid cell. */
+const flow = (text: string) => text.replace(/\s*\n\s*/g, " ");
+
+/** The saved version of slide 1, if storage is available. */
+function readSavedVariant(): string | null {
+  try {
+    return window.localStorage.getItem(VARIANT_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function saveVariant(id: string) {
+  try {
+    window.localStorage.setItem(VARIANT_STORAGE_KEY, id);
+  } catch {
+    // Private mode or blocked storage: the choice just isn't remembered.
+  }
+}
+
 /**
- * Home hero carousel.
- * Slide 1: the chosen intro style (questions & answers, poem, …), one vertical scrolling sequence
- * ending with the closing invitation. It scrolls down by itself (one section at a time, a hold on
- * each) and stops at the invitation; visitors can scroll by hand at any time, which pauses it
- * until Play. Slide 2: the banner image, reached with the Next arrow. There is one timer only.
+ * The invitation in the bar under slide 2: "I'm here. Just book a moment in my calendar—" /
+ * "I'll be listening." and the postscript.
+ */
+function BarInvite({ inv, booking }: { inv: Invitation; booking: Booking }) {
+  const flat = (t: string) => t.replace(/\n/g, " ");
+  return (
+    <div className="hc-invite">
+      <p>
+        {flat(inv.before)}
+        <a className="intro-cta" href={booking.href} {...booking.props}>
+          {inv.link}
+        </a>
+        {lines(inv.after)}
+        {inv.end && <strong>{inv.end}</strong>}
+      </p>
+      <p className="hc-ps">{inv.postscript}</p>
+    </div>
+  );
+}
+
+/**
+ * Slide 1, Q&A version: every question with its answer, then the closing (with `end`, the talk
+ * button). On desktop the closing fills the rest of the last grid row, beside the 10th question.
+ */
+function QaContent({ end }: { end: ReactNode }) {
+  return (
+    <div className="qa-grid">
+      {QA_ITEMS.map((qa) => (
+        <article key={qa.topic} className="qa-item">
+          <p className="qa-topic">{qa.topic}</p>
+          <h3 className="qa-q">{flow(qa.question)}</h3>
+          <p className="qa-a">{flow(qa.answer)}</p>
+        </article>
+      ))}
+      <div className="qa-summary">
+        <h3 className="qa-summary-title">{QA_CLOSING.headline}</h3>
+        <p className="qa-summary-sub">{QA_CLOSING.subhead}</p>
+        <p className="intro-skills">{QA_CLOSING.skills}</p>
+        <p className="qa-summary-body">{QA_CLOSING.body}</p>
+        {end}
+      </div>
+    </div>
+  );
+}
+
+/** Slide 1, poem version: the whole poem, stanzas in columns read top to bottom. */
+function PoemContent() {
+  return (
+    <>
+      <header className="poem-head">
+        <h3 className="intro-poem-title">{POEM.title}</h3>
+        <p className="intro-poem-note">{POEM.note}</p>
+      </header>
+      <div className="poem-cols">
+        {POEM.stanzas.map((s, i) => {
+          const [first, ...rest] = s.text.split("\n");
+          return (
+            <p key={i} className="poem-stanza">
+              {s.plainLead ? first : <strong className="intro-stanza-lead">{first}</strong>}
+              {rest.map((line, j) => (
+                <Fragment key={j}>
+                  <br />
+                  {line}
+                </Fragment>
+              ))}
+            </p>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+/**
+ * Home hero carousel, navigated by hand (arrows, dots, ← →); nothing moves by itself.
+ * Slide 1: the version picked with the selector (all questions & answers, or the whole poem),
+ * ending with a "Then we really need to talk. →" button that leads to slide 2.
+ * Slide 2: the handshake banner, with the calendar invitation in the bar under it.
+ * Only the shown slide takes space, so each slide is as tall as its content (no clipping, no
+ * inner scrolling); on small screens the page simply scrolls.
  */
 export default function HeroCarousel({
   banner,
@@ -352,114 +366,35 @@ export default function HeroCarousel({
   bookingUrl: string;
 }) {
   const [slide, setSlide] = useState<0 | 1>(0);
-  // The server always renders the default style; the saved one is applied after mount.
-  const [variantId, setVariantId] = useState(DEFAULT_VARIANT_ID);
-  const variant = resolveVariant(variantId);
-  const sections = variant.sections;
-  const last = sections.length - 1;
-  /** The section the sequence has settled on. */
-  const [pos, setPos] = useState(0);
-  /** Off only when the visitor presses Pause; Play turns it back on. */
-  const [playing, setPlaying] = useState(true);
-  /** Short holds that end by themselves: the visitor scrolling by hand, or keyboard focus inside. */
-  const [reading, setReading] = useState(false);
-  const readingTimer = useRef(0);
-  const [keyFocus, setKeyFocus] = useState(false);
+  // The server renders the default version; the saved one is applied after mount.
+  const [variant, setVariant] = useState<VariantId>(INTRO_VARIANTS[0].id);
   const reduced = usePrefersReducedMotion();
   const hidden = useTabHidden();
-  const scroller = useRef<HTMLDivElement>(null);
-  const blocks = useRef<(HTMLElement | null)[]>([]);
-  blocks.current.length = sections.length;
+  const root = useRef<HTMLDivElement>(null);
+  const moved = useRef(false);
 
   useEffect(() => {
-    setVariantId(resolveVariant(readSavedVariant()).id);
+    setVariant(resolveVariant(readSavedVariant()));
   }, []);
 
-  /** Show another intro style: back to its top, same paused/playing state. */
-  function chooseVariant(id: string) {
-    const v = resolveVariant(id);
-    saveVariant(v.id);
-    if (v.id === variantId) return;
-    setVariantId(v.id);
-    setPos(0);
-    scroller.current?.scrollTo({ top: 0, behavior: "auto" });
+  function chooseVariant(id: VariantId) {
+    saveVariant(id);
+    setVariant(id);
   }
 
-  const autoplay = slide === 0 && playing && !reading && !hidden && !reduced && !keyFocus;
-
-  const scrollToBlock = useCallback(
-    (i: number) => {
-      const el = blocks.current[i];
-      const box = scroller.current;
-      if (!el || !box) return;
-      box.scrollTo({ top: el.offsetTop, behavior: reduced ? "auto" : "smooth" });
-    },
-    [reduced],
-  );
-
-  // The one timer: after the current block has faded in and been held, scroll to the next; after
-  // the last one, move on to slide 2 (the invitation), where the show ends.
-  // Any change (manual scroll, pause, slide or style change, unmount) cancels it.
-  useEffect(() => {
-    if (!autoplay) return;
-    const step = introStep(pos, sections.length);
-    if (!step) return;
-    const t = window.setTimeout(() => (step.next >= sections.length ? setSlide(1) : scrollToBlock(step.next)), step.delay);
-    return () => window.clearTimeout(t);
-  }, [autoplay, pos, sections, scrollToBlock]);
-
-  // Track where the scroll settles (automatic or manual) to know the current block.
-  useEffect(() => {
-    const box = scroller.current;
-    if (!box) return;
-    let t = 0;
-    const settle = () => {
-      const mark = box.scrollTop + box.clientHeight * 0.4;
-      let i = 0;
-      blocks.current.forEach((el, k) => {
-        if (el && el.offsetTop <= mark) i = k;
-      });
-      setPos(i);
-    };
-    const onScroll = () => {
-      window.clearTimeout(t);
-      t = window.setTimeout(settle, 140);
-    };
-    box.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.clearTimeout(t);
-      box.removeEventListener("scroll", onScroll);
-    };
-  }, []);
-
-  /**
-   * The visitor scrolled the text by hand (wheel, touch, scrollbar or keys): hold the automatic
-   * scrolling while they read, then roll on by itself after a few quiet seconds.
-   */
-  const manual = useCallback(() => {
-    setReading(true);
-    window.clearTimeout(readingTimer.current);
-    readingTimer.current = window.setTimeout(() => setReading(false), INTRO_TIMING.resumeAfterMs);
-  }, []);
-  useEffect(() => () => window.clearTimeout(readingTimer.current), []);
-
-  const goTo = (s: 0 | 1) => {
-    // Back to slide 1 after the sequence has finished: replay it from the top.
-    if (s === 0 && slide === 1 && pos >= last) {
-      setPos(0);
-      scroller.current?.scrollTo({ top: 0, behavior: "auto" });
-    }
+  function goTo(s: 0 | 1) {
+    moved.current = true;
     setSlide(s);
-  };
+  }
   const other = (slide === 0 ? 1 : 0) as 0 | 1;
 
-  function togglePlay() {
-    setPlaying((p) => !p);
-  }
-
-  function skipToInvitation() {
-    setSlide(1);
-  }
+  // After a change, bring the carousel's top into view if the visitor had scrolled past it
+  // (slide 1 can be much taller than slide 2, e.g. the whole poem on a phone).
+  useEffect(() => {
+    if (!moved.current) return;
+    const el = root.current;
+    if (el && el.getBoundingClientRect().top < 0) el.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  }, [slide, reduced]);
 
   function onKeyDown(e: React.KeyboardEvent) {
     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
@@ -472,9 +407,24 @@ export default function HeroCarousel({
     ? { href: bookingUrl, props: { target: "_blank", rel: "noopener noreferrer" }, label: BOOKING.label }
     : { href: "#contact", props: {}, label: BOOKING.fallbackLabel };
   const caption = banner?.caption || BANNER_CAPTION;
+  // The end of slide 1 (both versions): leads to slide 2.
+  const talkButton = (
+    <button type="button" className="hc-talk-btn" onClick={() => goTo(1)}>
+      {TALK} <LuArrowRight aria-hidden />
+    </button>
+  );
+  const slideProps = (i: 0 | 1, extra: string) => ({
+    className: `hero-slide ${extra}${slide === i ? " is-active" : ""}`,
+    role: "group",
+    "aria-roledescription": "slide",
+    "aria-label": `${i + 1} of 2: ${SLIDE_NAMES[i]}`,
+    "aria-hidden": slide !== i,
+    inert: slide !== i,
+  });
 
   return (
     <div
+      ref={root}
       className={`hero-carousel${reduced ? " is-reduced" : ""}`}
       role="region"
       aria-roledescription="carousel"
@@ -482,90 +432,45 @@ export default function HeroCarousel({
       onKeyDown={onKeyDown}
     >
       <div className="hero-slides">
-        {/* Slide 1 — scrolling questions and answers, then the invitation */}
-        <div
-          className={`hero-slide intro-slide${slide === 0 ? " is-active" : ""}`}
-          role="group"
-          aria-roledescription="slide"
-          aria-label={`1 of 2: ${SLIDE_NAMES[0]}`}
-          aria-hidden={slide !== 0}
-          inert={slide !== 0}
-        >
+        {/* Slide 1 — all questions & answers, or the whole poem */}
+        <div {...slideProps(0, `intro-slide is-${variant}`)}>
           <div className="intro-bg" aria-hidden>
             <BrainLights running={slide === 0 && !hidden && !reduced} />
           </div>
           <div className="intro-shade" aria-hidden />
-          <div className="intro-head">
-            {(kicker || INTRO_ROLE) && (
+          <div className="hc-content">
+            <div className="hc-head">
               <div className="intro-id">
                 {kicker && <p className="intro-kicker">{kicker}</p>}
                 {INTRO_ROLE && <p className="intro-role">{INTRO_ROLE}</p>}
               </div>
-            )}
-            {INTRO_VARIANTS.length > 1 && (
-              // Versions of slide 1, not carousel slides: kept apart from the slide dots.
               <div className="intro-style" role="group" aria-label="Intro style">
                 {INTRO_VARIANTS.map((v) => (
                   <button
                     key={v.id}
                     type="button"
                     className="intro-style-btn"
-                    aria-pressed={v.id === variant.id}
+                    aria-pressed={v.id === variant}
                     onClick={() => chooseVariant(v.id)}
                   >
                     {v.label}
                   </button>
                 ))}
               </div>
+            </div>
+            {variant === "qa" ? (
+              <QaContent end={talkButton} />
+            ) : (
+              <>
+                <PoemContent />
+                {talkButton}
+              </>
             )}
-          </div>
-          <div
-            ref={scroller}
-            className={`intro-scroll is-${variant.id}`}
-            tabIndex={0}
-            role="region"
-            aria-label={variant.title}
-            onWheel={(e) => {
-              // Only a wheel that really scrolls the text counts (not scrolling the page past it).
-              const b = e.currentTarget;
-              if ((e.deltaY > 0 && b.scrollTop + b.clientHeight < b.scrollHeight - 1) || (e.deltaY < 0 && b.scrollTop > 0)) manual();
-            }}
-            onTouchMove={manual}
-            onPointerDown={(e) => {
-              // Dragging the scrollbar (not clicking a link or button) counts as manual scrolling.
-              if (e.target === e.currentTarget) manual();
-            }}
-            onKeyDown={(e) => {
-              if (SCROLL_KEYS.has(e.key) && (e.target === e.currentTarget || e.key !== " ")) manual();
-            }}
-            onFocus={(e) => setKeyFocus(e.target.matches(":focus-visible"))}
-            onBlur={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setKeyFocus(false);
-            }}
-          >
-            {sections.map((s, i) => (
-              <article
-                key={i}
-                ref={(el) => {
-                  blocks.current[i] = el;
-                }}
-                className={`intro-block is-${s.kind}${pos === i ? " is-current" : ""}`}
-              >
-                <Section section={s} />
-              </article>
-            ))}
           </div>
         </div>
 
-        {/* Slide 2 — banner image */}
-        <div
-          className={`hero-slide banner-slide${slide === 1 ? " is-active" : ""}`}
-          role="group"
-          aria-roledescription="slide"
-          aria-label={`2 of 2: ${SLIDE_NAMES[1]}`}
-          aria-hidden={slide !== 1}
-          inert={slide !== 1}
-        >
+        {/* Slide 2 — Business & Technology: the handshake banner */}
+        <div {...slideProps(1, "banner-slide")}>
           {banner ? (
             <figure className="hero-banner">
               <img
@@ -588,7 +493,7 @@ export default function HeroCarousel({
       </div>
 
       <div className="hero-carousel-controls">
-        {slide === 1 && <BarInvite inv={variant.invitation} booking={booking} />}
+        {slide === 1 && <BarInvite inv={variant === "poem" ? POEM.invitation : INVITATION} booking={booking} />}
         <button type="button" className="hc-btn" aria-label="Previous slide" onClick={() => goTo(other)}>
           <LuChevronLeft aria-hidden />
         </button>
@@ -607,26 +512,6 @@ export default function HeroCarousel({
         <button type="button" className="hc-btn" aria-label="Next slide" onClick={() => goTo(other)}>
           <LuChevronRight aria-hidden />
         </button>
-
-        {slide === 0 && (
-          <>
-            {!reduced && (
-              <button
-                type="button"
-                className="hc-btn"
-                aria-pressed={!playing}
-                aria-label={playing ? "Pause automatic scrolling" : "Play automatic scrolling"}
-                onClick={togglePlay}
-              >
-                {playing ? <LuPause aria-hidden /> : <LuPlay aria-hidden />}
-              </button>
-            )}
-            <span className="hc-progress">{`${pos + 1} / ${sections.length}`}</span>
-            <button type="button" className="hc-btn" onClick={skipToInvitation}>
-              <LuSkipForward aria-hidden /> Skip to invitation
-            </button>
-          </>
-        )}
         <a className="hc-btn hc-book" href={booking.href} {...booking.props}>
           <LuCalendarCheck aria-hidden /> {booking.label}
         </a>
