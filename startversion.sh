@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Switch the website to a version (git branch) and start it without any AI (no LLM, no Flowise).
-# Used by ./startv1.sh (main), ./startv2.sh (V2) and ./startv3.sh (V3).
+# Used by ./startv1.sh (main), ./startv2.sh (V2), ./startv3.sh (V3) and ./startv4.sh (V4).
 #
 #   ./startversion.sh <branch>
 #
