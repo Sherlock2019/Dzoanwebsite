@@ -331,7 +331,7 @@ export default function HeroCarousel({
         <button type="button" className="hc-btn" aria-label="Next slide" onClick={() => goTo(other)}>
           <LuChevronRight aria-hidden />
         </button>
-        {slide === 0 && background.type === "dynamic" && !reduced && (
+        {slide === 0 && background.type !== "image" && !reduced && (
           <button
             type="button"
             className="hc-btn"
