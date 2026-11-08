@@ -7,7 +7,7 @@ import { getOwnerSession } from "@/lib/auth/guard";
 import { citizenshipFlags, languageFlags } from "@/lib/flags";
 import { thumbUrl } from "@/lib/media-url";
 import { loadPublicContent } from "@/lib/public-cache";
-import { sectionLabel, siteSections } from "@/lib/section-labels";
+import { siteSections } from "@/lib/section-labels";
 import { initials } from "@/lib/text";
 
 export const dynamic = "force-dynamic";
@@ -16,10 +16,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const [content, session] = await Promise.all([loadPublicContent(), getOwnerSession()]);
   const { profile } = content;
 
-  const nav: NavItem[] = [
-    { id: "home", label: sectionLabel(profile, "home") },
-    ...siteSections(content).map(({ id, label, icon }) => ({ id, label, icon })),
-  ];
+  const nav: NavItem[] = siteSections(content).map(({ id, label, icon }) => ({ id, label, icon }));
 
   const socials: Social[] = [];
   if (profile.linkedin) socials.push({ kind: "linkedin", href: profile.linkedin, label: "LinkedIn profile" });

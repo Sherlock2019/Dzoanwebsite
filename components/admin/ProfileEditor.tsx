@@ -249,16 +249,6 @@ export default function ProfileEditor({ initial, customSections }: { initial: Pr
           To add a new section, or upload files to one, use <Link href="/admin/sections">Custom sections</Link>; it
           appears here after you save it. Remember to save the profile.
         </p>
-        <div className="link-row">
-          <span className="section-order-arrows" aria-hidden />
-          <input
-            aria-label="Home name"
-            placeholder={SECTION_LABELS.home}
-            value={p.section_labels.home || ""}
-            onChange={(e) => set("section_labels", { ...p.section_labels, home: e.target.value })}
-          />
-          <span className="hint">Always first</span>
-        </div>
         {order.map((id, i) => {
           const custom = customBySlug.get(id);
           const name = custom ? custom.title : SECTION_LABELS[id as SectionId];
@@ -293,16 +283,20 @@ export default function ProfileEditor({ initial, customSections }: { initial: Pr
                     value={p.section_labels[id] || ""}
                     onChange={(e) => set("section_labels", { ...p.section_labels, [id]: e.target.value })}
                   />
-                  <label className="checkbox-line">
-                    <input
-                      type="checkbox"
-                      checked={!p.hidden_sections.includes(id)}
-                      onChange={(e) =>
-                        set("hidden_sections", e.target.checked ? p.hidden_sections.filter((x) => x !== id) : [...p.hidden_sections, id])
-                      }
-                    />
-                    Show
-                  </label>
+                  {id === "home" ? (
+                    <span className="hint">Banner · always shown</span>
+                  ) : (
+                    <label className="checkbox-line">
+                      <input
+                        type="checkbox"
+                        checked={!p.hidden_sections.includes(id)}
+                        onChange={(e) =>
+                          set("hidden_sections", e.target.checked ? p.hidden_sections.filter((x) => x !== id) : [...p.hidden_sections, id])
+                        }
+                      />
+                      Show
+                    </label>
+                  )}
                 </>
               )}
             </div>

@@ -22,6 +22,8 @@ export default async function HomePage() {
   function render({ id, label, custom }: SiteSection) {
     if (custom) return <CustomSections key={id} sections={[custom]} />;
     switch (id) {
+      case "home":
+        return <Hero key={id} profile={c.profile} hasProjects={has("projects")} hasArchitectures={has("architectures")} />;
       case "about":
         return <About key={id} profile={c.profile} />;
       case "skills":
@@ -44,10 +46,5 @@ export default async function HomePage() {
     }
   }
 
-  return (
-    <>
-      <Hero profile={c.profile} hasProjects={has("projects")} hasArchitectures={has("architectures")} />
-      {sections.map(render)}
-    </>
-  );
+  return <>{sections.map(render)}</>;
 }

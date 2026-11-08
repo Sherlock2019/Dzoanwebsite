@@ -69,7 +69,7 @@ export interface Profile {
   section_labels: Record<string, string>;
   /** Built-in section ids removed from the site (menu and page). */
   hidden_sections: string[];
-  /** Order of the sections after Home (built-in ids and custom-section slugs). */
+  /** Order of the sections, Home included (built-in ids and custom-section slugs). */
   section_order: string[];
   updated_at: string;
 }

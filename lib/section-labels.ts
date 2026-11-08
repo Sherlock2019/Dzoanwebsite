@@ -16,7 +16,7 @@ export const SECTION_LABELS = {
 
 export type SectionId = keyof typeof SECTION_LABELS;
 
-/** Home is the top banner: always shown and always first. Every other section can be hidden. */
+/** Home (the banner) is always shown, but can be moved like any other section. */
 export const HIDEABLE: readonly SectionId[] = (Object.keys(SECTION_LABELS) as SectionId[]).filter((id) => id !== "home");
 
 /** The owner's custom name for a section (Admin → Profile), or the default. */
@@ -31,9 +31,9 @@ export function sectionShown(profile: Pick<Profile, "hidden_sections">, id: Sect
 
 const isBuiltIn = (id: string): id is SectionId => id in SECTION_LABELS;
 
-/** Default order after Home: built-ins, custom sections (by their own order), Contact last. */
+/** Default order: built-ins, custom sections (by their own order), Contact last. */
 export function defaultOrder(customSlugs: string[]): string[] {
-  return ["about", "skills", "stacks", "resume", "projects", "architectures", "current", "certifications", ...customSlugs, "contact"];
+  return ["home", "about", "skills", "stacks", "resume", "projects", "architectures", "current", "certifications", ...customSlugs, "contact"];
 }
 
 /**
@@ -61,7 +61,7 @@ export interface SiteSection {
   custom?: CustomSection;
 }
 
-/** Sections shown on the site after Home, in the owner's order, skipping hidden or empty ones. */
+/** Sections shown on the site (Home included), in the owner's order, skipping hidden or empty ones. */
 export function siteSections(content: {
   profile: Profile;
   skills: SkillCategory[];
@@ -89,7 +89,7 @@ export function siteSections(content: {
   for (const id of applyOrder(defaultOrder([...custom.keys()]), profile.section_order)) {
     const c = custom.get(id);
     if (c) out.push({ id, label: c.title, icon: c.icon, custom: c });
-    else if (isBuiltIn(id) && hasContent[id] && sectionShown(profile, id)) out.push({ id, label: sectionLabel(profile, id) });
+    else if (isBuiltIn(id) && hasContent[id] && (id === "home" || sectionShown(profile, id))) out.push({ id, label: sectionLabel(profile, id) });
   }
   return out;
 }
