@@ -837,6 +837,10 @@ img {
   padding-bottom: 44px;
 }
 
+.intro-subhead {
+  margin-bottom: 18px;
+}
+
 .intro-skills {
   margin: 0 0 18px;
   font-weight: 700;
@@ -922,7 +926,41 @@ img {
 
 /* The banner fills the slide (which is as tall as the intro slide). */
 .banner-slide {
+  position: relative;
   background: #061426;
+}
+
+/* Slide 1's last line: "Then we really need to talk." */
+.intro-talk {
+  margin: 14px 0 0;
+  padding-left: 16px;
+  border-left: 3px solid #22b5ff;
+  font-family: var(--font-heading);
+  font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+  font-weight: 800;
+  line-height: 1.25;
+  color: #fff;
+}
+
+/* Slide 2: the invitation in the bar, left of the arrows. */
+.hc-invite {
+  max-width: 420px;
+  margin-right: 8px;
+  text-align: left;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #e3ecf7;
+}
+
+.hc-invite p {
+  margin: 0;
+}
+
+.hc-invite .hc-ps {
+  margin-top: 2px;
+  font-size: 0.76rem;
+  font-style: italic;
+  color: #b9c9dc;
 }
 .banner-slide .hero-banner {
   height: 100%;
@@ -1091,7 +1129,15 @@ img {
   /* Wide banner on a narrow screen: show it whole, centred, rather than cropping it. */
   .banner-slide {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+  }
+  /* Phones: the bar invitation takes its own full-width row above the buttons. */
+  .hc-invite {
+    flex-basis: 100%;
+    max-width: none;
+    margin: 0 0 4px;
+    text-align: center;
   }
   .banner-slide .hero-banner,
   .banner-slide .hero-banner img {

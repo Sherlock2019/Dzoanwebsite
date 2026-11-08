@@ -13,6 +13,7 @@ import {
   resolveVariant,
   VARIANT_STORAGE_KEY,
   type IntroSection,
+  type Invitation,
 } from "@/lib/hero-intro";
 
 export interface BannerImage {
@@ -61,8 +62,29 @@ interface Booking {
   label: string;
 }
 
+/**
+ * The invitation in the bar under slide 2 (beside the arrows and the Book my calendar button):
+ * "I'm here. Just book a moment in my calendar—" / "I'll be listening." and the postscript.
+ */
+function BarInvite({ inv, booking }: { inv: Invitation; booking: Booking }) {
+  const flat = (t: string) => t.replace(/\n/g, " ");
+  return (
+    <div className="hc-invite">
+      <p>
+        {flat(inv.before)}
+        <a className="intro-cta" href={booking.href} {...booking.props}>
+          {inv.link}
+        </a>
+        {lines(inv.after)}
+        {inv.end && <strong>{inv.end}</strong>}
+      </p>
+      <p className="hc-ps">{inv.postscript}</p>
+    </div>
+  );
+}
+
 /** One section of the scrolling sequence. */
-function Section({ section, booking }: { section: IntroSection; booking: Booking }) {
+function Section({ section }: { section: IntroSection }) {
   if (section.kind === "qa") {
     return (
       <>
@@ -90,40 +112,17 @@ function Section({ section, booking }: { section: IntroSection; booking: Booking
       </>
     );
   }
-  const inv = section.invitation;
-  const cta = (
-    <div className="intro-closing-cta">
-      <p className="intro-invite">
-        <strong className="intro-invite-lead">{inv.lead}</strong>
-        <br />
-        {lines(inv.before)}
-        <a className="intro-cta" href={booking.href} {...booking.props}>
-          {inv.link}
-        </a>
-        {lines(inv.after)}
-        {inv.end && <strong>{inv.end}</strong>}
-      </p>
-      <a className="btn btn-primary intro-book" href={booking.href} {...booking.props}>
-        <LuCalendarCheck aria-hidden /> {booking.label}
-      </a>
-      <p className="intro-ps">{inv.postscript}</p>
-    </div>
-  );
-  if (!section.body?.length) return cta;
   return (
     <>
       {section.headline && <h3 className="intro-q">{section.headline}</h3>}
+      {section.subhead && <p className="intro-a intro-subhead">{lines(section.subhead)}</p>}
       {section.skills && <p className="intro-skills">{section.skills}</p>}
-      <div className="intro-closing-cols">
-        <div>
-          {section.body.map((b, i) => (
-            <p key={i} className="intro-body">
-              {lines(b)}
-            </p>
-          ))}
-        </div>
-        {cta}
-      </div>
+      {section.body?.map((b, i) => (
+        <p key={i} className="intro-body">
+          {lines(b)}
+        </p>
+      ))}
+      {section.talk && <p className="intro-talk">{section.talk}</p>}
     </>
   );
 }
@@ -398,13 +397,14 @@ export default function HeroCarousel({
     [reduced],
   );
 
-  // The one timer: after the current block has faded in and been held, scroll to the next.
+  // The one timer: after the current block has faded in and been held, scroll to the next; after
+  // the last one, move on to slide 2 (the invitation), where the show ends.
   // Any change (manual scroll, pause, slide or style change, unmount) cancels it.
   useEffect(() => {
     if (!autoplay) return;
     const step = introStep(pos, sections.length);
     if (!step) return;
-    const t = window.setTimeout(() => scrollToBlock(step.next), step.delay);
+    const t = window.setTimeout(() => (step.next >= sections.length ? setSlide(1) : scrollToBlock(step.next)), step.delay);
     return () => window.clearTimeout(t);
   }, [autoplay, pos, sections, scrollToBlock]);
 
@@ -443,23 +443,22 @@ export default function HeroCarousel({
   }, []);
   useEffect(() => () => window.clearTimeout(readingTimer.current), []);
 
-  const goTo = (s: 0 | 1) => setSlide(s);
+  const goTo = (s: 0 | 1) => {
+    // Back to slide 1 after the sequence has finished: replay it from the top.
+    if (s === 0 && slide === 1 && pos >= last) {
+      setPos(0);
+      scroller.current?.scrollTo({ top: 0, behavior: "auto" });
+    }
+    setSlide(s);
+  };
   const other = (slide === 0 ? 1 : 0) as 0 | 1;
 
   function togglePlay() {
-    if (playing) return setPlaying(false);
-    if (pos >= last) {
-      // At the invitation, Play starts again from the top.
-      setPos(0);
-      scrollToBlock(0);
-    }
-    setPlaying(true);
+    setPlaying((p) => !p);
   }
 
   function skipToInvitation() {
-    // Mark the destination now, so the automatic timer can't redirect the scroll on its way there.
-    setPos(last);
-    scrollToBlock(last); // scrolling stops there by itself
+    setSlide(1);
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
@@ -552,7 +551,7 @@ export default function HeroCarousel({
                 }}
                 className={`intro-block is-${s.kind}${pos === i ? " is-current" : ""}`}
               >
-                <Section section={s} booking={booking} />
+                <Section section={s} />
               </article>
             ))}
           </div>
@@ -589,6 +588,7 @@ export default function HeroCarousel({
       </div>
 
       <div className="hero-carousel-controls">
+        {slide === 1 && <BarInvite inv={variant.invitation} booking={booking} />}
         <button type="button" className="hc-btn" aria-label="Previous slide" onClick={() => goTo(other)}>
           <LuChevronLeft aria-hidden />
         </button>
@@ -621,8 +621,8 @@ export default function HeroCarousel({
                 {playing ? <LuPause aria-hidden /> : <LuPlay aria-hidden />}
               </button>
             )}
-            <span className="hc-progress">{pos < last ? `${pos + 1} / ${last}` : "Invitation"}</span>
-            <button type="button" className="hc-btn" disabled={pos >= last} onClick={skipToInvitation}>
+            <span className="hc-progress">{`${pos + 1} / ${sections.length}`}</span>
+            <button type="button" className="hc-btn" onClick={skipToInvitation}>
               <LuSkipForward aria-hidden /> Skip to invitation
             </button>
           </>

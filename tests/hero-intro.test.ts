@@ -19,16 +19,17 @@ describe("hero intro versions", () => {
     expect(resolveVariant("poem").id).toBe("poem");
   });
 
-  it("ends every version with the closing invitation and calendar link", () => {
+  it("ends slide 1 on 'Then we really need to talk.' and puts 'I’m here…' on slide 2", () => {
     for (const v of INTRO_VARIANTS) {
-      const last = v.sections.at(-1)!;
-      expect(last.kind).toBe("closing");
-      expect(v.sections.slice(0, -1).every((s) => s.kind !== "closing")).toBe(true);
-      if (last.kind !== "closing") continue;
-      expect(last.invitation.lead).toBe("Then we really need to talk.");
-      expect(last.invitation.link).toBe("book a moment in my calendar");
-      expect(last.invitation.postscript).toBe("P.S. I’m not an AI chatbot. I’m a real human.");
+      const end = v.sections.at(-1)!;
+      expect(end.kind === "closing" && end.talk).toBe("Then we really need to talk.");
+      expect(v.invitation.before.startsWith("I’m here.")).toBe(true);
+      expect(v.invitation.link).toBe("book a moment in my calendar");
+      expect(v.invitation.postscript).toBe("P.S. I’m not an AI chatbot. I’m a real human.");
     }
+    const qaEnd = qa.sections.at(-1)!;
+    expect(qaEnd.kind === "closing" && qaEnd.headline).toBe("And if you need all the above in one person?");
+    expect(qaEnd.kind === "closing" && qaEnd.subhead).toBe("And more than that—\na servant to your team,\nyour company,\nand your customers.");
   });
 
   it("keeps the ten questions in the required order", () => {
@@ -59,13 +60,12 @@ describe("hero intro versions", () => {
     );
     const first = poem.sections[0];
     expect(first.kind === "stanza" && first.note).toBe("Inspired by Rudyard Kipling’s poem “If—”");
-    const end = poem.sections.at(-1)!;
-    expect(end.kind === "closing" && `${end.invitation.after}${end.invitation.end}`).toBe("—\nI’ll be listening.");
+    expect(`${poem.invitation.after}${poem.invitation.end}`).toBe("—\nI’ll be listening.");
     expect(stanzas.slice(0, 11).every((s) => s.split("\n").length === 4)).toBe(true);
     expect(stanzas[11].split("\n")).toHaveLength(5);
   });
 
-  it("visits every section in order, holding each 5 s after its fade-in, and stops at the invitation", () => {
+  it("visits every section in order, holding each 5 s after its fade-in, then moves to slide 2", () => {
     for (const v of INTRO_VARIANTS) {
       const n = v.sections.length;
       const visited = [0];
@@ -75,8 +75,9 @@ describe("hero intro versions", () => {
         i = step.next;
         visited.push(i);
       }
-      expect(visited).toEqual([...Array(n).keys()]);
-      expect(introStep(n - 1, n)).toBeNull();
+      // 0 … n-1 are the sections; n means "slide 2", after the last section's hold.
+      expect(visited).toEqual([...Array(n + 1).keys()]);
+      expect(introStep(n, n)).toBeNull();
     }
     expect(INTRO_TIMING.holdMs).toBe(5000);
   });

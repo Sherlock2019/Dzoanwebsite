@@ -2,17 +2,18 @@
 //
 // Slide 1 has several versions ("intro styles"), listed in INTRO_VARIANTS. Each version is one
 // vertical scrolling sequence of sections: it scrolls down automatically, holding each section for
-// `holdMs` once its text has faded in, and stops at its last section, the closing invitation.
-// Visitors pick a version with the "Intro style" selector; slide 2 (the banner image) is shared.
+// `holdMs` once its text has faded in, ending on "Then we really need to talk." The carousel then
+// moves to slide 2: the banner image, with the version's invitation ("I'm here. Just book a
+// moment in my calendar—…") in the bar under it, where the show ends.
+// Visitors pick a version with the selector at the top of slide 1.
 //
 // To add a version: append an entry to INTRO_VARIANTS with a new stable `id`, a `label` for the
-// selector and its ordered `sections`, ending with a closing section.
+// selector, its ordered `sections` and its `invitation`.
 //
 // "\n" inside a string is an intentional line break (text still wraps naturally on small screens).
 
-/** The invitation that ends every version; `link` is the part that links to the calendar. */
+/** The invitation shown in the bar under slide 2, where every version ends; `link` links to the calendar. */
 export interface Invitation {
-  lead: string;
   before: string;
   link: string;
   after: string;
@@ -29,8 +30,11 @@ export type IntroSection =
    * and an optional italic note under the title.
    */
   | { kind: "stanza"; title?: string; note?: string; text: string; plainLead?: boolean }
-  /** The closing invitation (always last), with optional headline, skills and body above it. */
-  | { kind: "closing"; headline?: string; skills?: string; body?: string[]; invitation: Invitation };
+  /**
+   * A closing section: headline, a line right under it, skills line, body paragraphs and an
+   * emphasized last line, e.g. "Then we really need to talk." (all optional).
+   */
+  | { kind: "closing"; headline?: string; subhead?: string; skills?: string; body?: string[]; talk?: string };
 
 export interface IntroVariant {
   /** Stable id, saved in the visitor's browser: do not rename. */
@@ -40,10 +44,14 @@ export interface IntroVariant {
   /** Full title of the version (accessible name of its sequence). */
   title: string;
   sections: IntroSection[];
+  /** Shown over the banner image on slide 2 when this version is selected. */
+  invitation: Invitation;
 }
 
+/** Last line of slide 1, in both versions. */
+export const TALK = "Then we really need to talk.";
+
 export const INVITATION: Invitation = {
-  lead: "Then we really need to talk.",
   before: "I’m here.\nJust ",
   link: "book a moment in my calendar",
   after: "—\nI’ll be listening.",
@@ -125,11 +133,13 @@ const QA_VARIANT: IntroVariant = {
     {
       kind: "closing",
       headline: "And if you need all the above in one person?",
+      subhead: "And more than that—\na servant to your team,\nyour company,\nand your customers.",
       skills: "AI & Data · Cloud Architecture · DevOps & SRE.",
-      body: ["One hands-on engineer—\nsaving headcount, budget, and time.", "And more than that—\na servant to your team,\nyour company,\nand your customers."],
-      invitation: INVITATION,
+      body: ["One hands-on engineer—\nsaving headcount, budget, and time."],
+      talk: TALK,
     },
   ],
+  invitation: INVITATION,
 };
 
 const POEM_VARIANT: IntroVariant = {
@@ -188,8 +198,9 @@ const POEM_VARIANT: IntroVariant = {
       text: "And more than that, someone prepared to be\nA servant to your team,\nYour company,\nyour customers—\nand you want to Build Together an Earth of Abundance and prosperity for Us and generations to come ...",
       plainLead: true,
     },
-    { kind: "closing", invitation: { ...INVITATION, after: "—\n", end: "I’ll be listening." } },
+    { kind: "closing", talk: TALK },
   ],
+  invitation: { ...INVITATION, after: "—\n", end: "I’ll be listening." },
 };
 
 /** Every version of slide 1, in selector order. The first is the default. */
@@ -225,9 +236,10 @@ export const INTRO_TIMING = {
 
 /**
  * The next automatic step from section `index` of a sequence of `count` sections: wait `delay`,
- * then scroll to section `next`. Null at the last section (the invitation): scrolling stops.
+ * then go to `next`. After the last section, `next` is `count`, meaning "move to slide 2" (the
+ * invitation), where the show ends.
  */
 export function introStep(index: number, count: number): { delay: number; next: number } | null {
-  if (index >= count - 1) return null;
+  if (index >= count) return null;
   return { delay: INTRO_TIMING.fadeMs + INTRO_TIMING.holdMs, next: index + 1 };
 }
