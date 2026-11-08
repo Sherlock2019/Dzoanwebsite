@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
+import ElectroBrain from "./ElectroBrain";
 import NeuralBackground from "./NeuralBackground";
 import { CURRENT_IMAGE, imageBgUrl, type Slide1Bg } from "@/lib/slide1-bg";
 
@@ -15,7 +16,9 @@ const layer: CSSProperties = { position: "absolute", inset: 0, pointerEvents: "n
 export default function Slide1Backdrop({ bg, running }: { bg: Slide1Bg; running: boolean }) {
   const [failed, setFailed] = useState(false);
   const dynamic = bg.type === "dynamic" && !failed;
-  const image = failed ? { ...bg.image, source: "current" as const } : bg.image;
+  const electro = bg.dynamic.theme === "electro";
+  // A failing canvas shows the matching image instead.
+  const image = failed ? { ...bg.image, source: electro ? ("electro" as const) : ("current" as const) } : bg.image;
   const url = imageBgUrl(image);
   const overlay = dynamic ? bg.dynamic.overlay : image.overlay;
 
@@ -23,7 +26,11 @@ export default function Slide1Backdrop({ bg, running }: { bg: Slide1Bg; running:
     <div className="slide1-bg" aria-hidden style={{ ...layer, overflow: "hidden", background: "#030A12" }}>
       {dynamic ? (
         <>
-          <NeuralBackground key={bg.dynamic.theme} settings={bg.dynamic} running={running} onFail={() => setFailed(true)} />
+          {electro ? (
+            <ElectroBrain settings={bg.dynamic} running={running} onFail={() => setFailed(true)} />
+          ) : (
+            <NeuralBackground key={bg.dynamic.theme} settings={bg.dynamic} running={running} onFail={() => setFailed(true)} />
+          )}
           {/* Keep the text side (left) quieter and darker. */}
           <div style={{ ...layer, background: "linear-gradient(90deg, rgba(3,10,18,0.85) 0%, rgba(3,10,18,0.45) 38%, rgba(3,10,18,0) 70%)" }} />
         </>

@@ -6,6 +6,7 @@ import Slide1Backdrop from "@/components/sections/Slide1Backdrop";
 import { thumbUrl } from "@/lib/media-url";
 import {
   CURRENT_IMAGE,
+  ELECTRO_IMAGE,
   LABELS,
   NETWORK_THEMES,
   PALETTES,
@@ -194,16 +195,20 @@ export default function BackgroundEditor({ initial }: { initial: Slide1BgSetting
                 ))}
               </select>
             </label>
-            <label>
-              <span className="admin-label">Colours</span>
-              <select value={d.palette} onChange={(e) => setDynamic("palette", e.target.value as DynamicBg["palette"])}>
-                {PALETTES.map((p) => (
-                  <option key={p} value={p}>
-                    {LABELS.palette[p]}
-                  </option>
-                ))}
-              </select>
-            </label>
+            {d.theme === "electro" ? (
+              <p className="hint">Blue neurons with blue, yellow and green sparkles; the brain turns 360°. Speed sets the rotation.</p>
+            ) : (
+              <label>
+                <span className="admin-label">Colours</span>
+                <select value={d.palette} onChange={(e) => setDynamic("palette", e.target.value as DynamicBg["palette"])}>
+                  {PALETTES.map((p) => (
+                    <option key={p} value={p}>
+                      {LABELS.palette[p]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <Range label="Node density" min={0.5} max={1.5} step={0.1} value={d.density} onChange={(v) => setDynamic("density", v)} />
             <Range label="Signal speed" min={0.5} max={2} step={0.1} value={d.speed} onChange={(v) => setDynamic("speed", v)} />
             <Range label="Glow intensity" min={0} max={1} step={0.05} value={d.glow} onChange={(v) => setDynamic("glow", v)} />
@@ -220,6 +225,15 @@ export default function BackgroundEditor({ initial }: { initial: Slide1BgSetting
               >
                 <img src={CURRENT_IMAGE.small} alt="" />
                 <span>Current image</span>
+              </button>
+              <button
+                type="button"
+                className={`bg-thumb${im.source === "electro" ? " is-selected" : ""}`}
+                aria-pressed={im.source === "electro"}
+                onClick={() => setImage("source", "electro")}
+              >
+                <img src={ELECTRO_IMAGE.small} alt="" />
+                <span>Electronic brain</span>
               </button>
               {library.map((m) => {
                 const selected = im.source === "upload" && im.media?.key === m.key;
