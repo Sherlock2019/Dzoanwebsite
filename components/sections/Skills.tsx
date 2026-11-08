@@ -2,7 +2,7 @@ import MediaImage from "@/components/ui/MediaImage";
 import { CATEGORY_COLORS, CATEGORY_ICONS, skillColor, skillIcon } from "@/lib/icons";
 import { thumbUrl } from "@/lib/media-url";
 import type { Profile, SkillCategory } from "@/lib/types";
-import { sectionLabel, sectionShown } from "@/lib/section-labels";
+import { sectionLabel } from "@/lib/section-labels";
 import SectionTitle from "./SectionTitle";
 
 function CategoryColumn({ category }: { category: SkillCategory }) {
@@ -29,14 +29,15 @@ function CategoryColumn({ category }: { category: SkillCategory }) {
   );
 }
 
-export default function Skills({ profile, skills }: { profile: Profile; skills: SkillCategory[] }) {
+/** part="skills": the technical Skills section; part="stacks": the Business & Human Stack section. */
+export default function Skills({ profile, skills, part }: { profile: Profile; skills: SkillCategory[]; part: "skills" | "stacks" }) {
   const technical = skills.filter((s) => s.group === "technical");
   const stacks = skills.filter((s) => s.group !== "technical");
   if (!skills.length) return null;
 
   return (
     <>
-      {sectionShown(profile, "skills") && (
+      {part === "skills" && (
       <section id="skills" className="section section-alt" aria-labelledby="skills-title">
         <div className="container">
           <SectionTitle id="skills" title={sectionLabel(profile, "skills")} intro={profile.positioning} />
@@ -50,7 +51,7 @@ export default function Skills({ profile, skills }: { profile: Profile; skills: 
         </div>
       </section>
       )}
-      {stacks.length > 0 && sectionShown(profile, "stacks") && (
+      {part === "stacks" && stacks.length > 0 && (
         <section id="stacks" className="section" aria-labelledby="stacks-title">
           <div className="container">
             <div className="section-title">

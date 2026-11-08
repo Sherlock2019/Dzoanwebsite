@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireOwner } from "@/lib/auth/guard";
-import { safeFilename, storeDocument, storeImage, storePdf, UploadError } from "@/lib/upload";
+import { safeFilename, storeAnyFile, storeDocument, storeImage, storePdf, UploadError } from "@/lib/upload";
 
 export const runtime = "nodejs";
 
@@ -9,7 +9,8 @@ const MAX_REQUEST_BYTES = 16 * 1024 * 1024;
 /**
  * Owner-only upload. multipart/form-data with:
  *   file  — the file
- *   kind  — "image" (JPEG/PNG/WebP), "pdf", or "document" (PDF or Word .docx, keeps its filename)
+ *   kind  — "image" (JPEG/PNG/WebP), "pdf", "document" (PDF or Word .docx, keeps its filename)
+ *           or "file" (any type, for custom sections; non-PDF/Word files are download-only)
  *   alt   — optional alt text for images
  * Files are stored privately; they become public only when referenced by published content.
  */
@@ -43,7 +44,10 @@ export async function POST(req: Request) {
     if (kind === "document") {
       return NextResponse.json(await storeDocument(buf, file.name), { status: 201 });
     }
-    return NextResponse.json({ error: 'kind must be "image", "pdf" or "document"' }, { status: 400 });
+    if (kind === "file") {
+      return NextResponse.json(await storeAnyFile(buf, file.name), { status: 201 });
+    }
+    return NextResponse.json({ error: 'kind must be "image", "pdf", "document" or "file"' }, { status: 400 });
   } catch (err) {
     if (err instanceof UploadError) return NextResponse.json({ error: err.message }, { status: 415 });
     throw err;

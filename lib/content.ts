@@ -76,6 +76,7 @@ export function defaultProfile(): Profile {
     seo_description: "",
     section_labels: {},
     hidden_sections: [],
+    section_order: [],
     updated_at: new Date(0).toISOString(),
   };
 }

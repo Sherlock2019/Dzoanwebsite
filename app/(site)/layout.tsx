@@ -7,7 +7,7 @@ import { getOwnerSession } from "@/lib/auth/guard";
 import { citizenshipFlags, languageFlags } from "@/lib/flags";
 import { thumbUrl } from "@/lib/media-url";
 import { loadPublicContent } from "@/lib/public-cache";
-import { sectionLabel, sectionShown, type SectionId } from "@/lib/section-labels";
+import { sectionLabel, siteSections } from "@/lib/section-labels";
 import { initials } from "@/lib/text";
 
 export const dynamic = "force-dynamic";
@@ -16,20 +16,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const [content, session] = await Promise.all([loadPublicContent(), getOwnerSession()]);
   const { profile } = content;
 
-  const item = (id: SectionId, hasContent = true) =>
-    hasContent && sectionShown(profile, id) ? [{ id, label: sectionLabel(profile, id) }] : [];
   const nav: NavItem[] = [
-    ...item("home"),
-    ...item("about"),
-    ...item("skills", content.skills.length > 0),
-    ...item("stacks", content.skills.some((s) => s.group !== "technical")),
-    ...item("resume"),
-    ...item("projects", content.projects.length > 0),
-    ...item("architectures", content.architectures.length > 0),
-    ...item("current", content.current.length > 0),
-    ...item("certifications", content.certifications.length > 0),
-    ...content.sections.map((s) => ({ id: s.slug, label: s.title, icon: s.icon })),
-    ...item("contact"),
+    { id: "home", label: sectionLabel(profile, "home") },
+    ...siteSections(content).map(({ id, label, icon }) => ({ id, label, icon })),
   ];
 
   const socials: Social[] = [];

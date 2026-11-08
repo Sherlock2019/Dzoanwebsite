@@ -4,6 +4,7 @@ import Medal from "@/components/ui/Medal";
 import MediaImage from "@/components/ui/MediaImage";
 import RecommendationIcon from "@/components/ui/RecommendationIcon";
 import RichText from "@/components/ui/RichText";
+import { fileKind } from "@/lib/file-kind";
 import { HONOR_ICONS, SECTION_ICON_MAP } from "@/lib/icons";
 import { fullUrl, mediaUrl, thumbUrl } from "@/lib/media-url";
 import { hostOf } from "@/lib/text";
@@ -52,7 +53,7 @@ function Entry({ entry, Icon, honor }: { entry: SectionEntry; Icon: IconType; ho
                 <a href={mediaUrl(f.key)} {...(isPdf ? { target: "_blank", rel: "noopener noreferrer" } : { download: f.filename })}>
                   {isPdf ? <LuFileText aria-hidden /> : <LuDownload aria-hidden />}
                   <span>{f.filename}</span>
-                  <span className="custom-file-kind">{isPdf ? "PDF" : "Word"}</span>
+                  <span className="custom-file-kind">{fileKind(f)}</span>
                 </a>
               </li>
             );

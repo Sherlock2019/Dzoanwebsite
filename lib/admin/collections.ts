@@ -256,7 +256,7 @@ export const COLLECTION_CONFIG: Record<CollectionName, CollectionConfig> = {
         name: "entries",
         label: "Entries",
         type: "entries",
-        help: "Each entry is a card: title, text, a link, images, and PDF or Word (.docx) files. Files are visible only once the section is published.",
+        help: "Each entry is a card: title, text, a link, images, and files of any type (max 15 MB each; PDFs open in the browser, other files download). Files are visible only once the section is published. Set the section's place in the left menu under Profile → Left menu & sections.",
       },
     ],
   },

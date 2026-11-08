@@ -10,8 +10,10 @@ export interface ObjectStorage {
 // Only server-generated keys are accepted: <folder>/<year>/<uuid>[.thumb].<ext>
 // "sources" holds documents uploaded for AI ingestion; they are never referenced by published
 // content, so the media route only ever serves them to the signed-in owner.
+// ".bin" = any other file attached to a custom section: served as application/octet-stream and
+// always downloaded (never rendered), so its content can't run in the site's origin.
 const KEY_PATTERN =
-  /^(images|documents|sources)\/\d{4}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(\.thumb)?\.(png|jpg|webp|pdf|docx|txt|md)$/;
+  /^(images|documents|sources)\/\d{4}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(\.thumb)?\.(png|jpg|webp|pdf|docx|txt|md|bin)$/;
 
 export function isValidKey(key: string): boolean {
   return KEY_PATTERN.test(key);

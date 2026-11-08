@@ -575,6 +575,20 @@
   margin-bottom: 8px;
 }
 
+/* Left menu & sections: [↑↓] [name] [Show / link] */
+.link-row:has(> .section-order-arrows) {
+  grid-template-columns: 72px 1fr 180px;
+  align-items: center;
+}
+.section-order-arrows {
+  display: inline-flex;
+  gap: 4px;
+}
+.section-order-arrows .icon-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
 /* Lists */
 .admin-list {
   list-style: none;

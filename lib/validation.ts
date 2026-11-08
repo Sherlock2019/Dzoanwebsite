@@ -92,6 +92,7 @@ export const profileSchema = z.object({
   seo_description: text(300),
   section_labels: z.record(z.string().max(40), z.string().trim().max(80, "80 characters max")).default({}),
   hidden_sections: z.array(z.string().max(40)).max(20).default([]),
+  section_order: z.array(z.string().max(80)).max(100).default([]),
 });
 
 const projectSchema = z.object({
@@ -143,6 +144,10 @@ const attachment = z.object({
   filename: z.string().trim().min(1).max(150),
   // Accepted for round-trips from the form; the server always re-derives it (lib/pdf-preview.ts).
   preview: storageKey.optional(),
+});
+/** Custom-section files: PDF, Word, or any other file stored as download-only .bin. */
+const anyAttachment = attachment.extend({
+  key: storageKey.refine((k) => k.startsWith("documents/") && /\.(pdf|docx|bin)$/.test(k), "Invalid file reference"),
 });
 
 const currentSchema = z.object({
@@ -208,7 +213,7 @@ const sectionEntrySchema = z.object({
   url: optionalUrl,
   url_label: text(80),
   images: z.array(media).max(20).default([]),
-  files: z.array(attachment).max(20).default([]),
+  files: z.array(anyAttachment).max(20).default([]),
 });
 
 const sectionSchema = z.object({

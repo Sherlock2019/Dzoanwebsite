@@ -62,6 +62,15 @@ export async function uploadDocument(file: File): Promise<{ key: string; filenam
   return api("/api/admin/upload", { method: "POST", body: form });
 }
 
+/** Upload any file (custom sections). PDF/Word keep their type; others are download-only. */
+export async function uploadAnyFile(file: File): Promise<{ key: string; filename: string }> {
+  if (file.size > MAX_BYTES) throw new ApiError(`${file.name} is larger than 15 MB`, 413);
+  const form = new FormData();
+  form.set("file", file);
+  form.set("kind", "file");
+  return api("/api/admin/upload", { method: "POST", body: form });
+}
+
 /** Turn a filename into readable default alt text. */
 export function altFromName(name: string): string {
   return name

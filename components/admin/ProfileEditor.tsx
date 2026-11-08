@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LuFileText, LuPlus, LuSave, LuTrash2, LuUpload } from "react-icons/lu";
+import { LuArrowDown, LuArrowUp, LuFileText, LuPlus, LuSave, LuTrash2, LuUpload } from "react-icons/lu";
 import { mediaUrl } from "@/lib/media-url";
-import { HIDEABLE, SECTION_LABELS, type SectionId } from "@/lib/section-labels";
+import { applyOrder, defaultOrder, SECTION_LABELS, type SectionId } from "@/lib/section-labels";
 import type { Profile } from "@/lib/types";
 import { api, ApiError, uploadPdf } from "./api";
 import { ImageField } from "./fields";
@@ -82,10 +82,29 @@ const SECTIONS: { title: string; fields: { name: TextKey; label: string; rows?: 
   },
 ];
 
-export default function ProfileEditor({ initial }: { initial: Profile }) {
+export interface CustomSectionRef {
+  slug: string;
+  title: string;
+  /** Published and has at least one entry, so it appears on the site. */
+  live: boolean;
+}
+
+export default function ProfileEditor({ initial, customSections }: { initial: Profile; customSections: CustomSectionRef[] }) {
   const router = useRouter();
   // Profiles saved before these fields existed don't have them yet.
-  const [p, setP] = useState<Profile>({ ...initial, section_labels: initial.section_labels ?? {}, hidden_sections: initial.hidden_sections ?? [] });
+  const [p, setP] = useState<Profile>({
+    ...initial,
+    section_labels: initial.section_labels ?? {},
+    hidden_sections: initial.hidden_sections ?? [],
+    section_order: initial.section_order ?? [],
+  });
+  const customBySlug = new Map(customSections.map((s) => [s.slug, s]));
+  const order = applyOrder(defaultOrder(customSections.map((s) => s.slug)), p.section_order);
+  const move = (i: number, by: -1 | 1) => {
+    const next = [...order];
+    [next[i], next[i + by]] = [next[i + by], next[i]];
+    set("section_order", next);
+  };
   const [issues, setIssues] = useState<Record<string, string>>({});
   const [message, setMessage] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
@@ -225,37 +244,70 @@ export default function ProfileEditor({ initial }: { initial: Profile }) {
       <fieldset className="admin-fieldset">
         <legend>Left menu &amp; sections</legend>
         <p className="hint">
-          Rename a section (changes the menu entry and the section heading; leave empty for the default) or untick it to
-          remove it from the site. Its content is kept. To add a new section, use{" "}
-          <Link href="/admin/sections">Custom sections</Link>.
+          Same order as the left menu and the page. Use the arrows to move a section, type a new name (menu entry and
+          heading; empty = default), or untick <strong>Show</strong> to remove it from the site (its content is kept).
+          To add a new section, or upload files to one, use <Link href="/admin/sections">Custom sections</Link>; it
+          appears here after you save it. Remember to save the profile.
         </p>
-        {(Object.keys(SECTION_LABELS) as SectionId[]).map((id) => (
-          <div key={id} className="link-row">
-            <input
-              aria-label={`${SECTION_LABELS[id]} name`}
-              placeholder={SECTION_LABELS[id]}
-              value={p.section_labels[id] || ""}
-              onChange={(e) => set("section_labels", { ...p.section_labels, [id]: e.target.value })}
-            />
-            {HIDEABLE.includes(id) ? (
-              <label className="checkbox-line">
-                <input
-                  type="checkbox"
-                  checked={!p.hidden_sections.includes(id)}
-                  onChange={(e) =>
-                    set(
-                      "hidden_sections",
-                      e.target.checked ? p.hidden_sections.filter((x) => x !== id) : [...p.hidden_sections, id],
-                    )
-                  }
-                />
-                Show
-              </label>
-            ) : (
-              <span className="hint">Always shown</span>
-            )}
-          </div>
-        ))}
+        <div className="link-row">
+          <span className="section-order-arrows" aria-hidden />
+          <input
+            aria-label="Home name"
+            placeholder={SECTION_LABELS.home}
+            value={p.section_labels.home || ""}
+            onChange={(e) => set("section_labels", { ...p.section_labels, home: e.target.value })}
+          />
+          <span className="hint">Always first</span>
+        </div>
+        {order.map((id, i) => {
+          const custom = customBySlug.get(id);
+          const name = custom ? custom.title : SECTION_LABELS[id as SectionId];
+          return (
+            <div key={id} className="link-row">
+              <span className="section-order-arrows">
+                <button type="button" className="icon-btn" aria-label={`Move ${name} up`} disabled={i === 0} onClick={() => move(i, -1)}>
+                  <LuArrowUp aria-hidden />
+                </button>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  aria-label={`Move ${name} down`}
+                  disabled={i === order.length - 1}
+                  onClick={() => move(i, 1)}
+                >
+                  <LuArrowDown aria-hidden />
+                </button>
+              </span>
+              {custom ? (
+                <>
+                  <input aria-label={`${name} name`} value={custom.title} readOnly title="Rename it in Custom sections" />
+                  <Link href="/admin/sections" className="hint">
+                    {custom.live ? "Custom · edit" : "Custom · draft or empty (hidden)"}
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <input
+                    aria-label={`${name} name`}
+                    placeholder={name}
+                    value={p.section_labels[id] || ""}
+                    onChange={(e) => set("section_labels", { ...p.section_labels, [id]: e.target.value })}
+                  />
+                  <label className="checkbox-line">
+                    <input
+                      type="checkbox"
+                      checked={!p.hidden_sections.includes(id)}
+                      onChange={(e) =>
+                        set("hidden_sections", e.target.checked ? p.hidden_sections.filter((x) => x !== id) : [...p.hidden_sections, id])
+                      }
+                    />
+                    Show
+                  </label>
+                </>
+              )}
+            </div>
+          );
+        })}
         {issues.section_labels && <p className="field-error">{issues.section_labels}</p>}
       </fieldset>
 

@@ -115,10 +115,25 @@ export async function storeDocument(buf: Buffer, name: string): Promise<{ key: s
   throw new UploadError("Only PDF or Word (.docx) files are accepted. Save older .doc files as .docx first.");
 }
 
-/** Make a safe download filename from user input. */
+/**
+ * Store any file attached to a custom section. PDFs and Word files keep their type (PDFs open in
+ * the browser and get a page-1 preview); everything else is stored opaquely as .bin and is only
+ * ever served as a download with its original filename.
+ */
+export async function storeAnyFile(buf: Buffer, name: string): Promise<{ key: string; filename: string }> {
+  if (buf.length === 0) throw new UploadError("Empty file");
+  if (buf.length > MAX_PDF_BYTES) throw new UploadError("File is larger than 15 MB");
+  if (sniffType(buf) === "pdf" || isDocx(buf)) return storeDocument(buf, name);
+  const key = `documents/${new Date().getUTCFullYear()}/${randomUUID()}.bin`;
+  await (await getStorage()).put(key, buf, "application/octet-stream");
+  return { key, filename: safeFilename(name, "file", "") };
+}
+
+/** Make a safe download filename from user input. ext "" keeps whatever extension it has. */
 export function safeFilename(name: string, fallback = "resume.pdf", ext = "pdf"): string {
   const base = name.split(/[\\/]/).pop() || "";
   const cleaned = base.replace(/[^\w .()-]+/g, "_").replace(/^\.+/, "").slice(0, 120).trim();
   if (!cleaned) return fallback;
+  if (!ext) return cleaned;
   return new RegExp(`\\.${ext}$`, "i").test(cleaned) ? cleaned : `${cleaned}.${ext}`;
 }

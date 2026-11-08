@@ -4,7 +4,8 @@ import { useRef, useState } from "react";
 import { LuArrowDown, LuArrowUp, LuFileText, LuPlus, LuTrash2, LuUpload, LuX } from "react-icons/lu";
 import { mediaUrl, thumbUrl } from "@/lib/media-url";
 import type { Attachment, Link, Media, SectionEntry } from "@/lib/types";
-import { altFromName, uploadDocument, uploadImage } from "./api";
+import { fileKind } from "@/lib/file-kind";
+import { altFromName, uploadAnyFile, uploadDocument, uploadImage } from "./api";
 
 export interface RefOption {
   id: string;
@@ -293,7 +294,18 @@ export function LinksField({ id, value, onChange }: { id: string; value: Link[];
 
 // ------------------------------------------------------------------ Documents (PDF / Word)
 
-export function FilesField({ id, value, onChange }: { id: string; value: Attachment[]; onChange: (f: Attachment[]) => void }) {
+export function FilesField({
+  id,
+  value,
+  onChange,
+  anyType = false,
+}: {
+  id: string;
+  value: Attachment[];
+  onChange: (f: Attachment[]) => void;
+  /** Accept any file type (custom sections), not only PDF / Word. */
+  anyType?: boolean;
+}) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -305,7 +317,7 @@ export function FilesField({ id, value, onChange }: { id: string; value: Attachm
     const errors: string[] = [];
     for (const file of Array.from(files)) {
       try {
-        done.push(await uploadDocument(file));
+        done.push(await (anyType ? uploadAnyFile(file) : uploadDocument(file)));
       } catch (e) {
         errors.push((e as Error).message);
       }
@@ -321,7 +333,7 @@ export function FilesField({ id, value, onChange }: { id: string; value: Attachm
           {value.map((f, i) => (
             <li key={f.key} className="link-row">
               <a href={mediaUrl(f.key)} target="_blank" rel="noopener noreferrer" className="file-row-kind">
-                <LuFileText aria-hidden /> {f.key.endsWith(".pdf") ? "PDF" : "Word"}
+                <LuFileText aria-hidden /> {fileKind(f)}
               </a>
               <input
                 aria-label="Name shown to visitors"
@@ -341,7 +353,7 @@ export function FilesField({ id, value, onChange }: { id: string; value: Attachm
         id={id}
         type="file"
         multiple
-        accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        accept={anyType ? undefined : ".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
         className="sr-only"
         onChange={(e) => {
           upload(e.target.files);
@@ -349,7 +361,7 @@ export function FilesField({ id, value, onChange }: { id: string; value: Attachm
         }}
       />
       <button type="button" className="btn btn-outline btn-sm" onClick={() => input.current?.click()} disabled={busy}>
-        <LuUpload aria-hidden /> {busy ? "Uploading…" : "Add PDF or Word files"}
+        <LuUpload aria-hidden /> {busy ? "Uploading…" : anyType ? "Add files (any type, max 15 MB)" : "Add PDF or Word files"}
       </button>
       {error && <p className="field-error" role="alert">{error}</p>}
     </div>
@@ -431,7 +443,7 @@ export function EntriesField({ id, value, onChange }: { id: string; value: Secti
               </div>
               <div className="is-wide">
                 <p className="admin-label">Documents</p>
-                <FilesField id={`${p}-files`} value={e.files || []} onChange={(files) => update(i, { files })} />
+                <FilesField id={`${p}-files`} value={e.files || []} onChange={(files) => update(i, { files })} anyType />
               </div>
             </div>
           </fieldset>
