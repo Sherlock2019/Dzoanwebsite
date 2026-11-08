@@ -197,6 +197,11 @@ export default function BackgroundEditor({ initial }: { initial: Slide1BgSetting
             </label>
             {d.theme === "electro" ? (
               <p className="hint">Blue neurons with blue, yellow and green sparkles; the brain turns 360°. Speed sets the rotation.</p>
+            ) : d.theme === "engine" ? (
+              <p className="hint">
+                The brain as an engine: business workflows, data and MLOps feed it, GPU compute powers it, and results flow
+                to Insights, Automation and Better decisions. Speed sets the flow; density how busy it is.
+              </p>
             ) : (
               <label>
                 <span className="admin-label">Colours</span>
