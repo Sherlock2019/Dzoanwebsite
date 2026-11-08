@@ -594,18 +594,55 @@ img {
   /* Fixed height: the sequence scrolls inside, so the carousel never changes size. */
   height: clamp(480px, 72vh, 720px);
   overflow: hidden;
-  /* Decorative background (human ↔ AI brains). It belongs to the slide, not the scrolling
-     text, so it stays put while the sequence scrolls over it. The gradients only darken the
-     text side a little: the image is already dark. */
   background-color: #050b16;
-  background-image:
-    linear-gradient(90deg, rgba(3, 8, 18, 0.62) 0%, rgba(3, 8, 18, 0.4) 42%, rgba(3, 8, 18, 0.08) 72%, transparent 100%),
-    linear-gradient(180deg, rgba(3, 8, 18, 0.35) 0%, transparent 22%, transparent 80%, rgba(3, 8, 18, 0.45) 100%),
-    url("/humanaibrain-2400.webp");
+}
+
+/* Decorative, animated background (human ↔ AI brains): the image, the light animation drawn
+   over it (canvas), then a light shade for readability. It belongs to the slide, not the
+   scrolling text, so it stays put while the sequence scrolls over it. */
+.intro-bg,
+.intro-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.intro-bg {
+  background-image: url("/humanaibrain-2400.webp");
   background-size: cover;
   background-repeat: no-repeat;
   /* Keep the meeting point of the two brains (about 57% across) in view. */
   background-position: 60% 50%;
+  /* A very slow breathing zoom, centred on the spark between the brains. */
+  transform-origin: 57% 48%;
+  animation: intro-breathe 22s ease-in-out infinite alternate;
+}
+
+.intro-bg canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes intro-breathe {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.045);
+  }
+}
+
+/* The image is already dark: only the text side is darkened a little. */
+.intro-shade {
+  background-image:
+    linear-gradient(90deg, rgba(3, 8, 18, 0.62) 0%, rgba(3, 8, 18, 0.4) 42%, rgba(3, 8, 18, 0.08) 72%, transparent 100%),
+    linear-gradient(180deg, rgba(3, 8, 18, 0.35) 0%, transparent 22%, transparent 80%, rgba(3, 8, 18, 0.45) 100%);
+}
+
+.is-reduced .intro-bg {
+  animation: none;
 }
 
 /* Header row (name + intro style) and the text column share one left edge. */
@@ -676,13 +713,24 @@ img {
   outline-offset: 2px;
 }
 
+/* Name, with the role line under it. */
 .intro-kicker {
   margin: 0;
+  font-family: var(--font-heading);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  font-size: 0.82rem;
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.intro-role {
+  margin: 4px 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.74rem;
   font-weight: 700;
-  color: #9fd8ff;
+  color: #22b5ff;
 }
 
 /* The scrolling sequence: one block per view, the invitation may be taller. */
@@ -760,6 +808,14 @@ img {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #22b5ff;
+}
+
+.intro-poem-note {
+  margin: -10px 0 18px;
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: #b9c9dc;
 }
 
 .intro-stanza {
@@ -1012,12 +1068,15 @@ img {
 @media (max-width: 767px) {
   .intro-slide {
     height: clamp(480px, 74svh, 660px);
-    /* Text spans the whole width here: an even, light overlay; smaller image file. */
-    background-image:
-      linear-gradient(180deg, rgba(3, 8, 18, 0.5) 0%, rgba(3, 8, 18, 0.42) 50%, rgba(3, 8, 18, 0.55) 100%),
-      url("/humanaibrain-1280.webp");
-    /* Centre on the spark between the two brains. */
+  }
+  /* Smaller image file; centred on the spark between the two brains. */
+  .intro-bg {
+    background-image: url("/humanaibrain-1280.webp");
     background-position: 57% 50%;
+  }
+  /* Text spans the whole width here: an even, light overlay. */
+  .intro-shade {
+    background-image: linear-gradient(180deg, rgba(3, 8, 18, 0.5) 0%, rgba(3, 8, 18, 0.42) 50%, rgba(3, 8, 18, 0.55) 100%);
   }
   .intro-head,
   .intro-block {

@@ -54,8 +54,15 @@ describe("hero intro versions", () => {
     expect(stanzas[0]).toBe(
       "If, as a CEO, you see what could be,\nYet daily troubles keep that goal from view,\nLet’s name the pains and find the possibility—\nThen build the next step, and see it through.",
     );
-    expect(stanzas[11]).toBe("And more than that, someone prepared to be\nA servant to your team,\nYour company,\nAnd your customers—");
-    expect(stanzas.every((s) => s.split("\n").length === 4)).toBe(true);
+    expect(stanzas[11]).toBe(
+      "And more than that, someone prepared to be\nA servant to your team,\nYour company,\nyour customers—\nand you want to Build Together an Earth of Abundance and prosperity for Us and generations to come ...",
+    );
+    const first = poem.sections[0];
+    expect(first.kind === "stanza" && first.note).toBe("Inspired by Rudyard Kipling’s poem “If—”");
+    const end = poem.sections.at(-1)!;
+    expect(end.kind === "closing" && `${end.invitation.after}${end.invitation.end}`).toBe("—\nI’ll be listening.");
+    expect(stanzas.slice(0, 11).every((s) => s.split("\n").length === 4)).toBe(true);
+    expect(stanzas[11].split("\n")).toHaveLength(5);
   });
 
   it("visits every section in order, holding each 3 s after its fade-in, and stops at the invitation", () => {

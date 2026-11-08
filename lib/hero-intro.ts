@@ -16,14 +16,19 @@ export interface Invitation {
   before: string;
   link: string;
   after: string;
+  /** Optional last words, shown in bold after `after`. */
+  end?: string;
   postscript: string;
 }
 
 export type IntroSection =
   /** A question with its answer. */
   | { kind: "qa"; topic: string; question: string; answer: string }
-  /** A poem stanza: its first line is emphasized. Optional small title above it. */
-  | { kind: "stanza"; title?: string; text: string }
+  /**
+   * A poem stanza: its first line is emphasized unless `plainLead`. Optional small title above it,
+   * and an optional italic note under the title.
+   */
+  | { kind: "stanza"; title?: string; note?: string; text: string; plainLead?: boolean }
   /** The closing invitation (always last), with optional headline, skills and body above it. */
   | { kind: "closing"; headline?: string; skills?: string; body?: string[]; invitation: Invitation };
 
@@ -135,6 +140,7 @@ const POEM_VARIANT: IntroVariant = {
     {
       kind: "stanza",
       title: "If — A Builder’s Promise",
+      note: "Inspired by Rudyard Kipling’s poem “If—”",
       text: "If, as a CEO, you see what could be,\nYet daily troubles keep that goal from view,\nLet’s name the pains and find the possibility—\nThen build the next step, and see it through.",
     },
     {
@@ -179,9 +185,10 @@ const POEM_VARIANT: IntroVariant = {
     },
     {
       kind: "stanza",
-      text: "And more than that, someone prepared to be\nA servant to your team,\nYour company,\nAnd your customers—",
+      text: "And more than that, someone prepared to be\nA servant to your team,\nYour company,\nyour customers—\nand you want to Build Together an Earth of Abundance and prosperity for Us and generations to come ...",
+      plainLead: true,
     },
-    { kind: "closing", invitation: INVITATION },
+    { kind: "closing", invitation: { ...INVITATION, after: "—\n", end: "I’ll be listening." } },
   ],
 };
 
@@ -192,6 +199,9 @@ export const DEFAULT_VARIANT_ID = INTRO_VARIANTS[0].id;
 
 /** localStorage key of the visitor's chosen intro style. */
 export const VARIANT_STORAGE_KEY = "hero-intro-style";
+
+/** Line shown under the name at the top of slide 1. Empty = none. */
+export const INTRO_ROLE = "AI Data Multi-Cloud Solutions Architect and Engineer";
 
 /** The version with this id, or the default one for a missing or unknown id. */
 export function resolveVariant(id: string | null | undefined): IntroVariant {
