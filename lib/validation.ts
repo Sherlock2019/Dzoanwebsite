@@ -182,7 +182,7 @@ const skillSchema = z.object({
   title: text(120).pipe(z.string().min(1, "Title required")),
   description: longText(1000),
   icon: z.enum(SKILL_ICONS).default("other"),
-  items: strList(60, 120),
+  items: strList(60, 200),
   image: media.nullable().default(null),
   visibility,
   sort_order: sortOrder,
