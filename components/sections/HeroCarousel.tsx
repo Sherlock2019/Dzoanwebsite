@@ -411,21 +411,24 @@ export default function HeroCarousel({
               {/* "How can I help a …": jump to any question (generated from the same content). */}
               <nav className="qa-nav" aria-label="Questions">
                 <p className="qa-nav-title">{QA_NAV_HEADING}</p>
-                <div className="qa-nav-btns">
-                  {sections.map((s, i) =>
-                    s.kind === "qa" || s.kind === "closing" ? (
-                      <button
-                        key={s.id ?? i}
-                        type="button"
-                        className="qa-nav-btn"
-                        aria-pressed={qaIndex === i}
-                        onClick={() => pickTopic(i)}
-                      >
-                        {s.nav ?? `#${i + 1}`}
-                      </button>
-                    ) : null,
-                  )}
-                </div>
+                {/* Topics on the first row; "All the Above" on its own row below, at the left. */}
+                {(["qa", "closing"] as const).map((kind) => (
+                  <div key={kind} className={`qa-nav-btns${kind === "closing" ? " is-all" : ""}`}>
+                    {sections.map((s, i) =>
+                      s.kind === kind ? (
+                        <button
+                          key={s.id ?? i}
+                          type="button"
+                          className="qa-nav-btn"
+                          aria-pressed={qaIndex === i}
+                          onClick={() => pickTopic(i)}
+                        >
+                          {s.nav ?? `#${i + 1}`}
+                        </button>
+                      ) : null,
+                    )}
+                  </div>
+                ))}
               </nav>
               <div className="qa-stage">
                 {qaCurrent && (

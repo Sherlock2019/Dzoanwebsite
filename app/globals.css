@@ -909,6 +909,11 @@ img {
   gap: 4px;
 }
 
+/* "All the Above" sits on its own row, under the topics. */
+.qa-nav-btns.is-all {
+  margin-top: 6px;
+}
+
 /* Small rounded blue buttons, matching "Book my calendar". */
 .qa-nav-btn {
   min-height: 30px;
