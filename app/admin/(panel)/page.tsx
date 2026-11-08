@@ -1,5 +1,6 @@
 ﻿import Link from "next/link";
 import { COLLECTION_CONFIG } from "@/lib/admin/collections";
+import { visitorCounts } from "@/lib/analytics";
 import { dataProvider } from "@/lib/config";
 import { getProfile } from "@/lib/content";
 import { getRepo } from "@/lib/db/index";
@@ -9,8 +10,9 @@ export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
   const repo = await getRepo();
-  const [profile, counts] = await Promise.all([
+  const [profile, visitors, counts] = await Promise.all([
     getProfile(),
+    visitorCounts(),
     Promise.all(
       COLLECTIONS.map(async (c) => {
         const items = await repo.list(c);
@@ -32,6 +34,14 @@ export default async function Dashboard() {
         </div>
       </div>
       <ul className="dash-grid">
+        <li>
+          <Link href="/admin/analytics" className="dash-card">
+            <strong>Visitors</strong>
+            <span>
+              {visitors.today} today · {visitors.week} in 7 days · {visitors.month} in 30 days
+            </span>
+          </Link>
+        </li>
         <li>
           <Link href="/admin/profile" className="dash-card">
             <strong>Profile &amp; résumé</strong>

@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import {
+  LuActivity,
   LuAward,
   LuBriefcase,
   LuCode,
@@ -14,6 +15,7 @@ import {
   LuSettings,
   LuSparkles,
   LuUser,
+  LuUsers,
 } from "react-icons/lu";
 import { SECTION_ICON_MAP } from "@/lib/icons";
 
@@ -30,8 +32,23 @@ const LINKS = [
 ];
 
 const AI_LINK = { href: "/admin/ai", label: "AI & documents", icon: LuSparkles };
+const ANALYTICS_LINK = { href: "/admin/analytics", label: "Visitors & heatmap", icon: LuActivity };
 
-export default function AdminNav({ email, sections = [] }: { email: string; sections?: { id: string; title: string; icon: string }[] }) {
+interface Visitors {
+  today: number;
+  week: number;
+  month: number;
+}
+
+export default function AdminNav({
+  email,
+  sections = [],
+  visitors,
+}: {
+  email: string;
+  sections?: { id: string; title: string; icon: string }[];
+  visitors?: Visitors;
+}) {
   const path = usePathname();
   async function signOut() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -40,6 +57,22 @@ export default function AdminNav({ email, sections = [] }: { email: string; sect
   return (
     <aside className="admin-nav">
       <p className="admin-brand">Portfolio admin</p>
+      {visitors && (
+        <a href={ANALYTICS_LINK.href} className="visitor-counter" aria-label={`Visitors: ${visitors.today} today, ${visitors.week} in 7 days, ${visitors.month} in 30 days`}>
+          <span>
+            <strong>{visitors.today}</strong> today
+          </span>
+          <span>
+            <strong>{visitors.week}</strong> 7 days
+          </span>
+          <span>
+            <strong>{visitors.month}</strong> 30 days
+          </span>
+          <small>
+            <LuUsers aria-hidden /> Visitors
+          </small>
+        </a>
+      )}
       <nav aria-label="Dashboard">
         <ul>
           {LINKS.map(({ href, label, icon: Icon }) => {
@@ -64,6 +97,11 @@ export default function AdminNav({ email, sections = [] }: { email: string; sect
               </li>
             );
           })}
+          <li>
+            <a href={ANALYTICS_LINK.href} className={path.startsWith(ANALYTICS_LINK.href) ? "active" : undefined} aria-current={path.startsWith(ANALYTICS_LINK.href) ? "page" : undefined}>
+              <LuActivity aria-hidden /> {ANALYTICS_LINK.label}
+            </a>
+          </li>
           <li>
             <a href={AI_LINK.href} className={path.startsWith(AI_LINK.href) ? "active" : undefined} aria-current={path.startsWith(AI_LINK.href) ? "page" : undefined}>
               <LuSparkles aria-hidden /> {AI_LINK.label}

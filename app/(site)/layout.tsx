@@ -1,5 +1,6 @@
 import ChatWidget from "@/components/chat/ChatWidget";
 import AdminHotkey from "@/components/layout/AdminHotkey";
+import Tracker from "@/components/layout/Tracker";
 import { chatEnabled } from "@/lib/ai/config";
 import Sidebar, { type NavItem, type Social } from "@/components/layout/Sidebar";
 import { getOwnerSession } from "@/lib/auth/guard";
@@ -39,6 +40,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   return (
     <div className="site">
       <AdminHotkey />
+      {!session && <Tracker />}
       <a href="#main" className="skip-link">
         Skip to content
       </a>

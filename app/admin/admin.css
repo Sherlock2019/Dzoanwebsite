@@ -764,3 +764,215 @@
     flex-wrap: wrap;
   }
 }
+
+/* ---------- Visitors & heatmap ---------- */
+.visitor-counter {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin: 0 0 16px;
+  padding: 10px 8px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--sidebar-text);
+  text-decoration: none;
+  font-size: 0.72rem;
+  text-align: center;
+}
+.visitor-counter:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.visitor-counter span {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.visitor-counter strong {
+  color: #fff;
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+}
+.visitor-counter small {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.65rem;
+}
+.an-range {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.an-tiles {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.an-tiles li {
+  background: #fff;
+  border: 1px solid #dde4ee;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.an-tiles strong {
+  font-size: 1.6rem;
+  color: #0d2a4a;
+  font-variant-numeric: tabular-nums;
+}
+.an-tiles span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.an-daily {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 120px;
+  border-bottom: 1px solid #dde4ee;
+}
+.an-day {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+.an-day span {
+  width: 100%;
+  min-height: 0;
+  background: var(--primary);
+  border-radius: 4px 4px 0 0;
+}
+.an-day:hover span {
+  background: var(--primary-strong);
+}
+.an-daily-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+.an-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0 16px;
+}
+.an-bars {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+.an-bars li {
+  display: grid;
+  grid-template-columns: minmax(90px, 38%) 1fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+}
+.an-bar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.an-bar-track {
+  height: 8px;
+  background: #eef2f7;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.an-bar-track span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  border-radius: 4px;
+}
+.an-bar-value {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.an-table-wrap {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+.an-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.an-table th,
+.an-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e8edf4;
+  vertical-align: top;
+}
+.an-table th {
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.an-linkmaker {
+  display: grid;
+  gap: 10px;
+  max-width: 640px;
+  margin: 12px 0;
+}
+.an-link {
+  display: flex;
+  gap: 8px;
+}
+.an-link input {
+  flex: 1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+}
+.heatmap-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 18px;
+  margin-bottom: 12px;
+}
+.heatmap-controls select {
+  min-width: 200px;
+}
+.heatmap-layouts {
+  display: flex;
+  gap: 6px;
+}
+.heatmap-controls .hint {
+  margin: 0 0 6px;
+}
+.heatmap-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.heatmap-legend span {
+  width: 90px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgb(255, 237, 160), rgb(254, 178, 76), rgb(240, 59, 32), rgb(128, 0, 38));
+}
+.heatmap-box {
+  overflow: hidden;
+  border: 1px solid #dde4ee;
+  border-radius: 12px;
+  background: #fff;
+}
+.heatmap-box iframe {
+  border: 0;
+  display: block;
+}

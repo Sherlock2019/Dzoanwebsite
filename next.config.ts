@@ -13,7 +13,7 @@ const csp = [
   "connect-src 'self'",
   "object-src 'none'",
   "frame-src 'self'",
-  "frame-ancestors 'none'",
+  "frame-ancestors 'self'", // the admin heatmap previews the site in a same-origin iframe
   "base-uri 'self'",
   "form-action 'self'",
 ].join("; ");
@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
     const headers = [
       { key: "X-Content-Type-Options", value: "nosniff" },
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-      { key: "X-Frame-Options", value: "DENY" },
+      { key: "X-Frame-Options", value: "SAMEORIGIN" },
       { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
     ];
     if (isProd) headers.push({ key: "Content-Security-Policy", value: csp });
