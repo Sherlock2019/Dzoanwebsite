@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LuFileText, LuPlus, LuSave, LuTrash2, LuUpload } from "react-icons/lu";
 import { mediaUrl } from "@/lib/media-url";
+import { HIDEABLE, SECTION_LABELS, type SectionId } from "@/lib/section-labels";
 import type { Profile } from "@/lib/types";
 import { api, ApiError, uploadPdf } from "./api";
 import { ImageField } from "./fields";
@@ -82,7 +84,8 @@ const SECTIONS: { title: string; fields: { name: TextKey; label: string; rows?: 
 
 export default function ProfileEditor({ initial }: { initial: Profile }) {
   const router = useRouter();
-  const [p, setP] = useState<Profile>(initial);
+  // Profiles saved before these fields existed don't have them yet.
+  const [p, setP] = useState<Profile>({ ...initial, section_labels: initial.section_labels ?? {}, hidden_sections: initial.hidden_sections ?? [] });
   const [issues, setIssues] = useState<Record<string, string>>({});
   const [message, setMessage] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
@@ -218,6 +221,43 @@ export default function ProfileEditor({ initial }: { initial: Profile }) {
           )}
         </fieldset>
       ))}
+
+      <fieldset className="admin-fieldset">
+        <legend>Left menu &amp; sections</legend>
+        <p className="hint">
+          Rename a section (changes the menu entry and the section heading; leave empty for the default) or untick it to
+          remove it from the site. Its content is kept. To add a new section, use{" "}
+          <Link href="/admin/sections">Custom sections</Link>.
+        </p>
+        {(Object.keys(SECTION_LABELS) as SectionId[]).map((id) => (
+          <div key={id} className="link-row">
+            <input
+              aria-label={`${SECTION_LABELS[id]} name`}
+              placeholder={SECTION_LABELS[id]}
+              value={p.section_labels[id] || ""}
+              onChange={(e) => set("section_labels", { ...p.section_labels, [id]: e.target.value })}
+            />
+            {HIDEABLE.includes(id) ? (
+              <label className="checkbox-line">
+                <input
+                  type="checkbox"
+                  checked={!p.hidden_sections.includes(id)}
+                  onChange={(e) =>
+                    set(
+                      "hidden_sections",
+                      e.target.checked ? p.hidden_sections.filter((x) => x !== id) : [...p.hidden_sections, id],
+                    )
+                  }
+                />
+                Show
+              </label>
+            ) : (
+              <span className="hint">Always shown</span>
+            )}
+          </div>
+        ))}
+        {issues.section_labels && <p className="field-error">{issues.section_labels}</p>}
+      </fieldset>
 
       <fieldset className="admin-fieldset">
         <legend>Headline numbers (hero)</legend>

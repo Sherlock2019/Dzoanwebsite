@@ -62,7 +62,7 @@ function groupProjects(projects: Project[]): { name: string; items: Project[] }[
   return groups;
 }
 
-export default function Projects({ projects }: { projects: Project[] }) {
+export default function Projects({ projects, title = "Projects" }: { projects: Project[]; title?: string }) {
   const [filter, setFilter] = useState("All");
   const [query, setQuery] = useState("");
   const filters = PROJECT_CATEGORIES.filter((c) => projects.some((p) => p.categories.includes(c)));
@@ -82,7 +82,7 @@ export default function Projects({ projects }: { projects: Project[] }) {
       <div className="container">
         <SectionTitle
           id="projects"
-          title="Projects"
+          title={title}
           intro="Evidence of how I work: what each project was for, what I built or designed, and its real delivery stage. Hover or tap a card for a summary."
         />
         <FilterBar

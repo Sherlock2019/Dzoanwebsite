@@ -90,6 +90,8 @@ export const profileSchema = z.object({
   stats: z.array(z.object({ value: text(30), label: text(60) })).max(8).default([]),
   seo_title: text(120),
   seo_description: text(300),
+  section_labels: z.record(z.string().max(40), z.string().trim().max(80, "80 characters max")).default({}),
+  hidden_sections: z.array(z.string().max(40)).max(20).default([]),
 });
 
 const projectSchema = z.object({

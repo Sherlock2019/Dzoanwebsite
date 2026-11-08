@@ -2,6 +2,7 @@ import MediaImage from "@/components/ui/MediaImage";
 import { CATEGORY_ICONS, skillIcon } from "@/lib/icons";
 import { thumbUrl } from "@/lib/media-url";
 import type { Profile, SkillCategory } from "@/lib/types";
+import { sectionLabel, sectionShown } from "@/lib/section-labels";
 import SectionTitle from "./SectionTitle";
 
 function CategoryColumn({ category }: { category: SkillCategory }) {
@@ -34,9 +35,10 @@ export default function Skills({ profile, skills }: { profile: Profile; skills: 
 
   return (
     <>
+      {sectionShown(profile, "skills") && (
       <section id="skills" className="section section-alt" aria-labelledby="skills-title">
         <div className="container">
-          <SectionTitle id="skills" title="Skills" intro={profile.positioning} />
+          <SectionTitle id="skills" title={sectionLabel(profile, "skills")} intro={profile.positioning} />
           {technical.length > 0 && (
             <div className="skills-grid">
               {technical.map((c) => (
@@ -46,11 +48,12 @@ export default function Skills({ profile, skills }: { profile: Profile; skills: 
           )}
         </div>
       </section>
-      {stacks.length > 0 && (
+      )}
+      {stacks.length > 0 && sectionShown(profile, "stacks") && (
         <section id="stacks" className="section" aria-labelledby="stacks-title">
           <div className="container">
             <div className="section-title">
-              <h2 id="stacks-title">Business &amp; Human Stack</h2>
+              <h2 id="stacks-title">{sectionLabel(profile, "stacks")}</h2>
               <p>The skills that turn technology into outcomes people can trust and use.</p>
             </div>
             <div className="stacks-grid">

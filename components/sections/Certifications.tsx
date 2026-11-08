@@ -4,7 +4,7 @@ import SectionTitle from "./SectionTitle";
 
 const KIND_ICON = { Certification: LuAward, Course: LuBookOpen, Training: LuBookOpen, Education: LuGraduationCap };
 
-export default function Certifications({ items }: { items: Certification[] }) {
+export default function Certifications({ items, title = "Certifications & Learning" }: { items: Certification[]; title?: string }) {
   if (!items.length) return null;
   const groups = [...new Set(items.map((c) => c.group || "Other"))];
   return (
@@ -12,7 +12,7 @@ export default function Certifications({ items }: { items: Certification[] }) {
       <div className="container">
         <SectionTitle
           id="certifications"
-          title="Certifications & Learning"
+          title={title}
           intro="Professional certifications are labelled “Certification”; courses and programmes are labelled “Course”."
         />
         <div className="cert-grid">

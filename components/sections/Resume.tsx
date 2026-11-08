@@ -1,6 +1,7 @@
 import { LuDownload, LuFileText } from "react-icons/lu";
 import { mediaUrl } from "@/lib/media-url";
 import type { Certification, Experience, Profile } from "@/lib/types";
+import { sectionLabel } from "@/lib/section-labels";
 import SectionTitle from "./SectionTitle";
 
 function TimelineItem({ item }: { item: Experience }) {
@@ -52,7 +53,7 @@ export default function Resume({
   return (
     <section id="resume" className="section" aria-labelledby="resume-title">
       <div className="container">
-        <SectionTitle id="resume" title="Résumé" />
+        <SectionTitle id="resume" title={sectionLabel(profile, "resume")} />
         {profile.resume && (
           <p className="resume-actions">
             <a className="btn btn-primary" href={mediaUrl(profile.resume.key)} target="_blank" rel="noopener noreferrer">

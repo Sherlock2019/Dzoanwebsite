@@ -2,6 +2,7 @@ import DownloadGate from "@/components/ui/DownloadGate";
 import MediaImage from "@/components/ui/MediaImage";
 import StatusBadge from "@/components/ui/StatusBadge";
 import { thumbUrl } from "@/lib/media-url";
+import { SECTION_LABELS } from "@/lib/section-labels";
 import { formatDate } from "@/lib/text";
 import type { CurrentProject } from "@/lib/types";
 import SectionTitle from "./SectionTitle";
@@ -9,14 +10,14 @@ import SectionTitle from "./SectionTitle";
 /** Button text when a project has a single gated file (with several, each shows its filename). */
 export const DOWNLOAD_LABEL = "Projects Portfolio Download";
 
-export default function CurrentProjects({ items }: { items: CurrentProject[] }) {
+export default function CurrentProjects({ items, title = SECTION_LABELS.current }: { items: CurrentProject[]; title?: string }) {
   if (!items.length) return null;
   return (
     <section id="current" className="section section-alt" aria-labelledby="current-title">
       <div className="container">
         <SectionTitle
           id="current"
-          title="Full Resume Portfolio Download"
+          title={title}
           intro="In-depth write-ups of my projects: the problem, architecture, key decisions and results. Confirm your email to download."
         />
         <ul className="card-grid">

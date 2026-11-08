@@ -3,6 +3,7 @@ import { LuCalendarCheck, LuDownload, LuMail, LuMapPin, LuPhone } from "react-ic
 import { mediaUrl } from "@/lib/media-url";
 import { hostOf, phoneDigits } from "@/lib/text";
 import type { Profile } from "@/lib/types";
+import { sectionLabel } from "@/lib/section-labels";
 import SectionTitle from "./SectionTitle";
 
 export default function Contact({ profile }: { profile: Profile }) {
@@ -49,7 +50,7 @@ export default function Contact({ profile }: { profile: Profile }) {
       <div className="container">
         <SectionTitle
           id="contact"
-          title="Contact"
+          title={sectionLabel(profile, "contact")}
           intro="Open to conversations about AI, data and cloud solution architecture — remote or hybrid. Email is the fastest way to reach me."
         />
         <ul className="contact-grid">

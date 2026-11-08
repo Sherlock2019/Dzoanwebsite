@@ -6,6 +6,7 @@ import { bioItemFlags } from "@/lib/flags";
 import { fullUrl } from "@/lib/media-url";
 import { hostOf, initials, phoneDigits } from "@/lib/text";
 import type { Profile } from "@/lib/types";
+import { sectionLabel } from "@/lib/section-labels";
 import SectionTitle from "./SectionTitle";
 
 function bioFlags(item: string) {
@@ -53,7 +54,7 @@ export default function About({ profile }: { profile: Profile }) {
     <section id="about" className="section" aria-labelledby="about-title">
       <div className="container">
         <div className="about-head">
-          <SectionTitle id="about" title="About" />
+          <SectionTitle id="about" title={sectionLabel(profile, "about")} />
           {profile.bio && (
             <aside className="about-mission bio-box" aria-label={profile.bio_title || "My bio"}>
               <p className="mission-label">{profile.bio_title || "My Bio"}</p>

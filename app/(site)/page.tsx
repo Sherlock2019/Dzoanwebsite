@@ -9,23 +9,28 @@ import Projects from "@/components/sections/Projects";
 import Resume from "@/components/sections/Resume";
 import Skills from "@/components/sections/Skills";
 import { loadPublicContent } from "@/lib/public-cache";
+import { sectionLabel, sectionShown, type SectionId } from "@/lib/section-labels";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const c = await loadPublicContent();
+  const shown = (id: SectionId) => sectionShown(c.profile, id);
+  const label = (id: SectionId) => sectionLabel(c.profile, id);
+  const showProjects = shown("projects") && c.projects.length > 0;
+  const showArchitectures = shown("architectures") && c.architectures.length > 0;
   return (
     <>
-      <Hero profile={c.profile} hasProjects={c.projects.length > 0} hasArchitectures={c.architectures.length > 0} />
-      <About profile={c.profile} />
+      <Hero profile={c.profile} hasProjects={showProjects} hasArchitectures={showArchitectures} />
+      {shown("about") && <About profile={c.profile} />}
       <Skills profile={c.profile} skills={c.skills} />
-      <Resume profile={c.profile} experience={c.experience} certifications={c.certifications} />
-      <Projects projects={c.projects} />
-      <Architectures architectures={c.architectures} projects={c.projects} />
-      <CurrentProjects items={c.current} />
-      <Certifications items={c.certifications} />
+      {shown("resume") && <Resume profile={c.profile} experience={c.experience} certifications={c.certifications} />}
+      {showProjects && <Projects projects={c.projects} title={label("projects")} />}
+      {showArchitectures && <Architectures architectures={c.architectures} projects={c.projects} title={label("architectures")} />}
+      {shown("current") && <CurrentProjects items={c.current} title={label("current")} />}
+      {shown("certifications") && <Certifications items={c.certifications} title={label("certifications")} />}
       <CustomSections sections={c.sections} />
-      <Contact profile={c.profile} />
+      {shown("contact") && <Contact profile={c.profile} />}
     </>
   );
 }

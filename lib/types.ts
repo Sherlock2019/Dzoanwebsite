@@ -65,6 +65,10 @@ export interface Profile {
   stats: Stat[];
   seo_title: string;
   seo_description: string;
+  /** Custom left-menu / heading names for built-in sections, keyed by section id. Empty = default. */
+  section_labels: Record<string, string>;
+  /** Built-in section ids removed from the site (menu and page). */
+  hidden_sections: string[];
   updated_at: string;
 }
 

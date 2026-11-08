@@ -11,7 +11,15 @@ import type { Architecture, Project } from "@/lib/types";
 import FilterBar, { matches } from "./FilterBar";
 import SectionTitle from "./SectionTitle";
 
-export default function Architectures({ architectures, projects }: { architectures: Architecture[]; projects: Project[] }) {
+export default function Architectures({
+  architectures,
+  projects,
+  title = "Architectures",
+}: {
+  architectures: Architecture[];
+  projects: Project[];
+  title?: string;
+}) {
   const [filter, setFilter] = useState("All");
   const [query, setQuery] = useState("");
   const [viewing, setViewing] = useState<number | null>(null);
@@ -47,7 +55,7 @@ export default function Architectures({ architectures, projects }: { architectur
       <div className="container">
         <SectionTitle
           id="architectures"
-          title="Architectures"
+          title={title}
           intro="Systems, workflows and reference architectures I designed or contributed to across AI, data, banking, multi-cloud, MLOps and supply chain. Each one is labelled with its real status — most are reference or proposed designs, not deployed systems."
         />
         <FilterBar
