@@ -18,6 +18,7 @@ const SECTION_LABELS: Record<string, string> = {
   architectures: "Architectures",
   current: "Current Projects",
   certifications: "Certifications",
+  "ai-toolbox": "AI Toolbox",
   contact: "Contact",
 };
 

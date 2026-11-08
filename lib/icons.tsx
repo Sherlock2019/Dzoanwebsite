@@ -77,6 +77,7 @@ import {
   LuUser,
   LuUsers,
   LuWorkflow,
+  LuWrench,
 } from "react-icons/lu";
 
 // Keyword → icon + colour rules for skill items. First match wins; unmatched items use the
@@ -206,5 +207,6 @@ export const NAV_ICONS: Record<string, IconType> = {
   architectures: LuNetwork,
   current: LuRocket,
   certifications: LuAward,
+  "ai-toolbox": LuWrench,
   contact: LuMail,
 };
