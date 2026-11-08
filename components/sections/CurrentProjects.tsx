@@ -16,7 +16,7 @@ export default function CurrentProjects({ items }: { items: CurrentProject[] }) 
       <div className="container">
         <SectionTitle
           id="current"
-          title="Full Project Details"
+          title="Full Resume Portfolio Download"
           intro="In-depth write-ups of my projects: the problem, architecture, key decisions and results. Confirm your email to download."
         />
         <ul className="card-grid">

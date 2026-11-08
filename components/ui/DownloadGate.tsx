@@ -105,7 +105,7 @@ export default function DownloadGate({
           <LuX aria-hidden />
         </button>
         <h2 id={`gate-${projectId}-${index}`}>
-          <LuLock aria-hidden /> Full project details
+          <LuLock aria-hidden /> Full resume portfolio download
         </h2>
         <p className="gate-file">
           {projectTitle} · <strong>{filename}</strong>
