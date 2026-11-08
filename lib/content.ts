@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { getRepo } from "@/lib/db/index";
+import { DEFAULT_SLIDE1_SETTINGS } from "@/lib/slide1-bg";
 import { RESERVED_SECTION_SLUGS } from "@/lib/options";
 import { withPdfPreviews } from "@/lib/pdf-preview";
 import { getStorage, isValidKey } from "@/lib/storage/index";
@@ -77,6 +78,7 @@ export function defaultProfile(): Profile {
     section_labels: {},
     hidden_sections: [],
     section_order: [],
+    slide1_bg: DEFAULT_SLIDE1_SETTINGS,
     updated_at: new Date(0).toISOString(),
   };
 }

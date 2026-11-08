@@ -1,4 +1,13 @@
 import { z } from "zod";
+import {
+  BG_TYPES,
+  DEFAULT_DYNAMIC,
+  DEFAULT_IMAGE,
+  DEFAULT_SLIDE1_SETTINGS,
+  IMAGE_SOURCES,
+  NETWORK_THEMES,
+  PALETTES,
+} from "@/lib/slide1-bg";
 import { isValidKey } from "@/lib/storage/index";
 import { isHttpUrl } from "@/lib/text";
 import {
@@ -34,6 +43,41 @@ const media = z.object({
   width: z.number().int().positive().max(100000).optional(),
   height: z.number().int().positive().max(100000).optional(),
 });
+/** One slide 1 background setting (see lib/slide1-bg.ts). */
+const overlay = z.number().min(0).max(0.85);
+const slide1Bg = z
+  .object({
+    type: z.enum(BG_TYPES),
+    dynamic: z
+      .object({
+        theme: z.enum(NETWORK_THEMES),
+        palette: z.enum(PALETTES),
+        density: z.number().min(0.5).max(1.5),
+        speed: z.number().min(0.5).max(2),
+        glow: z.number().min(0).max(1),
+        overlay,
+      })
+      .default(DEFAULT_DYNAMIC),
+    image: z
+      .object({
+        source: z.enum(IMAGE_SOURCES),
+        media: media.nullable().default(null),
+        position: z.object({ x: z.number().min(0).max(100), y: z.number().min(0).max(100) }),
+        overlay,
+      })
+      .default(DEFAULT_IMAGE),
+  })
+  .refine((b) => b.type !== "image" || b.image.source !== "upload" || b.image.media !== null, {
+    message: "Choose or upload an image first",
+    path: ["image", "media"],
+  });
+
+export const slide1BgSettingsSchema = z.object({
+  all: slide1Bg,
+  overrides: z.object({ V2: slide1Bg.optional(), V3: slide1Bg.optional(), V4: slide1Bg.optional() }).default({}),
+  library: z.array(media).max(12, "12 images max").default([]),
+});
+
 const link = z.object({
   label: z.string().trim().min(1, "Label required").max(100),
   url: z.string().trim().max(2000).refine(isHttpUrl, "Must be a full http:// or https:// URL"),
@@ -93,6 +137,7 @@ export const profileSchema = z.object({
   section_labels: z.record(z.string().max(40), z.string().trim().max(80, "80 characters max")).default({}),
   hidden_sections: z.array(z.string().max(40)).max(20).default([]),
   section_order: z.array(z.string().max(80)).max(100).default([]),
+  slide1_bg: slide1BgSettingsSchema.default(DEFAULT_SLIDE1_SETTINGS),
 });
 
 const projectSchema = z.object({

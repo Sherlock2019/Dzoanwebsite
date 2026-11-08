@@ -990,3 +990,117 @@
   border: 0;
   display: block;
 }
+
+/* ---------- Slide 1 background editor ---------- */
+.bg-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-bottom: 8px;
+}
+
+.bg-overrides {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px 22px;
+  margin-top: 12px;
+}
+
+.bg-grid input[type="range"] {
+  width: 100%;
+}
+
+.bg-grid output {
+  float: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.bg-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0 12px;
+}
+
+.bg-thumb {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 150px;
+  padding: 4px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: #f1f5f9;
+  font: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bg-thumb img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.bg-thumb span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bg-thumb.is-selected {
+  border-color: #0563bb;
+  background: #e0efff;
+}
+
+.bg-thumb:focus-visible {
+  outline: 3px solid #22b5ff;
+  outline-offset: 2px;
+}
+
+/* Preview: the background behind representative slide 1 text. */
+.bg-preview {
+  position: relative;
+  height: 340px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #030a12;
+}
+
+.bg-preview-text {
+  position: relative;
+  max-width: 520px;
+  padding: 60px 32px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+.bg-preview-kicker {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #22b5ff;
+}
+
+.bg-preview-q {
+  margin: 0 0 12px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.bg-preview-a {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #e3ecf7;
+}

@@ -1,6 +1,8 @@
 // Content model shared by the public site, the owner dashboard and both data providers.
 // Media objects only store storage keys; URLs are built with lib/media-url.ts.
 
+import type { Slide1BgSettings } from "@/lib/slide1-bg";
+
 export type Visibility = "published" | "draft";
 
 export interface Media {
@@ -71,6 +73,8 @@ export interface Profile {
   hidden_sections: string[];
   /** Order of the sections, Home included (built-in ids and custom-section slugs). */
   section_order: string[];
+  /** Background of slide 1 of the home carousel (managed in Dashboard → Slide 1 background). */
+  slide1_bg: Slide1BgSettings;
   updated_at: string;
 }
 

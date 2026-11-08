@@ -25,5 +25,8 @@ export async function PUT(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Please fix the highlighted fields", issues: formatIssues(parsed.error) }, { status: 422 });
   }
-  return NextResponse.json(await saveProfile(parsed.data));
+  // The slide 1 background is managed on its own page (/api/admin/background): keep the stored one,
+  // so saving the profile form can never overwrite a newer background choice.
+  const current = await getProfile();
+  return NextResponse.json(await saveProfile({ ...parsed.data, slide1_bg: current.slide1_bg }));
 }
