@@ -553,8 +553,310 @@ img {
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
 }
 
-.hero-banner + .hero-inner {
+.hero-banner + .hero-inner,
+.hero-carousel + .hero-inner {
   padding-top: 40px;
+}
+
+/* ---------- Hero carousel (slide 1: animated Q&A, slide 2: banner) ---------- */
+.hero-carousel {
+  position: relative;
+  background: #040c18;
+}
+
+/* Both slides share one grid cell: the carousel is as tall as the taller slide, so no jumps. */
+.hero-slides {
+  display: grid;
+  /* minmax(0, …): never let the banner's intrinsic 2048px width widen the page on phones. */
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.hero-slide {
+  grid-area: 1 / 1;
+  min-width: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.7s ease,
+    visibility 0s linear 0.7s;
+}
+
+.hero-slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.7s ease;
+}
+
+.intro-slide {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: clamp(400px, 62vh, 640px);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(20, 157, 221, 0.22), transparent 45%),
+    radial-gradient(circle at 10% 90%, rgba(5, 99, 187, 0.3), transparent 50%),
+    linear-gradient(135deg, #030a14 0%, #061a33 60%, #0a2c55 100%);
+}
+
+.intro-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.intro-content {
+  position: relative;
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 72px 32px 112px;
+}
+
+.intro-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #9fd8ff;
+  margin: 0 0 22px;
+}
+
+.intro-stage {
+  display: grid;
+}
+
+.intro-pair {
+  grid-area: 1 / 1;
+}
+
+.intro-pair.is-ghost {
+  visibility: hidden;
+}
+
+.intro-q {
+  font-family: var(--font-heading);
+  font-size: clamp(1.55rem, 3.6vw, 2.7rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: #fff;
+  margin: 0 0 20px;
+  overflow-wrap: break-word;
+}
+
+.intro-a {
+  font-size: clamp(1.1rem, 2.1vw, 1.55rem);
+  line-height: 1.5;
+  color: #9fd8ff;
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+.intro-cta {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: #22b5ff;
+  text-underline-offset: 4px;
+}
+
+.intro-cta:hover {
+  color: #22b5ff;
+}
+
+.intro-cursor {
+  display: inline-block;
+  width: 0.09em;
+  min-width: 3px;
+  height: 1em;
+  margin-left: 3px;
+  vertical-align: -0.12em;
+  background: #22b5ff;
+}
+
+.intro-cursor.is-idle {
+  animation: intro-blink 1s steps(1) infinite;
+}
+
+@keyframes intro-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.hero-carousel .hero-banner figcaption {
+  bottom: 76px;
+  right: 32px;
+}
+
+/* The banner fills the slide (which is as tall as the intro slide). */
+.banner-slide {
+  background: #061426;
+}
+.banner-slide .hero-banner {
+  height: 100%;
+}
+.banner-slide .hero-banner img {
+  height: 100%;
+  max-height: none;
+}
+
+.hero-banner-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(400px, 62vh, 640px);
+  padding: 32px 32px 96px;
+  background: linear-gradient(135deg, #061426 0%, #0a2c55 55%, #0b3d73 100%);
+}
+
+.hero-banner-fallback p {
+  font-family: var(--font-heading);
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+  margin: 0;
+}
+
+.hero-carousel-controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.hc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(4, 12, 24, 0.6);
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+
+.hc-btn:hover:not(:disabled) {
+  background: rgba(34, 181, 255, 0.25);
+  border-color: #9fd8ff;
+}
+
+.hc-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.hc-btn svg {
+  font-size: 1.15rem;
+}
+
+.hc-dots {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.hc-dot {
+  width: 28px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hc-dot::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  transition: background 0.2s;
+}
+
+.hc-dot[aria-current="true"]::before {
+  background: #fff;
+}
+
+.hc-btn:focus-visible,
+.hc-dot:focus-visible,
+.intro-cta:focus-visible {
+  outline: 3px solid #9fd8ff;
+  outline-offset: 2px;
+}
+
+.hc-progress {
+  min-width: 3.2em;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #cfe6ff;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide,
+  .hero-slide.is-active {
+    transition: none;
+  }
+  .intro-cursor.is-idle {
+    animation: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .intro-content {
+    padding: 48px 16px 150px;
+  }
+  .hero-banner-fallback {
+    padding: 24px 16px 150px;
+  }
+  /* Wide banner on a narrow screen: show it whole, centred, rather than cropping it. */
+  .banner-slide {
+    display: flex;
+    align-items: center;
+  }
+  .banner-slide .hero-banner,
+  .banner-slide .hero-banner img {
+    height: auto;
+  }
+  .banner-slide .hero-banner {
+    width: 100%;
+    margin-bottom: 100px;
+  }
+  .hero-carousel .hero-banner figcaption {
+    position: static;
+    padding: 12px 16px 0;
+    font-size: 0.95rem;
+  }
+  .banner-slide .hero-banner::after {
+    display: none;
+  }
+  .hero-carousel-controls {
+    bottom: 12px;
+    gap: 6px;
+  }
+  .hc-btn {
+    padding: 0 10px;
+    font-size: 0.85rem;
+  }
 }
 
 .invite-card {

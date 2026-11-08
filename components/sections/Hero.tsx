@@ -1,6 +1,7 @@
 import { FaWhatsapp } from "react-icons/fa";
 import { LuArrowRight, LuCalendarCheck, LuDownload, LuMail, LuNetwork, LuPhone } from "react-icons/lu";
 import RichText, { inline } from "@/components/ui/RichText";
+import HeroCarousel from "./HeroCarousel";
 import Mission from "./Mission";
 import { fullUrl, mediaUrl, thumbUrl } from "@/lib/media-url";
 import { phoneDigits } from "@/lib/text";
@@ -20,20 +21,21 @@ export default function Hero({
 
   return (
     <section id="home" className="hero" aria-labelledby="home-title">
-      {profile.hero_image && (
-        <figure className="hero-banner">
-          <img
-            src={fullUrl(profile.hero_image)}
-            srcSet={`${thumbUrl(profile.hero_image)} 960w, ${fullUrl(profile.hero_image)} ${profile.hero_image.width || 2048}w`}
-            sizes="(max-width: 1023px) 100vw, calc(100vw - 300px)"
-            alt={profile.hero_image.alt}
-            width={profile.hero_image.width}
-            height={profile.hero_image.height}
-            fetchPriority="high"
-          />
-          {profile.hero_image.caption && <figcaption>{profile.hero_image.caption}</figcaption>}
-        </figure>
-      )}
+      <HeroCarousel
+        kicker={profile.name}
+        banner={
+          profile.hero_image
+            ? {
+                src: fullUrl(profile.hero_image),
+                srcSet: `${thumbUrl(profile.hero_image)} 960w, ${fullUrl(profile.hero_image)} ${profile.hero_image.width || 2048}w`,
+                alt: profile.hero_image.alt,
+                width: profile.hero_image.width,
+                height: profile.hero_image.height,
+                caption: profile.hero_image.caption,
+              }
+            : null
+        }
+      />
       <div className="hero-inner">
         <p className="hero-kicker">{profile.headline}</p>
         <h2 id="home-title" className="hero-name">
