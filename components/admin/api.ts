@@ -43,6 +43,19 @@ export async function uploadImage(file: File, alt = ""): Promise<Media> {
   return api<Media>("/api/admin/upload", { method: "POST", body: form });
 }
 
+const VIDEO_TYPES = ["video/mp4", "video/webm"];
+const MAX_VIDEO_BYTES = 45 * 1024 * 1024;
+
+/** Upload a background video (MP4/WebM, up to 45 MB; the server re-checks its real type and size). */
+export async function uploadVideo(file: File): Promise<{ key: string; filename: string }> {
+  if (file.size > MAX_VIDEO_BYTES) throw new ApiError(`${file.name} is larger than 45 MB. Please compress it.`, 413);
+  if (file.type && !VIDEO_TYPES.includes(file.type)) throw new ApiError(`${file.name}: only MP4 or WebM videos`, 415);
+  const form = new FormData();
+  form.set("file", file);
+  form.set("kind", "video");
+  return api<{ key: string; filename: string }>("/api/admin/upload", { method: "POST", body: form });
+}
+
 export async function uploadPdf(file: File): Promise<{ key: string; filename: string }> {
   const problem = precheck(file, "pdf");
   if (problem) throw new ApiError(problem, 415);

@@ -27,6 +27,29 @@ export async function GET(req: Request, { params }: { params: Promise<{ key: str
 
   const download = new URL(req.url).searchParams.get("download") === "1";
   const isImage = file.contentType.startsWith("image/");
+  const isVideo = file.contentType.startsWith("video/");
+
+  // Background videos play inline and support range requests (needed to stream and seek, and by
+  // Safari before it plays a video at all).
+  if (isVideo && !download) {
+    headers.set("Accept-Ranges", "bytes");
+    const size = file.body.length;
+    const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.get("range") || "");
+    if (range && (range[1] || range[2])) {
+      let start = range[1] ? Number(range[1]) : size - Number(range[2]);
+      let end = range[1] && range[2] ? Number(range[2]) : size - 1;
+      start = Math.max(0, start);
+      end = Math.min(size - 1, end);
+      if (start > end || start >= size) {
+        return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${size}` } });
+      }
+      headers.set("Content-Range", `bytes ${start}-${end}/${size}`);
+      headers.set("Content-Length", String(end - start + 1));
+      return new Response(new Uint8Array(file.body.subarray(start, end + 1)), { status: 206, headers });
+    }
+    return new Response(new Uint8Array(file.body), { status: 200, headers });
+  }
+
   if (!isImage || download) {
     // PDFs open in the browser; Word and other documents are always downloaded, never rendered.
     const name = (await documentFilename(key)) || key.split("/").pop() || "file";

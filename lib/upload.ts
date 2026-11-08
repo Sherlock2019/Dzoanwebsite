@@ -129,6 +129,27 @@ export async function storeAnyFile(buf: Buffer, name: string): Promise<{ key: st
   return { key, filename: safeFilename(name, "file", "") };
 }
 
+/** Background videos: kept under the 50 MB request limit of the server's web proxy. */
+export const MAX_VIDEO_BYTES = 45 * 1024 * 1024;
+
+/** The real type of a video from its first bytes: MP4 ("ftyp" box) or WebM (EBML header). */
+export function sniffVideo(buf: Buffer): "mp4" | "webm" | null {
+  if (buf.length >= 12 && buf.toString("latin1", 4, 8) === "ftyp") return "mp4";
+  if (buf.length >= 4 && buf[0] === 0x1a && buf[1] === 0x45 && buf[2] === 0xdf && buf[3] === 0xa3) return "webm";
+  return null;
+}
+
+/** Validate and store a background video (MP4 or WebM, checked from its bytes). */
+export async function storeVideo(buf: Buffer, name: string): Promise<{ key: string; filename: string }> {
+  if (buf.length === 0) throw new UploadError("Empty file");
+  if (buf.length > MAX_VIDEO_BYTES) throw new UploadError("Video is larger than 45 MB. Please compress it (a short 1080p loop is plenty).");
+  const type = sniffVideo(buf);
+  if (!type) throw new UploadError("Only MP4 or WebM videos are accepted");
+  const key = `videos/${new Date().getUTCFullYear()}/${randomUUID()}.${type}`;
+  await (await getStorage()).put(key, buf, type === "mp4" ? "video/mp4" : "video/webm");
+  return { key, filename: safeFilename(name, `background.${type}`, "") };
+}
+
 /** Make a safe download filename from user input. ext "" keeps whatever extension it has. */
 export function safeFilename(name: string, fallback = "resume.pdf", ext = "pdf"): string {
   const base = name.split(/[\\/]/).pop() || "";
