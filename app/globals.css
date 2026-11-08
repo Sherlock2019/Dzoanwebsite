@@ -599,13 +599,6 @@ img {
     linear-gradient(135deg, #030a14 0%, #061a33 60%, #0a2c55 100%);
 }
 
-.intro-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
 .intro-content {
   position: relative;
   width: 100%;
