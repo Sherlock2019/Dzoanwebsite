@@ -1,8 +1,9 @@
 // Background of slide 1 of the home carousel, chosen by the owner in the dashboard
 // (Dashboard → Slide 1 background) and saved in the profile. Every visitor gets the saved choice.
 //
-//   - "dynamic": an animated neural network (layered, or brain-shaped), drawn on a canvas;
-//   - "image":   a fixed image: the current one (humanaibrain) or one uploaded by the owner.
+//   - "dynamic": an animated neural network (layered, brain-shaped, or the rotating 3D
+//                "electronic brain" with sparkles), drawn on a canvas;
+//   - "image":   a fixed image: the current one (humanaibrain), the electronic brain, or an upload.
 //
 // One shared setting ("all"), optionally overridden per site version (V2, V3, V4).
 
@@ -12,13 +13,13 @@ import type { Media } from "@/lib/types";
 export const BG_TYPES = ["dynamic", "image"] as const;
 export type BgType = (typeof BG_TYPES)[number];
 
-export const NETWORK_THEMES = ["layered", "brain"] as const;
+export const NETWORK_THEMES = ["layered", "brain", "electro"] as const;
 export type NetworkTheme = (typeof NETWORK_THEMES)[number];
 
 export const PALETTES = ["blue-cyan", "deep-blue", "cyan"] as const;
 export type Palette = (typeof PALETTES)[number];
 
-export const IMAGE_SOURCES = ["current", "upload"] as const;
+export const IMAGE_SOURCES = ["current", "electro", "upload"] as const;
 export type ImageSource = (typeof IMAGE_SOURCES)[number];
 
 export const SITE_VERSIONS = ["V2", "V3", "V4"] as const;
@@ -70,9 +71,15 @@ export const DEFAULT_SLIDE1_SETTINGS: Slide1BgSettings = { all: DEFAULT_SLIDE1_B
 /** The current image (humanaibrain), large and small. */
 export const CURRENT_IMAGE = { large: "/humanaibrain-2400.webp", small: "/humanaibrain-1280.webp" };
 
+/** The electronic-brain image: model and fallback of the "electro" theme, and a fixed-image choice. */
+export const ELECTRO_IMAGE = { large: "/electrobrain.webp", small: "/electrobrain-1280.webp" };
+
 export const LABELS = {
   type: { dynamic: "Dynamic neural network", image: "Fixed image" } as Record<BgType, string>,
-  theme: { layered: "Layered network", brain: "Brain-shaped network" } as Record<NetworkTheme, string>,
+  theme: { layered: "Layered network", brain: "Brain-shaped network", electro: "Electronic brain (3D, rotating, sparkles)" } as Record<
+    NetworkTheme,
+    string
+  >,
   palette: { "blue-cyan": "Blue & cyan", "deep-blue": "Deep blue", cyan: "Cyan" } as Record<Palette, string>,
 };
 
@@ -90,5 +97,6 @@ export function resolveSlide1Bg(settings: Slide1BgSettings | null | undefined, v
 
 /** URL of a fixed image (an upload without its file falls back to the current image). */
 export function imageBgUrl(image: ImageBg): string {
+  if (image.source === "electro") return ELECTRO_IMAGE.large;
   return image.source === "upload" && image.media ? fullUrl(image.media) : CURRENT_IMAGE.large;
 }
