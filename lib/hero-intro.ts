@@ -13,28 +13,44 @@ export interface IntroPair {
 
 export const INTRO_PAIRS: IntroPair[] = [
   {
-    question: "Do you need to improve your workflows and business performance using AI?",
-    answer: ["I build AI solutions that help your people work better."],
+    question: "As a CEO, do you need to turn business pains into business wins?",
+    answer: ["Let’s talk about what holds you back—\nand what we can build next."],
   },
   {
-    question: "Do you need to get more value from your data?",
-    answer: ["I turn scattered data into reliable insights and actionable answers."],
+    question: "As a CFO, do you need more value from your services, with a lower total cost of ownership?",
+    answer: ["Let’s make every investment count—\nin money saved and value gained."],
   },
   {
-    question: "Do you need your AI services to be faster, more reliable, and cost-effective?",
-    answer: ["I evaluate, troubleshoot, and optimize your AI with MLOps."],
+    question: "As a CTO, do you need your team to move faster, work smarter, and feel happier?",
+    answer: ["Let’s clear the friction from their day\nand give good ideas room to grow."],
   },
   {
-    question: "Do you need a cloud architect to deploy, migrate, or prepare your infrastructure for AI?",
-    answer: ["I build with performance, privacy, and data sovereignty in mind."],
+    question: "Do you need AI to improve your workflows?",
+    answer: ["I build tools that lighten the load\nand help your people do their best work."],
   },
   {
-    question: "Do you need to improve your development workflow and production reliability?",
-    answer: ["I automate delivery with DevOps and strengthen operations with SRE."],
+    question: "Do you need more value from your data?",
+    answer: ["I connect the scattered pieces\nso clearer answers can guide your next move."],
   },
   {
-    question: "Do you need to modernize your monolithic applications?",
-    answer: ["I help turn them into scalable, maintainable, cloud-native apps."],
+    question: "Do you need faster, more reliable, cost-effective AI?",
+    answer: ["I trace, evaluate, and tune—\nturning promising demos into dependable services."],
+  },
+  {
+    question: "Do you need a cloud ready for what comes next?",
+    answer: ["I design, migrate, and optimize—\nwith performance, privacy, and sovereignty in mind."],
+  },
+  {
+    question: "Do you need smoother delivery and reliable operations?",
+    answer: ["I bring DevOps to the release\nand SRE to the running."],
+  },
+  {
+    question: "Do you need to modernize applications that hold you back?",
+    answer: ["I help them grow beyond the monolith—\neasier to maintain, ready to scale."],
+  },
+  {
+    question: "Do you need someone who hears your customers’ pain and turns understanding into solutions?",
+    answer: ["I listen first. Build with purpose.\nAnd stay to see the outcome."],
   },
   {
     question: "Do you need all the above?",

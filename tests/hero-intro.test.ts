@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { answerText, INTRO_PAIRS, INTRO_START, INTRO_TIMING, introStep, type IntroState } from "@/lib/hero-intro";
 
+const LAST = INTRO_PAIRS.length - 1;
+
 /** Run the automatic sequence from the start and record what happens. */
 function play() {
   let s: IntroState = INTRO_START;
@@ -25,12 +27,13 @@ function play() {
 }
 
 describe("hero intro sequence", () => {
-  it("has the seven pairs in the required order", () => {
-    expect(INTRO_PAIRS).toHaveLength(7);
-    expect(INTRO_PAIRS[0].question).toMatch(/^Do you need to improve your workflows/);
-    expect(INTRO_PAIRS[6].question).toBe("Do you need all the above?");
-    expect(answerText(INTRO_PAIRS[6])).toMatch(/Let’s talk\. I’m here\.$/);
-    expect(INTRO_PAIRS[6].answer.at(-1)).toEqual({ text: "Let’s talk. I’m here.", href: "#contact" });
+  it("has the ten questions in the required order, then the closing frame", () => {
+    expect(INTRO_PAIRS).toHaveLength(11);
+    const starts = [/^As a CEO/, /^As a CFO/, /^As a CTO/, /AI to improve your workflows/, /value from your data/, /cost-effective AI/, /cloud ready/, /smoother delivery/, /modernize applications/, /customers’ pain/];
+    starts.forEach((re, i) => expect(INTRO_PAIRS[i].question).toMatch(re));
+    expect(INTRO_PAIRS[LAST].question).toBe("Do you need all the above?");
+    expect(answerText(INTRO_PAIRS[LAST])).toMatch(/Let’s talk\. I’m here\.$/);
+    expect(INTRO_PAIRS[LAST].answer.at(-1)).toEqual({ text: "Let’s talk. I’m here.", href: "#contact" });
   });
 
   it("plays every question then its answer, in order, and only then moves to slide 2", () => {
@@ -43,11 +46,11 @@ describe("hero intro sequence", () => {
     expected.push(`slide2 after ${INTRO_TIMING.finalHoldMs}`);
     expect(events).toEqual(expected);
     // The final frame is complete when slide 2 comes, after a 6-second hold.
-    expect(end).toEqual({ slide: 1, pair: 6, q: INTRO_PAIRS[6].question.length, a: answerText(INTRO_PAIRS[6]).length });
+    expect(end).toEqual({ slide: 1, pair: LAST, q: INTRO_PAIRS[LAST].question.length, a: answerText(INTRO_PAIRS[LAST]).length });
     expect(lastDelay).toBe(6000);
   });
 
   it("stays on slide 2 (no timer) until the visitor replays", () => {
-    expect(introStep({ slide: 1, pair: 6, q: 0, a: 0 })).toBeNull();
+    expect(introStep({ slide: 1, pair: LAST, q: 0, a: 0 })).toBeNull();
   });
 });
