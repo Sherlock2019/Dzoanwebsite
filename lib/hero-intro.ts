@@ -1,11 +1,12 @@
 // Content and timing of the home hero carousel. Edit freely.
 //
-// Slide 1 has several versions ("intro styles"), listed in INTRO_VARIANTS. Each version is one
-// vertical scrolling sequence of sections: it scrolls down automatically, holding each section for
-// `holdMs` once its text has faded in, ending on "Then we really need to talk." The carousel then
-// moves to slide 2: the banner image, with the version's invitation ("I'm here. Just book a
-// moment in my calendar—…") in the bar under it, where the show ends.
-// Visitors pick a version with the selector at the top of slide 1.
+// Slide 1 has two versions ("intro styles"), listed in INTRO_VARIANTS, picked with the selector:
+//   - Questions & Answers: one question at a time; it fades in, its answer types out under it,
+//     and it stays `holdMs`. Topic buttons ("How can I help a …") jump to any of them.
+//   - The poem: scrolls slowly and continuously; in each stanza the first two lines are red.
+// Both end on "Then we really need to talk." The carousel then moves to slide 2: the banner image,
+// with the version's invitation ("I'm here. Just book a moment in my calendar—…") in the bar under
+// it, where the show ends.
 //
 // To add a version: append an entry to INTRO_VARIANTS with a new stable `id`, a `label` for the
 // selector, its ordered `sections` and its `invitation`.
@@ -23,8 +24,11 @@ export interface Invitation {
 }
 
 export type IntroSection =
-  /** A question with its answer. */
-  | { kind: "qa"; topic: string; question: string; answer: string }
+  /**
+   * A question with its answer. `id` is stable (used by the topic buttons); `nav` is the button
+   * label under "How can I help a …".
+   */
+  | { kind: "qa"; id: string; nav: string; topic: string; question: string; answer: string }
   /**
    * A poem stanza: its first line is emphasized unless `plainLead`. Optional small title above it,
    * and an optional italic note under the title.
@@ -34,7 +38,7 @@ export type IntroSection =
    * A closing section: headline, a line right under it, skills line, body paragraphs and an
    * emphasized last line, e.g. "Then we really need to talk." (all optional).
    */
-  | { kind: "closing"; headline?: string; subhead?: string; skills?: string; body?: string[]; talk?: string };
+  | { kind: "closing"; id?: string; nav?: string; headline?: string; subhead?: string; skills?: string; body?: string[]; talk?: string };
 
 export interface IntroVariant {
   /** Stable id, saved in the visitor's browser: do not rename. */
@@ -50,6 +54,9 @@ export interface IntroVariant {
 
 /** Last line of slide 1, in both versions. */
 export const TALK = "Then we really need to talk.";
+
+/** Heading of the topic buttons (Questions & Answers version only). */
+export const QA_NAV_HEADING = "How can I help a …";
 
 export const INVITATION: Invitation = {
   before: "I’m here.\nJust ",
@@ -72,66 +79,88 @@ const QA_VARIANT: IntroVariant = {
   sections: [
     {
       kind: "qa",
+      id: "ceo",
+      nav: "CEO",
       topic: "CEO",
       question: "As a CEO, do you need to turn\nbusiness pains into business wins?",
       answer: "Let’s talk about what holds you back—\nand what we can build next.",
     },
     {
       kind: "qa",
+      id: "cfo",
+      nav: "CFO",
       topic: "CFO",
       question: "As a CFO, do you need more value from your services,\nwith a lower total cost of ownership?",
       answer: "Let’s make every investment count—\nin money saved and value gained.",
     },
     {
       kind: "qa",
+      id: "cto",
+      nav: "CTO",
       topic: "CTO",
       question: "As a CTO, do you need your team to move faster,\nwork smarter, and feel happier?",
       answer: "Let’s clear the friction from their day\nand give good ideas room to grow.",
     },
     {
       kind: "qa",
+      id: "ai-workflows",
+      nav: "AI Workflows",
       topic: "AI workflows",
       question: "Do you need AI to improve your workflows?",
       answer: "I build tools that lighten the load\nand help your people do their best work.",
     },
     {
       kind: "qa",
+      id: "data",
+      nav: "Data Insights",
       topic: "Data",
       question: "Do you need more value from your data?",
       answer: "I connect the scattered pieces\nso clearer answers can guide your next move.",
     },
     {
       kind: "qa",
+      id: "mlops",
+      nav: "AI / MLOps",
       topic: "AI reliability · MLOps",
       question: "Do you need faster, more reliable, cost-effective AI?",
       answer: "I trace, evaluate, and tune—\nturning promising demos into dependable services.",
     },
     {
       kind: "qa",
+      id: "cloud",
+      nav: "Cloud Architecture",
       topic: "Cloud",
       question: "Do you need a cloud ready for what comes next?",
       answer: "I design, migrate, and optimize—\nwith performance, privacy, and sovereignty in mind.",
     },
     {
       kind: "qa",
+      id: "devops",
+      nav: "DevOps / SRE",
       topic: "DevOps · SRE",
       question: "Do you need smoother delivery and reliable operations?",
       answer: "I bring DevOps to the release\nand SRE to the running.",
     },
     {
       kind: "qa",
+      id: "modernization",
+      nav: "App Modernization",
       topic: "Modernization",
       question: "Do you need to modernize applications that hold you back?",
       answer: "I help them grow beyond the monolith—\neasier to maintain, ready to scale.",
     },
     {
       kind: "qa",
+      id: "customers",
+      nav: "Customer Needs",
       topic: "Customer understanding",
       question: "Do you need someone who hears your customers’ pain\nand turns understanding into solutions?",
       answer: "I listen first. Build with purpose.\nAnd stay to see the outcome.",
     },
     {
       kind: "closing",
+      id: "all",
+      nav: "All the Above",
       headline: "And if you need all the above in one person?",
       subhead: "And more than that—\na servant to your team,\nyour company,\nand your customers.",
       skills: "AI & Data · Cloud Architecture · DevOps & SRE.",
@@ -222,24 +251,34 @@ export function resolveVariant(id: string | null | undefined): IntroVariant {
 /** Default caption of slide 2 when the banner image has none. */
 export const BANNER_CAPTION = "Bridging Business Goals, Human Workflows and Technology — Together.";
 
-/** Timings (milliseconds). */
+/** Timings (milliseconds) and speeds. */
 export const INTRO_TIMING = {
-  /** Fade-in of a section once the scroll reaches it. */
+  /** Q&A: the question fades in for this long, then its answer starts typing. */
   fadeMs: 500,
-  /** How long a section stays after its text is fully visible. */
-  holdMs: 5000,
-  /** After the visitor scrolls the text by hand, automatic scrolling resumes this long after. */
+  /** Q&A: time per typed character of the answer. */
+  typeCharMs: 28,
+  /** Q&A: how long a question and its answer stay once fully shown. */
+  holdMs: 7000,
+  /** Poem: speed of the slow, continuous scroll (pixels per second). */
+  poemScrollPxPerSec: 26,
+  /** Poem: pause on its last line before moving to slide 2. */
+  poemEndHoldMs: 5000,
+  /** After the visitor scrolls the poem by hand, automatic scrolling resumes this long after. */
   resumeAfterMs: 6000,
   /** Cross-fade between slides. */
   slideFadeMs: 700,
 };
 
+/** Text that the answer of a section types out (Q&A only; other sections show at once). */
+export function typedText(section: IntroSection): string {
+  return section.kind === "qa" ? section.answer : "";
+}
+
 /**
- * The next automatic step from section `index` of a sequence of `count` sections: wait `delay`,
- * then go to `next`. After the last section, `next` is `count`, meaning "move to slide 2" (the
- * invitation), where the show ends.
+ * Q&A: how long section `index` stays in total before the next one (or slide 2 after the last):
+ * fade-in, typing of its answer, then the hold.
  */
-export function introStep(index: number, count: number): { delay: number; next: number } | null {
-  if (index >= count) return null;
-  return { delay: INTRO_TIMING.fadeMs + INTRO_TIMING.holdMs, next: index + 1 };
+export function qaStepMs(section: IntroSection): number {
+  const t = INTRO_TIMING;
+  return t.fadeMs + typedText(section).length * t.typeCharMs + t.holdMs;
 }

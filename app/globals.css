@@ -647,7 +647,8 @@ img {
 
 /* Header row (name + intro style) and the text column share one left edge. */
 .intro-head,
-.intro-block {
+.intro-block,
+.qa-nav {
   width: 100%;
   max-width: 860px;
   margin-left: clamp(0px, 4vw, 56px);
@@ -931,6 +932,140 @@ img {
 }
 
 /* Slide 1's last line: "Then we really need to talk." */
+/* ---------- Q&A mode: "How can I help a …" topic buttons ---------- */
+.qa-nav {
+  position: relative;
+  z-index: 1;
+  padding-top: 14px;
+}
+
+.qa-nav-title {
+  margin: 0 0 8px;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.qa-nav-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Small rounded blue buttons, matching "Book my calendar". */
+.qa-nav-btn {
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid rgba(34, 181, 255, 0.55);
+  border-radius: 999px;
+  background: rgba(5, 99, 187, 0.55);
+  color: #e3ecf7;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.qa-nav-btn:hover {
+  background: rgba(5, 99, 187, 0.85);
+  color: #fff;
+}
+
+.qa-nav-btn[aria-pressed="true"] {
+  border-color: #fff;
+  background: #1e8fff;
+  color: #fff;
+  box-shadow: 0 0 0 2px rgba(34, 181, 255, 0.35);
+}
+
+.qa-nav-btn:focus-visible {
+  outline: 3px solid #9fd8ff;
+  outline-offset: 2px;
+}
+
+/* ---------- Q&A mode: one question at a time ---------- */
+.intro-slide.is-qa {
+  height: auto;
+  min-height: clamp(480px, 72vh, 720px);
+}
+
+.qa-stage {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.qa-stage .intro-block {
+  min-height: 0;
+  padding-top: 24px;
+  padding-bottom: 32px;
+  opacity: 1;
+  animation: intro-fade-in 0.5s ease both;
+}
+
+@keyframes intro-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Red typing cursor after the answer (like josephmiano.com). */
+.intro-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 1em;
+  margin-left: 3px;
+  vertical-align: -0.12em;
+  background: #ff3b5c;
+}
+
+.intro-cursor.is-idle {
+  animation: intro-blink 1s steps(1) infinite;
+}
+
+@keyframes intro-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Poem mode: slow continuous scroll, the first two lines of each stanza in red ---------- */
+.intro-scroll.is-poem {
+  scroll-snap-type: none;
+}
+
+.intro-scroll.is-poem .intro-block {
+  min-height: 0;
+  justify-content: flex-start;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  opacity: 1;
+}
+
+.intro-scroll.is-poem .intro-block:first-child {
+  padding-top: 40px;
+}
+
+.intro-scroll.is-poem .intro-block:last-child {
+  padding-bottom: 56px;
+}
+
+.stanza-red {
+  color: #ff5a6e;
+  font-weight: 600;
+}
+
 .intro-talk {
   margin: 14px 0 0;
   padding-left: 16px;
@@ -1088,6 +1223,10 @@ img {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .qa-stage .intro-block,
+  .intro-cursor.is-idle {
+    animation: none;
+  }
   .hero-slide,
   .hero-slide.is-active {
     transition: none;
@@ -1111,8 +1250,15 @@ img {
     background-image: linear-gradient(180deg, rgba(3, 8, 18, 0.5) 0%, rgba(3, 8, 18, 0.42) 50%, rgba(3, 8, 18, 0.55) 100%);
   }
   .intro-head,
-  .intro-block {
+  .intro-block,
+  .qa-nav {
     margin-left: 0;
+  }
+  .qa-nav {
+    padding: 8px 16px 0;
+  }
+  .intro-slide.is-qa {
+    min-height: clamp(480px, 74svh, 660px);
   }
   .intro-head {
     padding: 16px 72px 8px 16px; /* clear of the floating menu button */

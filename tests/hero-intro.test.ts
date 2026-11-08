@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_VARIANT_ID, INTRO_TIMING, INTRO_VARIANTS, introStep, resolveVariant } from "@/lib/hero-intro";
+import { DEFAULT_VARIANT_ID, INTRO_TIMING, INTRO_VARIANTS, qaStepMs, resolveVariant } from "@/lib/hero-intro";
 
 const qa = resolveVariant("qa");
 const poem = resolveVariant("poem");
@@ -65,20 +65,30 @@ describe("hero intro versions", () => {
     expect(stanzas[11].split("\n")).toHaveLength(5);
   });
 
-  it("visits every section in order, holding each 5 s after its fade-in, then moves to slide 2", () => {
-    for (const v of INTRO_VARIANTS) {
-      const n = v.sections.length;
-      const visited = [0];
-      let i = 0;
-      for (let step = introStep(i, n); step; step = introStep(i, n)) {
-        expect(step.delay).toBe(INTRO_TIMING.fadeMs + 5000);
-        i = step.next;
-        visited.push(i);
-      }
-      // 0 … n-1 are the sections; n means "slide 2", after the last section's hold.
-      expect(visited).toEqual([...Array(n + 1).keys()]);
-      expect(introStep(n, n)).toBeNull();
-    }
-    expect(INTRO_TIMING.holdMs).toBe(5000);
+  it("gives every Q&A section a stable id and topic-button label, in order", () => {
+    const nav = qa.sections.map((s) => (s.kind === "qa" || s.kind === "closing" ? [s.id, s.nav] : null));
+    expect(nav).toEqual([
+      ["ceo", "CEO"],
+      ["cfo", "CFO"],
+      ["cto", "CTO"],
+      ["ai-workflows", "AI Workflows"],
+      ["data", "Data Insights"],
+      ["mlops", "AI / MLOps"],
+      ["cloud", "Cloud Architecture"],
+      ["devops", "DevOps / SRE"],
+      ["modernization", "App Modernization"],
+      ["customers", "Customer Needs"],
+      ["all", "All the Above"],
+    ]);
+  });
+
+  it("keeps each question 7 s after its answer has typed out", () => {
+    const ceo = qa.sections[0];
+    expect(ceo.kind).toBe("qa");
+    if (ceo.kind !== "qa") return;
+    expect(INTRO_TIMING.holdMs).toBe(7000);
+    expect(qaStepMs(ceo)).toBe(INTRO_TIMING.fadeMs + ceo.answer.length * INTRO_TIMING.typeCharMs + 7000);
+    // The closing has nothing to type: fade + hold.
+    expect(qaStepMs(qa.sections.at(-1)!)).toBe(INTRO_TIMING.fadeMs + 7000);
   });
 });
