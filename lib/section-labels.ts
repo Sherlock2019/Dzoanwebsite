@@ -9,7 +9,7 @@ export const SECTION_LABELS = {
   resume: "Résumé",
   projects: "Projects",
   architectures: "Architectures",
-  current: "Full Resume Portfolio Download",
+  current: "Full Portfolio Download",
   certifications: "Certifications & Learning",
   contact: "Contact",
 } as const;

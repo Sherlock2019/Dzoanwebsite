@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { LuDownload, LuLock, LuMail, LuX } from "react-icons/lu";
 
 /**
- * "Download full project details" button. Opens a dialog that asks for name, email and company,
- * emails a 6-digit code, and starts the download once the code is confirmed. Visitors who already
- * confirmed an email (signed cookie, 30 days) download straight away.
+ * "Full Portfolio Download" button. Always opens a dialog that asks for name, email and company,
+ * emails a 6-digit code, and starts the download once the code is confirmed. If that email was
+ * already confirmed in this browser (signed cookie, 30 days), the download starts without a new code.
  */
 
 type Step = "details" | "code" | "done";
@@ -50,18 +50,10 @@ export default function DownloadGate({
     window.location.href = url;
   }
 
-  async function open() {
+  // Always ask for the visitor's details first (email confirmation before any download).
+  function open() {
     setError("");
-    setBusy(true);
-    const r = await post("/api/downloads/request", { project: projectId, index }).catch(() => null);
-    setBusy(false);
-    if (r?.url) {
-      // Already confirmed on this browser: download without asking again.
-      window.location.href = r.url;
-      return;
-    }
     setStep("details");
-    if (r && !r.ok) setError(r.error || "Something went wrong.");
     dialog.current?.showModal();
   }
 
@@ -105,7 +97,7 @@ export default function DownloadGate({
           <LuX aria-hidden />
         </button>
         <h2 id={`gate-${projectId}-${index}`}>
-          <LuLock aria-hidden /> Full resume portfolio download
+          <LuLock aria-hidden /> Full portfolio download
         </h2>
         <p className="gate-file">
           {projectTitle} · <strong>{filename}</strong>
@@ -168,7 +160,7 @@ export default function DownloadGate({
                 <LuDownload aria-hidden /> Download again
               </a>
             </p>
-            <p className="gate-note">Other project documents on this site will now download without asking again.</p>
+            <p className="gate-note">For the next 30 days, this email won’t need a new code on this browser.</p>
           </div>
         )}
       </dialog>

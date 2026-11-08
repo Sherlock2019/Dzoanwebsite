@@ -28,7 +28,7 @@ const LINKS = [
   { href: "/admin/background", label: "Slide 1 background", icon: LuImage },
   { href: "/admin/projects", label: "Projects", icon: LuCode },
   { href: "/admin/architectures", label: "Architectures", icon: LuNetwork },
-  { href: "/admin/current", label: "Full resume portfolio", icon: LuRocket },
+  { href: "/admin/current", label: "Full portfolio", icon: LuRocket },
   { href: "/admin/experience", label: "Experience", icon: LuBriefcase },
   { href: "/admin/skills", label: "Skills & stacks", icon: LuSettings },
   { href: "/admin/certifications", label: "Certifications", icon: LuAward },
