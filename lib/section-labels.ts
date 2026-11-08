@@ -11,6 +11,7 @@ export const SECTION_LABELS = {
   architectures: "Architectures",
   current: "Full Portfolio Download",
   certifications: "Certifications & Learning",
+  "ai-toolbox": "AI Toolbox",
   contact: "Contact",
 } as const;
 
@@ -31,9 +32,9 @@ export function sectionShown(profile: Pick<Profile, "hidden_sections">, id: Sect
 
 const isBuiltIn = (id: string): id is SectionId => id in SECTION_LABELS;
 
-/** Default order: built-ins, custom sections (by their own order), Contact last. */
+/** Default order: built-ins, custom sections (by their own order), the AI Toolbox, Contact last. */
 export function defaultOrder(customSlugs: string[]): string[] {
-  return ["home", "about", "skills", "stacks", "resume", "projects", "architectures", "current", "certifications", ...customSlugs, "contact"];
+  return ["home", "about", "skills", "stacks", "resume", "projects", "architectures", "current", "certifications", ...customSlugs, "ai-toolbox", "contact"];
 }
 
 /**
@@ -82,6 +83,7 @@ export function siteSections(content: {
     architectures: content.architectures.length > 0,
     current: content.current.length > 0,
     certifications: content.certifications.length > 0,
+    "ai-toolbox": true,
     contact: true,
   };
   const custom = new Map(content.sections.map((s) => [s.slug, s]));

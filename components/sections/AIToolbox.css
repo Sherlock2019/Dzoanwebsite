@@ -1,0 +1,156 @@
+/* AI Useful Toolbox (#ai-toolbox): shared by V2, V3 and V4. */
+
+.toolbox .filter-bar {
+  margin-bottom: 10px;
+}
+
+.toolbox-count {
+  margin: 0 0 22px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.toolbox-group + .toolbox-group {
+  margin-top: 36px;
+}
+
+.toolbox-group .project-group-title {
+  margin-bottom: 6px;
+}
+
+.toolbox-group-icon {
+  color: var(--primary);
+  flex: none;
+}
+
+.toolbox-note {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  max-width: 72ch;
+}
+
+.toolbox-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.toolbox-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 18px 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.toolbox-card:hover,
+.toolbox-card:focus-within {
+  border-color: #b9d3ef;
+  box-shadow: var(--shadow);
+}
+
+.toolbox-card h4 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  color: #0d2a4a;
+}
+
+.toolbox-card p {
+  margin: 0;
+  flex: 1;
+  color: #34465c;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.toolbox-tag {
+  align-self: flex-start;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+}
+
+.toolbox-tag.tag-monitoring {
+  background: #e3f5f9;
+  color: #0b6378;
+}
+
+.toolbox-tag.tag-benchmarks {
+  background: #ecebfb;
+  color: #3d3a8f;
+}
+
+.toolbox-card a {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--primary);
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.toolbox-card a:hover {
+  text-decoration: underline;
+}
+
+.toolbox a:focus-visible,
+.toolbox .chip:focus-visible,
+.toolbox input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.toolbox-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbox-empty p {
+  margin: 0;
+}
+
+.toolbox-empty .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 1199px) {
+  .toolbox-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .toolbox-grid {
+    grid-template-columns: 1fr;
+  }
+  .toolbox .filter-search {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toolbox-card {
+    transition: none;
+  }
+}

@@ -63,7 +63,7 @@ export const SECTION_ICONS =["trophy", "medal", "award", "quote", "star", "heart
 
 /** Anchor ids used by built-in parts of the home page; custom sections never take these. */
 export const RESERVED_SECTION_SLUGS = [
-  "home", "about", "skills", "stacks", "resume", "projects", "architectures", "current", "certifications", "contact", "main", "site-sidebar",
+  "home", "about", "skills", "stacks", "resume", "projects", "architectures", "current", "certifications", "ai-toolbox", "contact", "main", "site-sidebar",
 ];
 
 export const VISIBILITIES = ["published", "draft"] as const;
