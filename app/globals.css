@@ -679,12 +679,6 @@ img {
   background: rgba(4, 12, 24, 0.55);
 }
 
-.intro-style-label {
-  padding: 0 8px 0 10px;
-  font-size: 0.75rem;
-  color: #9fb8d4;
-}
-
 .intro-style-btn {
   min-height: 32px;
   padding: 0 12px;
@@ -1084,9 +1078,6 @@ img {
   }
   .intro-head {
     padding: 16px 72px 8px 16px; /* clear of the floating menu button */
-  }
-  .intro-style-label {
-    display: none;
   }
   .intro-block {
     padding: 28px 16px;

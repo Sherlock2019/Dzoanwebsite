@@ -506,9 +506,6 @@ export default function HeroCarousel({
             {INTRO_VARIANTS.length > 1 && (
               // Versions of slide 1, not carousel slides: kept apart from the slide dots.
               <div className="intro-style" role="group" aria-label="Intro style">
-                <span className="intro-style-label" aria-hidden>
-                  Intro style
-                </span>
                 {INTRO_VARIANTS.map((v) => (
                   <button
                     key={v.id}

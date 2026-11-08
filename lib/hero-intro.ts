@@ -134,7 +134,7 @@ const QA_VARIANT: IntroVariant = {
 
 const POEM_VARIANT: IntroVariant = {
   id: "poem",
-  label: "If",
+  label: "If you need...",
   title: "If — A Builder’s Promise",
   sections: [
     {
@@ -216,7 +216,7 @@ export const INTRO_TIMING = {
   /** Fade-in of a section once the scroll reaches it. */
   fadeMs: 500,
   /** How long a section stays after its text is fully visible. */
-  holdMs: 3000,
+  holdMs: 5000,
   /** After the visitor scrolls the text by hand, automatic scrolling resumes this long after. */
   resumeAfterMs: 6000,
   /** Cross-fade between slides. */

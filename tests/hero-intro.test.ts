@@ -10,7 +10,7 @@ describe("hero intro versions", () => {
     expect(ids).toEqual(["qa", "poem"]);
     expect(new Set(ids).size).toBe(ids.length);
     expect(DEFAULT_VARIANT_ID).toBe("qa");
-    expect(INTRO_VARIANTS.map((v) => v.label)).toEqual(["Questions & Answers", "If"]);
+    expect(INTRO_VARIANTS.map((v) => v.label)).toEqual(["Questions & Answers", "If you need..."]);
   });
 
   it("falls back to the default for a missing or unknown saved id", () => {
@@ -65,19 +65,19 @@ describe("hero intro versions", () => {
     expect(stanzas[11].split("\n")).toHaveLength(5);
   });
 
-  it("visits every section in order, holding each 3 s after its fade-in, and stops at the invitation", () => {
+  it("visits every section in order, holding each 5 s after its fade-in, and stops at the invitation", () => {
     for (const v of INTRO_VARIANTS) {
       const n = v.sections.length;
       const visited = [0];
       let i = 0;
       for (let step = introStep(i, n); step; step = introStep(i, n)) {
-        expect(step.delay).toBe(INTRO_TIMING.fadeMs + 3000);
+        expect(step.delay).toBe(INTRO_TIMING.fadeMs + 5000);
         i = step.next;
         visited.push(i);
       }
       expect(visited).toEqual([...Array(n).keys()]);
       expect(introStep(n - 1, n)).toBeNull();
     }
-    expect(INTRO_TIMING.holdMs).toBe(3000);
+    expect(INTRO_TIMING.holdMs).toBe(5000);
   });
 });
