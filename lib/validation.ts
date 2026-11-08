@@ -136,6 +136,13 @@ const architectureSchema = z.object({
   sort_order: sortOrder,
 });
 
+const attachment = z.object({
+  key: storageKey.refine((k) => k.startsWith("documents/") && /\.(pdf|docx)$/.test(k), "Only PDF or Word documents"),
+  filename: z.string().trim().min(1).max(150),
+  // Accepted for round-trips from the form; the server always re-derives it (lib/pdf-preview.ts).
+  preview: storageKey.optional(),
+});
+
 const currentSchema = z.object({
   slug,
   title: text(150).pipe(z.string().min(1, "Title required")),
@@ -149,6 +156,7 @@ const currentSchema = z.object({
   diagrams: z.array(media).max(20).default([]),
   links: z.array(link).max(20).default([]),
   updated_on: z.string().trim().regex(/^(\d{4}-\d{2}-\d{2})?$/, "Use YYYY-MM-DD").default(""),
+  downloads: z.array(attachment.omit({ preview: true })).max(10).default([]),
   visibility,
   sort_order: sortOrder,
 });
@@ -188,13 +196,6 @@ const certificationSchema = z.object({
   url: optionalUrl,
   visibility,
   sort_order: sortOrder,
-});
-
-const attachment = z.object({
-  key: storageKey.refine((k) => k.startsWith("documents/") && /\.(pdf|docx)$/.test(k), "Only PDF or Word documents"),
-  filename: z.string().trim().min(1).max(150),
-  // Accepted for round-trips from the form; the server always re-derives it (lib/pdf-preview.ts).
-  preview: storageKey.optional(),
 });
 
 const sectionEntrySchema = z.object({

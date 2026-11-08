@@ -2417,3 +2417,116 @@ button.arch-media {
     bottom: 54px;
   }
 }
+
+/* ---------------------------------------------------------------- Gated downloads */
+.download-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.btn-download {
+  position: relative;
+  z-index: 2; /* above the card's stretched link */
+  font-size: 0.85rem;
+  padding: 8px 14px;
+  max-width: 100%;
+  text-align: left;
+}
+.gate {
+  width: min(440px, calc(100vw - 32px));
+  border: 0;
+  border-radius: var(--radius);
+  padding: 26px 24px 22px;
+  box-shadow: 0 20px 60px rgba(4, 11, 20, 0.35);
+  color: var(--text);
+  background: var(--bg);
+}
+.gate::backdrop {
+  background: rgba(4, 11, 20, 0.6);
+}
+.gate h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+  color: var(--primary);
+}
+.gate-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.2rem;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.gate-close:hover {
+  background: var(--bg-alt);
+}
+.gate-file {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+.gate-intro {
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+}
+.gate form {
+  display: grid;
+  gap: 12px;
+}
+.gate form .gate-intro {
+  margin: 0;
+}
+.gate-field {
+  display: grid;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.gate-field input {
+  font: inherit;
+  font-weight: 400;
+  font-size: 1rem;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+}
+.gate-field input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.gate-code {
+  letter-spacing: 0.5em;
+  font-size: 1.4rem !important;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.gate-error {
+  margin: 0;
+  color: #b42318;
+  font-size: 0.9rem;
+}
+.gate-note {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.gate-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}

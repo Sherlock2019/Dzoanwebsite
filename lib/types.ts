@@ -129,6 +129,8 @@ export interface CurrentProject extends Base {
   diagrams: Media[];
   links: Link[];
   updated_on: string;
+  /** Email-gated "Full project details" files. Never served by /media; see lib/gated.ts. */
+  downloads: Attachment[];
 }
 
 export interface Experience extends Base {

@@ -6,7 +6,7 @@ import { LuExternalLink, LuSave, LuTrash2 } from "react-icons/lu";
 import { COLLECTION_CONFIG, type Field } from "@/lib/admin/collections";
 import type { CollectionName } from "@/lib/types";
 import { api, ApiError } from "./api";
-import { EntriesField, ImageField, ImagesField, LinesInput, LinksField, RefSelect, RefsChecklist, TagsInput, type RefOption } from "./fields";
+import { EntriesField, FilesField, ImageField, ImagesField, LinesInput, LinksField, RefSelect, RefsChecklist, TagsInput, type RefOption } from "./fields";
 
 type Item = Record<string, unknown> & { id?: string; slug?: string; visibility?: string };
 
@@ -133,6 +133,8 @@ export default function EntityForm({ collection, initial, refs, existing = {} }:
         return <ImageField id={id} value={(value as never) ?? null} onChange={(v) => set(field.name, v)} />;
       case "images":
         return <ImagesField id={id} value={(value as never) || []} onChange={(v) => set(field.name, v)} />;
+      case "files":
+        return <FilesField id={id} value={(value as never) || []} onChange={(v) => set(field.name, v)} />;
       case "links":
         return <LinksField id={id} value={(value as never) || []} onChange={(v) => set(field.name, v)} />;
       case "ref":
@@ -228,7 +230,7 @@ export default function EntityForm({ collection, initial, refs, existing = {} }:
       <div className="admin-fields">
         {config.fields.map((field) => {
           const error = issueFor(field.name);
-          const wide = ["textarea", "images", "image", "links", "lines", "tags", "multiselect", "refs", "entries"].includes(field.type);
+          const wide = ["textarea", "images", "image", "links", "lines", "tags", "multiselect", "refs", "entries", "files"].includes(field.type);
           return (
             <div key={field.name} className={`admin-field${wide ? " is-wide" : ""}${error ? " has-error" : ""}`}>
               {field.type !== "checkbox" && (

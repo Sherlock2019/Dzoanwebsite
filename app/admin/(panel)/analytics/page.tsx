@@ -2,6 +2,7 @@ import Heatmap from "@/components/admin/Heatmap";
 import TrackingLinkMaker from "@/components/admin/TrackingLinkMaker";
 import { buildReport, readEvents } from "@/lib/analytics";
 import { getRepo } from "@/lib/db/index";
+import { mailConfigured, readLeads } from "@/lib/gated";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +62,9 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
   const { days: raw } = await searchParams;
   const days = RANGES.includes(Number(raw)) ? Number(raw) : 30;
   const since = Date.now() - days * 86_400_000;
-  const [events, sections] = await Promise.all([readEvents(since), (await getRepo()).list("sections")]);
+  const [events, sections, allLeads] = await Promise.all([readEvents(since), (await getRepo()).list("sections"), readLeads()]);
+  const downloads = allLeads.filter((l) => l.type === "download" && l.ts >= since).reverse();
+  const people = new Set(downloads.map((l) => l.email)).size;
   const r = buildReport(events, days);
 
   const labels: Record<string, string> = { ...SECTION_LABELS };
@@ -82,7 +85,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
     <div className="analytics">
       <div className="admin-form-head">
         <div>
-          <h1>Visitors &amp; heatmap</h1>
+          <h1>Visitors &amp; downloads</h1>
           <p className="hint">Self-hosted and cookie-free. Your own visits while signed in are not counted. Times are UTC.</p>
         </div>
         <nav className="an-range" aria-label="Time range">
@@ -171,6 +174,49 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
           </div>
         ) : (
           <p className="hint">No tracking-link visits in this period yet.</p>
+        )}
+      </section>
+
+      <section className="admin-fieldset">
+        <h2>Full project details: downloads (confirmed emails)</h2>
+        {!mailConfigured() && (
+          <p className="admin-message error">
+            Email isn&apos;t set up, so visitors can&apos;t receive codes and downloads are blocked. Add SMTP_USER and
+            SMTP_PASS (a Gmail app password) to .env.local and restart.
+          </p>
+        )}
+        <p className="hint">
+          {downloads.length} download{downloads.length === 1 ? "" : "s"} by {people} confirmed {people === 1 ? "person" : "people"} in this period.
+        </p>
+        {downloads.length > 0 && (
+          <div className="an-table-wrap">
+            <table className="an-table">
+              <thead>
+                <tr>
+                  <th>When</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Company</th>
+                  <th>Project</th>
+                  <th>File</th>
+                </tr>
+              </thead>
+              <tbody>
+                {downloads.slice(0, 200).map((l, i) => (
+                  <tr key={`${l.ts}-${i}`}>
+                    <td>{fmtTime(l.ts)}</td>
+                    <td>{l.name}</td>
+                    <td>
+                      <a href={`mailto:${l.email}`}>{l.email}</a>
+                    </td>
+                    <td>{l.company || "—"}</td>
+                    <td>{l.project}</td>
+                    <td>{l.file}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
 

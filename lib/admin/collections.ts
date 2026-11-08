@@ -32,7 +32,8 @@ export type FieldType =
   | "links"
   | "ref"
   | "refs"
-  | "entries";
+  | "entries"
+  | "files";
 
 export interface Field {
   name: string;
@@ -148,19 +149,26 @@ export const COLLECTION_CONFIG: Record<CollectionName, CollectionConfig> = {
   },
   current: {
     name: "current",
-    label: "Current Projects",
-    singular: "current project",
-    description: "What you are working on now. Most recently updated appear first.",
+    label: "Full Project Details",
+    singular: "project",
+    description:
+      "Shown on the site as \"Full Project Details\". Attach a detailed PDF to each: visitors must confirm their email with a 6-digit code before they can download it. Most recently updated appear first.",
     titleField: "title",
     subtitleField: "stage",
     publicPath: "current",
-    defaults: { stage: "In Progress", visibility: "draft", technologies: [], media: [], diagrams: [], links: [], updated_on: "" },
+    defaults: { stage: "In Progress", visibility: "draft", technologies: [], media: [], diagrams: [], links: [], updated_on: "", downloads: [] },
     fields: [
       { name: "title", label: "Project title", type: "text", required: true },
       { name: "slug", label: "URL slug", type: "text", help: "Leave blank to generate from the title." },
       { name: "stage", label: "Stage / status", type: "select", options: CURRENT_STAGES },
       { name: "updated_on", label: "Date updated", type: "date", help: "Shown publicly and used for ordering. Defaults to the last save." },
       visibility,
+      {
+        name: "downloads",
+        label: "Full project details (email-gated download)",
+        type: "files",
+        help: "PDF or Word. Visitors must confirm a real email with a 6-digit code first; each download is logged under Visitors & heatmap and emailed to you. Tip: describe the architecture, decisions and results, not the source code.",
+      },
       { name: "summary", label: "Short description", type: "textarea", rows: 3 },
       { name: "objective", label: "Current objective", type: "textarea", rows: 3 },
       { name: "working_on", label: "What I am working on", type: "textarea", rows: 4, help: BULLETS },

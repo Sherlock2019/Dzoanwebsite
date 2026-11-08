@@ -107,7 +107,10 @@ export async function getPublicContent(): Promise<PublicContent> {
     profile: publicProfile(profile),
     projects: published(projects),
     architectures: published(architectures),
-    current: published(current).sort(byRecent),
+    // Gated files keep only their names: no storage key, so /media never serves them.
+    current: published(current)
+      .sort(byRecent)
+      .map((p) => ({ ...p, downloads: (p.downloads || []).map((f) => ({ key: "", filename: f.filename })) })),
     experience: published(experience),
     skills: published(skills),
     certifications: published(certifications),
@@ -120,6 +123,10 @@ export async function documentFilename(key: string): Promise<string | null> {
   const repo = await getRepo();
   const profile = await repo.getProfile();
   if (profile?.resume?.key === key) return profile.resume.filename;
+  for (const p of await repo.list("current")) {
+    const f = p.downloads?.find((x) => x.key === key);
+    if (f) return f.filename;
+  }
   for (const s of await repo.list("sections")) {
     for (const e of s.entries || []) {
       const f = e.files?.find((x) => x.key === key);

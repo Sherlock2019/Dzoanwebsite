@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BackLink, DetailBlock, ExternalLinks, TagList } from "@/components/detail/Detail";
+import DownloadGate from "@/components/ui/DownloadGate";
 import MediaGallery from "@/components/ui/MediaGallery";
 import StatusBadge from "@/components/ui/StatusBadge";
 import { getPublishedBySlug } from "@/lib/content";
@@ -21,7 +22,7 @@ export default async function CurrentProjectPage({ params }: Props) {
 
   return (
     <article className="detail container">
-      <BackLink href="/#current" label="All current projects" />
+      <BackLink href="/#current" label="All project details" />
       <header className="detail-header">
         <div className="card-badges">
           <StatusBadge status={p.stage} />
@@ -44,6 +45,16 @@ export default async function CurrentProjectPage({ params }: Props) {
           )}
         </div>
         <aside>
+          {(p.downloads || []).length > 0 && (
+            <section className="detail-block">
+              <h2>Full project details</h2>
+              <div className="download-row">
+                {p.downloads.map((f, i) => (
+                  <DownloadGate key={i} projectId={p.id} index={i} filename={f.filename} projectTitle={p.title} />
+                ))}
+              </div>
+            </section>
+          )}
           <TagList title="Technologies" items={p.technologies} />
           <ExternalLinks links={p.links} />
         </aside>

@@ -23,7 +23,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     { id: "resume", label: "Résumé" },
     ...(content.projects.length ? [{ id: "projects", label: "Projects" }] : []),
     ...(content.architectures.length ? [{ id: "architectures", label: "Architectures" }] : []),
-    ...(content.current.length ? [{ id: "current", label: "Current Projects" }] : []),
+    ...(content.current.length ? [{ id: "current", label: "Full Project Details" }] : []),
     ...(content.certifications.length ? [{ id: "certifications", label: "Certifications & Learning" }] : []),
     ...content.sections.map((s) => ({ id: s.slug, label: s.title, icon: s.icon })),
     { id: "contact", label: "Contact" },
