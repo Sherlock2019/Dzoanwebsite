@@ -744,8 +744,8 @@
         "AWS EC2"
       ],
       "media": [],
-      "demo_url": "",
-      "repo_url": "https://github.com/Sherlock2019/NPLM-Next-Phrase-language-model-",
+      "demo_url": "http://100.31.100.157:3010/mlm",
+      "repo_url": "",
       "links": [],
       "related_architectures": [],
       "featured": false,
@@ -753,7 +753,7 @@
       "id": "6a5b9649-4586-45c5-a420-62ff1fc24fb9",
       "sort_order": 0,
       "created_at": "2026-11-01T08:16:11.620Z",
-      "updated_at": "2026-11-02T05:15:19.943Z",
+      "updated_at": "2026-11-08T03:32:26.583Z",
       "group": "AI Research"
     },
     {
@@ -780,8 +780,8 @@
         "NLP"
       ],
       "media": [],
-      "demo_url": "",
-      "repo_url": "https://github.com/Sherlock2019/ACM",
+      "demo_url": "http://100.31.100.157:3010/acm/tour",
+      "repo_url": "",
       "links": [],
       "related_architectures": [],
       "featured": false,
@@ -789,7 +789,7 @@
       "id": "ca54dbbf-4088-48b9-b088-6f6b21bd5b4e",
       "sort_order": 1,
       "created_at": "2026-11-01T08:16:11.628Z",
-      "updated_at": "2026-11-01T08:19:27.944Z",
+      "updated_at": "2026-11-08T03:28:24.969Z",
       "group": "AI Research"
     },
     {
@@ -2041,13 +2041,32 @@
   ],
   "sections": [
     {
-      "title": "Awards / Recommendations",
+      "title": "Awards and Recommendations",
       "slug": "awards-recommendations",
       "icon": "trophy",
-      "intro": "Polycom : Employee of Year in Polycom after creating a Technical Video DVD training for training 200 engineers\nGameloft : 2  times promotions in 5 years \nRackspace : 5 Recognitions Awards for building awesome tools , Ai cloud products and Trainings for the Team .",
+      "intro": "Polycom : Employee of Year in Polycom after creating a Technical Video DVD training for training 200 engineers\nGameloft :  3 promotions in 5 years \nRackspace : 5 Recognitions Awards for building awesome tools , Ai cloud products and Trainings for the Team . \n\n ",
       "entries": [
         {
-          "title": "Recognition  Gameloft Worldwide infra manager",
+          "badge": "recommendation",
+          "title": "My inner Award the one that is not given but earned",
+          "subtitle": "",
+          "text": "But my Greatest Award is the one  that I am working everyday to merrit , the one  is not in a frame but in the real World ,  Being simply a Servant  to  my Teamates ,  to my company , to  Customers  and other Business and the World that benefits  from  problems we solve and solution that what we build  Together , for why not a better world . Yes I am an Ideal-Realistic kind of guy.... ",
+          "url": "",
+          "url_label": "",
+          "images": [
+            {
+              "key": "images/2026/45ed7d1a-9ff9-4b4f-a58e-9aa38ab20d3a.png",
+              "thumb": "images/2026/45ed7d1a-9ff9-4b4f-a58e-9aa38ab20d3a.thumb.webp",
+              "alt": "teamservant award",
+              "width": 1536,
+              "height": 1024
+            }
+          ],
+          "files": []
+        },
+        {
+          "badge": "recommendation",
+          "title": "Recognition as Devops SRE Finops By Gameloft world wide infra manager",
           "subtitle": "",
           "text": "",
           "url": "",
@@ -2055,13 +2074,15 @@
           "images": [],
           "files": [
             {
-              "key": "documents/2026/b7e999e8-0a28-4ae4-911b-50073b77d516.pdf",
-              "filename": "01recomGLDaryl.pdf"
+              "key": "documents/2026/47ff1ed6-4320-494a-9d87-b858ef34e1ae.pdf",
+              "filename": "01recomGLDaryl.pdf",
+              "preview": "documents/2026/47ff1ed6-4320-494a-9d87-b858ef34e1ae.thumb.webp"
             }
           ]
         },
         {
-          "title": "Recognition RACKSPACE",
+          "badge": "recommendation",
+          "title": "Rackspace Recognition as Cloud AI engineer",
           "subtitle": "",
           "text": "",
           "url": "",
@@ -2069,8 +2090,9 @@
           "images": [],
           "files": [
             {
-              "key": "documents/2026/61d10176-e2ef-45c8-9748-3e31af9dbbe7.pdf",
-              "filename": "recooper.pdf"
+              "key": "documents/2026/25bd087a-9610-4a66-b2ff-fd2211817919.pdf",
+              "filename": "recooper.pdf",
+              "preview": "documents/2026/25bd087a-9610-4a66-b2ff-fd2211817919.thumb.webp"
             }
           ]
         }
@@ -2079,7 +2101,7 @@
       "id": "76af5c0e-a589-4e2e-af89-ff3b4d2497c8",
       "sort_order": 0,
       "created_at": "2026-11-07T02:31:37.328Z",
-      "updated_at": "2026-11-07T03:09:11.951Z"
+      "updated_at": "2026-11-07T06:15:58.312Z"
     }
   ]
 }
