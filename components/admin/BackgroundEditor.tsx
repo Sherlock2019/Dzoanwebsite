@@ -3,12 +3,13 @@
 import { useRef, useState } from "react";
 import { LuEye, LuSave, LuUndo2, LuUpload } from "react-icons/lu";
 import Slide1Backdrop from "@/components/sections/Slide1Backdrop";
-import { thumbUrl } from "@/lib/media-url";
+import { mediaUrl, thumbUrl } from "@/lib/media-url";
 import {
   CURRENT_IMAGE,
   ELECTRO_IMAGE,
   LABELS,
   NETWORK_THEMES,
+  normalizeSettings,
   PALETTES,
   resolveSlide1Bg,
   SITE_VERSIONS,
@@ -17,9 +18,11 @@ import {
   type SiteVersion,
   type Slide1Bg,
   type Slide1BgSettings,
+  type VideoBg,
+  type VideoFile,
 } from "@/lib/slide1-bg";
 import type { Media } from "@/lib/types";
-import { altFromName, api, ApiError, uploadImage } from "./api";
+import { altFromName, api, ApiError, uploadImage, uploadVideo } from "./api";
 
 type Target = "all" | SiteVersion;
 
@@ -27,9 +30,9 @@ type Target = "all" | SiteVersion;
 const publishedFor = (s: Slide1BgSettings, t: Target): Slide1Bg => (t === "all" ? s.all : resolveSlide1Bg(s, t));
 
 /**
- * Dashboard → Slide 1 background. The owner picks a dynamic neural network or a fixed image, for
- * all versions or one; edits are previewed here only, Save publishes them (owner-only API),
- * Cancel restores the published setting.
+ * Dashboard → Slide 1 background. The owner picks a dynamic neural network, a fixed image or a
+ * video, for all versions or one; edits are previewed here only, Save publishes them (owner-only
+ * API), Cancel restores the published setting.
  */
 export default function BackgroundEditor({ initial }: { initial: Slide1BgSettings }) {
   const [saved, setSaved] = useState<Slide1BgSettings>(initial);
@@ -37,11 +40,34 @@ export default function BackgroundEditor({ initial }: { initial: Slide1BgSetting
   const [draft, setDraft] = useState<Slide1Bg>(initial.all);
   const [preview, setPreview] = useState<Slide1Bg>(initial.all);
   const [library, setLibrary] = useState<Media[]>(initial.library);
+  const [videos, setVideos] = useState<VideoFile[]>(initial.videos);
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
-  const changed = JSON.stringify(draft) !== JSON.stringify(publishedFor(saved, target)) || library.length !== saved.library.length;
+  const videoInput = useRef<HTMLInputElement>(null);
+  const changed =
+    JSON.stringify(draft) !== JSON.stringify(publishedFor(saved, target)) ||
+    library.length !== saved.library.length ||
+    videos.length !== saved.videos.length;
+  const setVideo = <K extends keyof VideoBg>(k: K, v: VideoBg[K]) => setDraft((d) => ({ ...d, video: { ...d.video, [k]: v } }));
+
+  async function uploadVideoFile(files: FileList | null) {
+    const file = files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setMessage(null);
+    try {
+      const media = await uploadVideo(file);
+      // Kept for later reuse (6 most recent).
+      setVideos((l) => [media, ...l.filter((m) => m.key !== media.key)].slice(0, 6));
+      setDraft((d) => ({ ...d, type: "video", video: { ...d.video, media } }));
+    } catch (e) {
+      setMessage({ tone: "error", text: e instanceof Error ? e.message : "Upload failed" });
+    } finally {
+      setUploading(false);
+    }
+  }
 
   function pickTarget(t: Target) {
     setTarget(t);
@@ -76,12 +102,13 @@ export default function BackgroundEditor({ initial }: { initial: Slide1BgSetting
     setMessage(null);
     const next: Slide1BgSettings =
       target === "all"
-        ? { all: draft, overrides: {}, library }
-        : { all: saved.all, overrides: { ...saved.overrides, [target]: draft }, library };
+        ? { all: draft, overrides: {}, library, videos }
+        : { all: saved.all, overrides: { ...saved.overrides, [target]: draft }, library, videos };
     try {
-      const published = await api<Slide1BgSettings>("/api/admin/background", { method: "PUT", body: JSON.stringify(next) });
+      const published = normalizeSettings(await api<Slide1BgSettings>("/api/admin/background", { method: "PUT", body: JSON.stringify(next) }));
       setSaved(published);
       setLibrary(published.library);
+      setVideos(published.videos);
       setPreview(draft);
       setMessage({ tone: "ok", text: `Published${target === "all" ? " for all versions" : ` for ${target}`}. Visitors see it on their next visit or reload.` });
     } catch (e) {
@@ -98,10 +125,12 @@ export default function BackgroundEditor({ initial }: { initial: Slide1BgSetting
     const overrides = { ...saved.overrides };
     delete overrides[v];
     try {
-      const published = await api<Slide1BgSettings>("/api/admin/background", {
-        method: "PUT",
-        body: JSON.stringify({ ...saved, overrides, library: saved.library }),
-      });
+      const published = normalizeSettings(
+        await api<Slide1BgSettings>("/api/admin/background", {
+          method: "PUT",
+          body: JSON.stringify({ ...saved, overrides }),
+        }),
+      );
       setSaved(published);
       if (target === v) {
         setDraft(published.all);
@@ -120,6 +149,7 @@ export default function BackgroundEditor({ initial }: { initial: Slide1BgSetting
     setDraft(bg);
     setPreview(bg);
     setLibrary(saved.library);
+    setVideos(saved.videos);
     setMessage(null);
   }
 
@@ -175,7 +205,7 @@ export default function BackgroundEditor({ initial }: { initial: Slide1BgSetting
       <fieldset className="admin-fieldset">
         <legend>Background type</legend>
         <div className="bg-choices" role="radiogroup" aria-label="Background type">
-          {(["dynamic", "image"] as const).map((t) => (
+          {(["dynamic", "image", "video"] as const).map((t) => (
             <label key={t} className="checkbox-line">
               <input type="radio" name="bg-type" checked={draft.type === t} onChange={() => setDraft((x) => ({ ...x, type: t }))} />
               {LABELS.type[t]}
@@ -219,7 +249,7 @@ export default function BackgroundEditor({ initial }: { initial: Slide1BgSetting
             <Range label="Glow intensity" min={0} max={1} step={0.05} value={d.glow} onChange={(v) => setDynamic("glow", v)} />
             <Range label="Dark overlay" min={0} max={0.85} step={0.05} value={d.overlay} onChange={(v) => setDynamic("overlay", v)} />
           </div>
-        ) : (
+        ) : draft.type === "image" ? (
           <>
             <div className="bg-images" role="radiogroup" aria-label="Image">
               <button
@@ -275,6 +305,53 @@ export default function BackgroundEditor({ initial }: { initial: Slide1BgSetting
               <Range label="Focal point — horizontal" min={0} max={100} step={1} unit="%" value={im.position.x} onChange={(v) => setImage("position", { ...im.position, x: v })} />
               <Range label="Focal point — vertical" min={0} max={100} step={1} unit="%" value={im.position.y} onChange={(v) => setImage("position", { ...im.position, y: v })} />
               <Range label="Dark overlay" min={0} max={0.85} step={0.05} value={im.overlay} onChange={(v) => setImage("overlay", v)} />
+            </div>
+          </>
+        ) : (
+          <>
+            {videos.length === 0 ? (
+              <p className="hint">No video yet: upload one below.</p>
+            ) : (
+              <div className="bg-images" role="radiogroup" aria-label="Video">
+                {videos.map((v) => {
+                  const selected = draft.video.media?.key === v.key;
+                  return (
+                    <button
+                      key={v.key}
+                      type="button"
+                      className={`bg-thumb${selected ? " is-selected" : ""}`}
+                      aria-pressed={selected}
+                      onClick={() => setVideo("media", v)}
+                    >
+                      <video src={`${mediaUrl(v.key)}#t=0.5`} muted playsInline preload="metadata" />
+                      <span>{v.filename}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            <input
+              ref={videoInput}
+              type="file"
+              accept="video/mp4,video/webm"
+              className="sr-only"
+              aria-label="Upload a background video"
+              onChange={(e) => {
+                uploadVideoFile(e.target.files);
+                e.target.value = "";
+              }}
+            />
+            <button type="button" className="btn btn-outline btn-sm" disabled={uploading} onClick={() => videoInput.current?.click()}>
+              <LuUpload aria-hidden /> {uploading ? "Uploading…" : "Upload a video"}
+            </button>
+            <p className="hint">
+              MP4 or WebM, up to 45 MB. It plays muted and looping. A short loop (10–30 s, 1080p, compressed) works best and
+              loads fast.
+            </p>
+            <div className="bg-grid">
+              <Range label="Focal point — horizontal" min={0} max={100} step={1} unit="%" value={draft.video.position.x} onChange={(x) => setVideo("position", { ...draft.video.position, x })} />
+              <Range label="Focal point — vertical" min={0} max={100} step={1} unit="%" value={draft.video.position.y} onChange={(y) => setVideo("position", { ...draft.video.position, y })} />
+              <Range label="Dark overlay" min={0} max={0.85} step={0.05} value={draft.video.overlay} onChange={(v) => setVideo("overlay", v)} />
             </div>
           </>
         )}

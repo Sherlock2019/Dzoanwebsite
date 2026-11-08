@@ -4,6 +4,7 @@ import {
   DEFAULT_DYNAMIC,
   DEFAULT_IMAGE,
   DEFAULT_SLIDE1_SETTINGS,
+  DEFAULT_VIDEO,
   IMAGE_SOURCES,
   NETWORK_THEMES,
   PALETTES,
@@ -45,6 +46,10 @@ const media = z.object({
 });
 /** One slide 1 background setting (see lib/slide1-bg.ts). */
 const overlay = z.number().min(0).max(0.85);
+const videoFile = z.object({
+  key: storageKey.refine((k) => k.startsWith("videos/"), "Not a video"),
+  filename: z.string().trim().max(150),
+});
 const slide1Bg = z
   .object({
     type: z.enum(BG_TYPES),
@@ -66,16 +71,25 @@ const slide1Bg = z
         overlay,
       })
       .default(DEFAULT_IMAGE),
+    video: z
+      .object({
+        media: videoFile.nullable().default(null),
+        position: z.object({ x: z.number().min(0).max(100), y: z.number().min(0).max(100) }),
+        overlay,
+      })
+      .default(DEFAULT_VIDEO),
   })
   .refine((b) => b.type !== "image" || b.image.source !== "upload" || b.image.media !== null, {
     message: "Choose or upload an image first",
     path: ["image", "media"],
-  });
+  })
+  .refine((b) => b.type !== "video" || b.video.media !== null, { message: "Choose or upload a video first", path: ["video", "media"] });
 
 export const slide1BgSettingsSchema = z.object({
   all: slide1Bg,
   overrides: z.object({ V2: slide1Bg.optional(), V3: slide1Bg.optional(), V4: slide1Bg.optional() }).default({}),
   library: z.array(media).max(12, "12 images max").default([]),
+  videos: z.array(videoFile).max(6, "6 videos max").default([]),
 });
 
 const link = z.object({

@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server";
 import { requireOwner } from "@/lib/auth/guard";
-import { safeFilename, storeAnyFile, storeDocument, storeImage, storePdf, UploadError } from "@/lib/upload";
+import { safeFilename, storeAnyFile, storeDocument, storeImage, storePdf, storeVideo, UploadError } from "@/lib/upload";
 
 export const runtime = "nodejs";
 
-const MAX_REQUEST_BYTES = 16 * 1024 * 1024;
+// Videos may be up to 45 MB; every other kind keeps its own 15 MB limit (checked when stored).
+const MAX_REQUEST_BYTES = 46 * 1024 * 1024;
 
 /**
  * Owner-only upload. multipart/form-data with:
  *   file  — the file
- *   kind  — "image" (JPEG/PNG/WebP), "pdf", "document" (PDF or Word .docx, keeps its filename)
- *           or "file" (any type, for custom sections; non-PDF/Word files are download-only)
+ *   kind  — "image" (JPEG/PNG/WebP), "pdf", "document" (PDF or Word .docx, keeps its filename),
+ *           "file" (any type, for custom sections; non-PDF/Word files are download-only)
+ *           or "video" (MP4/WebM background video, up to 45 MB)
  *   alt   — optional alt text for images
  * Files are stored privately; they become public only when referenced by published content.
  */
@@ -19,7 +21,7 @@ export async function POST(req: Request) {
   if (denied) return denied;
 
   const length = Number(req.headers.get("content-length") || 0);
-  if (length > MAX_REQUEST_BYTES) return NextResponse.json({ error: "File is too large (max 15 MB)" }, { status: 413 });
+  if (length > MAX_REQUEST_BYTES) return NextResponse.json({ error: "File is too large (max 45 MB for videos, 15 MB otherwise)" }, { status: 413 });
 
   let form: FormData;
   try {
@@ -47,7 +49,10 @@ export async function POST(req: Request) {
     if (kind === "file") {
       return NextResponse.json(await storeAnyFile(buf, file.name), { status: 201 });
     }
-    return NextResponse.json({ error: 'kind must be "image", "pdf", "document" or "file"' }, { status: 400 });
+    if (kind === "video") {
+      return NextResponse.json(await storeVideo(buf, file.name), { status: 201 });
+    }
+    return NextResponse.json({ error: 'kind must be "image", "pdf", "document", "file" or "video"' }, { status: 400 });
   } catch (err) {
     if (err instanceof UploadError) return NextResponse.json({ error: err.message }, { status: 415 });
     throw err;
