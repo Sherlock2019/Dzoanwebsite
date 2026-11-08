@@ -6,6 +6,7 @@ import {
   BANNER_CAPTION,
   BOOKING,
   DEFAULT_VARIANT_ID,
+  INTRO_TIMING,
   INTRO_VARIANTS,
   introStep,
   resolveVariant,
@@ -171,9 +172,11 @@ export default function HeroCarousel({
   const last = sections.length - 1;
   /** The section the sequence has settled on. */
   const [pos, setPos] = useState(0);
+  /** Off only when the visitor presses Pause; Play turns it back on. */
   const [playing, setPlaying] = useState(true);
-  /** Temporary pauses: pointer over the text, or keyboard focus inside it. */
-  const [hovered, setHovered] = useState(false);
+  /** Short holds that end by themselves: the visitor scrolling by hand, or keyboard focus inside. */
+  const [reading, setReading] = useState(false);
+  const readingTimer = useRef(0);
   const [keyFocus, setKeyFocus] = useState(false);
   const reduced = usePrefersReducedMotion();
   const hidden = useTabHidden();
@@ -195,7 +198,7 @@ export default function HeroCarousel({
     scroller.current?.scrollTo({ top: 0, behavior: "auto" });
   }
 
-  const autoplay = slide === 0 && playing && !hidden && !reduced && !hovered && !keyFocus;
+  const autoplay = slide === 0 && playing && !reading && !hidden && !reduced && !keyFocus;
 
   const scrollToBlock = useCallback(
     (i: number) => {
@@ -241,13 +244,18 @@ export default function HeroCarousel({
     };
   }, []);
 
-  /** Mouse wheel, touch, scrollbar drag or scroll keys: the visitor is reading, stop. */
-  const manual = () => setPlaying(false);
+  /**
+   * The visitor scrolled the text by hand (wheel, touch, scrollbar or keys): hold the automatic
+   * scrolling while they read, then roll on by itself after a few quiet seconds.
+   */
+  const manual = useCallback(() => {
+    setReading(true);
+    window.clearTimeout(readingTimer.current);
+    readingTimer.current = window.setTimeout(() => setReading(false), INTRO_TIMING.resumeAfterMs);
+  }, []);
+  useEffect(() => () => window.clearTimeout(readingTimer.current), []);
 
-  const goTo = (s: 0 | 1) => {
-    setSlide(s);
-    setPlaying(false); // manual navigation pauses until Play
-  };
+  const goTo = (s: 0 | 1) => setSlide(s);
   const other = (slide === 0 ? 1 : 0) as 0 | 1;
 
   function togglePlay() {
@@ -257,8 +265,7 @@ export default function HeroCarousel({
   }
 
   function skipToInvitation() {
-    setPlaying(false);
-    scrollToBlock(last);
+    scrollToBlock(last); // scrolling stops there by itself
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
@@ -319,8 +326,12 @@ export default function HeroCarousel({
             tabIndex={0}
             role="region"
             aria-label={variant.title}
-            onWheel={manual}
-            onTouchStart={manual}
+            onWheel={(e) => {
+              // Only a wheel that really scrolls the text counts (not scrolling the page past it).
+              const b = e.currentTarget;
+              if ((e.deltaY > 0 && b.scrollTop + b.clientHeight < b.scrollHeight - 1) || (e.deltaY < 0 && b.scrollTop > 0)) manual();
+            }}
+            onTouchMove={manual}
             onPointerDown={(e) => {
               // Dragging the scrollbar (not clicking a link or button) counts as manual scrolling.
               if (e.target === e.currentTarget) manual();
@@ -328,8 +339,6 @@ export default function HeroCarousel({
             onKeyDown={(e) => {
               if (SCROLL_KEYS.has(e.key) && (e.target === e.currentTarget || e.key !== " ")) manual();
             }}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
             onFocus={(e) => setKeyFocus(e.target.matches(":focus-visible"))}
             onBlur={(e) => {
               if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setKeyFocus(false);

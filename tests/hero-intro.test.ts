@@ -10,7 +10,7 @@ describe("hero intro versions", () => {
     expect(ids).toEqual(["qa", "poem"]);
     expect(new Set(ids).size).toBe(ids.length);
     expect(DEFAULT_VARIANT_ID).toBe("qa");
-    expect(INTRO_VARIANTS.map((v) => v.label)).toEqual(["Questions & Answers", "Poem"]);
+    expect(INTRO_VARIANTS.map((v) => v.label)).toEqual(["Questions & Answers", "If"]);
   });
 
   it("falls back to the default for a missing or unknown saved id", () => {
