@@ -21,7 +21,9 @@ function Badge({ kind, Icon, honor }: { kind: NonNullable<SectionEntry["badge"]>
   );
 }
 
-function Entry({ entry, Icon, honor }: { entry: SectionEntry; Icon: IconType; honor: boolean }) {
+function Entry({ entry, Icon, honor, wide }: { entry: SectionEntry; Icon: IconType; honor: boolean; wide: boolean }) {
+  // The only card of its section, with a single image: show that image at full width.
+  const fullImage = wide && entry.images.length === 1;
   return (
     <article className="custom-card">
       <div className="custom-card-head">
@@ -32,11 +34,11 @@ function Entry({ entry, Icon, honor }: { entry: SectionEntry; Icon: IconType; ho
         </div>
       </div>
       {entry.images.length > 0 && (
-        <div className={`custom-images${entry.images.length > 1 ? " is-multi" : ""}`}>
+        <div className={`custom-images${entry.images.length > 1 ? " is-multi" : ""}${fullImage ? " is-full" : ""}`}>
           {entry.images.map((m) => (
             <figure key={m.key}>
               <a href={fullUrl(m)} target="_blank" rel="noopener noreferrer">
-                <MediaImage src={thumbUrl(m)} alt={m.alt || entry.title} label={entry.title || "Image"} width={m.width} height={m.height} />
+                <MediaImage src={fullImage ? fullUrl(m) : thumbUrl(m)} alt={m.alt || entry.title} label={entry.title || "Image"} width={m.width} height={m.height} />
               </a>
               {m.caption && <figcaption>{m.caption}</figcaption>}
             </figure>
@@ -101,9 +103,9 @@ export default function CustomSections({ sections }: { sections: CustomSection[]
                 {/* The intro keeps the owner's line breaks and "- " bullet lists. */}
                 <RichText text={s.intro} className={`custom-intro${honor ? " is-honor" : ""}`} />
               </div>
-              <div className="custom-grid">
+              <div className={`custom-grid${s.entries.length === 1 ? " is-single" : ""}`}>
                 {s.entries.map((e, i) => (
-                  <Entry key={i} entry={e} Icon={Icon} honor={honor} />
+                  <Entry key={i} entry={e} Icon={Icon} honor={honor} wide={s.entries.length === 1} />
                 ))}
               </div>
             </div>

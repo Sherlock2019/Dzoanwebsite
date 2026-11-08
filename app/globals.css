@@ -1619,6 +1619,15 @@ button.arch-media {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+/* A section with a single card uses the full width; a single image in it fills that width. */
+.custom-grid.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.custom-images.is-full img {
+  max-height: none;
+}
+
 .custom-images figure {
   margin: 0;
 }
