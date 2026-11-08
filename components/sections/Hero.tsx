@@ -23,6 +23,7 @@ export default function Hero({
     <section id="home" className="hero" aria-labelledby="home-title">
       <HeroCarousel
         kicker={profile.name}
+        bookingUrl={profile.booking_url}
         banner={
           profile.hero_image
             ? {

@@ -1,16 +1,16 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { LuChevronLeft, LuChevronRight, LuPause, LuPlay, LuRotateCcw, LuSkipForward } from "react-icons/lu";
+import { LuCalendarCheck, LuChevronLeft, LuChevronRight, LuPause, LuPlay, LuSkipForward } from "react-icons/lu";
 import {
-  answerText,
   BANNER_CAPTION,
-  INTRO_PAIRS,
-  INTRO_START,
+  BOOKING,
+  DEFAULT_VARIANT_ID,
+  INTRO_VARIANTS,
   introStep,
-  partText,
-  type IntroPart,
-  type IntroState,
+  resolveVariant,
+  VARIANT_STORAGE_KEY,
+  type IntroSection,
 } from "@/lib/hero-intro";
 
 export interface BannerImage {
@@ -23,6 +23,8 @@ export interface BannerImage {
 }
 
 const SLIDE_NAMES = ["Introduction", "Banner"] as const;
+/** Keys that scroll the sequence by hand. */
+const SCROLL_KEYS = new Set(["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "]);
 
 /** Text with "\n" as line breaks. */
 function lines(text: string): ReactNode {
@@ -34,25 +36,92 @@ function lines(text: string): ReactNode {
   ));
 }
 
-/** The first `count` characters of an answer, keeping its links. */
-function typedAnswer(parts: IntroPart[], count: number, linksFocusable: boolean): ReactNode[] {
-  let left = count;
-  const out: ReactNode[] = [];
-  parts.forEach((p, i) => {
-    if (left <= 0) return;
-    const text = partText(p).slice(0, left);
-    left -= text.length;
-    out.push(
-      typeof p === "string" ? (
-        <Fragment key={i}>{lines(text)}</Fragment>
-      ) : (
-        <a key={i} href={p.href} className="intro-cta" tabIndex={linksFocusable ? 0 : -1}>
-          {lines(text)}
-        </a>
-      ),
+/** The saved intro style, if storage is available. */
+function readSavedVariant(): string | null {
+  try {
+    return window.localStorage.getItem(VARIANT_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function saveVariant(id: string) {
+  try {
+    window.localStorage.setItem(VARIANT_STORAGE_KEY, id);
+  } catch {
+    // Private mode or blocked storage: the choice just isn't remembered.
+  }
+}
+
+interface Booking {
+  href: string;
+  props: { target?: string; rel?: string };
+  label: string;
+}
+
+/** One section of the scrolling sequence. */
+function Section({ section, booking }: { section: IntroSection; booking: Booking }) {
+  if (section.kind === "qa") {
+    return (
+      <>
+        <p className="intro-topic">{section.topic}</p>
+        <h3 className="intro-q">{lines(section.question)}</h3>
+        <p className="intro-a">{lines(section.answer)}</p>
+      </>
     );
-  });
-  return out;
+  }
+  if (section.kind === "stanza") {
+    const [first, ...rest] = section.text.split("\n");
+    return (
+      <>
+        {section.title && <h3 className="intro-poem-title">{section.title}</h3>}
+        <p className="intro-stanza">
+          <strong className="intro-stanza-lead">{first}</strong>
+          {rest.map((line, i) => (
+            <Fragment key={i}>
+              <br />
+              {line}
+            </Fragment>
+          ))}
+        </p>
+      </>
+    );
+  }
+  const inv = section.invitation;
+  const cta = (
+    <div className="intro-closing-cta">
+      <p className="intro-invite">
+        <strong className="intro-invite-lead">{inv.lead}</strong>
+        <br />
+        {lines(inv.before)}
+        <a className="intro-cta" href={booking.href} {...booking.props}>
+          {inv.link}
+        </a>
+        {lines(inv.after)}
+      </p>
+      <a className="btn btn-primary intro-book" href={booking.href} {...booking.props}>
+        <LuCalendarCheck aria-hidden /> {booking.label}
+      </a>
+      <p className="intro-ps">{inv.postscript}</p>
+    </div>
+  );
+  if (!section.body?.length) return cta;
+  return (
+    <>
+      {section.headline && <h3 className="intro-q">{section.headline}</h3>}
+      {section.skills && <p className="intro-skills">{section.skills}</p>}
+      <div className="intro-closing-cols">
+        <div>
+          {section.body.map((b, i) => (
+            <p key={i} className="intro-body">
+              {lines(b)}
+            </p>
+          ))}
+        </div>
+        {cta}
+      </div>
+    </>
+  );
 }
 
 function usePrefersReducedMotion(): boolean {
@@ -78,120 +147,119 @@ function useTabHidden(): boolean {
   return hidden;
 }
 
-/** Subtle animated network of blue nodes behind the intro. Static when not running. */
-function NetworkCanvas({ running }: { running: boolean }) {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const canvas = ref.current;
-    const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
-    let w = 0;
-    let h = 0;
-    let nodes: { x: number; y: number; vx: number; vy: number }[] = [];
-    let frame = 0;
-    const LINK = 130;
-
-    function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = canvas!.clientWidth;
-      h = canvas!.clientHeight;
-      canvas!.width = Math.round(w * dpr);
-      canvas!.height = Math.round(h * dpr);
-      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const count = Math.min(70, Math.max(18, Math.round((w * h) / 16000)));
-      nodes = Array.from({ length: count }, () => ({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: (Math.random() - 0.5) * 0.35,
-      }));
-      draw();
-    }
-
-    function draw() {
-      ctx!.clearRect(0, 0, w, h);
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const d = Math.hypot(dx, dy);
-          if (d < LINK) {
-            ctx!.strokeStyle = `rgba(34, 181, 255, ${0.22 * (1 - d / LINK)})`;
-            ctx!.lineWidth = 1;
-            ctx!.beginPath();
-            ctx!.moveTo(nodes[i].x, nodes[i].y);
-            ctx!.lineTo(nodes[j].x, nodes[j].y);
-            ctx!.stroke();
-          }
-        }
-      }
-      ctx!.fillStyle = "rgba(159, 216, 255, 0.7)";
-      for (const n of nodes) {
-        ctx!.beginPath();
-        ctx!.arc(n.x, n.y, 1.8, 0, Math.PI * 2);
-        ctx!.fill();
-      }
-    }
-
-    function tick() {
-      for (const n of nodes) {
-        n.x += n.vx;
-        n.y += n.vy;
-        if (n.x < 0 || n.x > w) n.vx *= -1;
-        if (n.y < 0 || n.y > h) n.vy *= -1;
-      }
-      draw();
-      frame = requestAnimationFrame(tick);
-    }
-
-    resize();
-    const ro = new ResizeObserver(resize);
-    ro.observe(canvas);
-    if (running) frame = requestAnimationFrame(tick);
-    return () => {
-      cancelAnimationFrame(frame);
-      ro.disconnect();
-    };
-  }, [running]);
-  return <canvas ref={ref} className="intro-canvas" aria-hidden />;
-}
-
 /**
- * Home hero carousel. Slide 1: animated questions and answers (one pair at a time). Slide 2: the
- * banner image, shown after the final frame and kept until the visitor replays the intro.
- * There is no independent timer: slide 1 itself moves to slide 2 when its sequence ends.
+ * Home hero carousel.
+ * Slide 1: the chosen intro style (questions & answers, poem, …), one vertical scrolling sequence
+ * ending with the closing invitation. It scrolls down by itself (one section at a time, a hold on
+ * each) and stops at the invitation; visitors can scroll by hand at any time, which pauses it
+ * until Play. Slide 2: the banner image, reached with the Next arrow. There is one timer only.
  */
-export default function HeroCarousel({ banner, kicker }: { banner: BannerImage | null; kicker: string }) {
-  const [state, setState] = useState<IntroState>(INTRO_START);
+export default function HeroCarousel({
+  banner,
+  kicker,
+  bookingUrl,
+}: {
+  banner: BannerImage | null;
+  kicker: string;
+  bookingUrl: string;
+}) {
+  const [slide, setSlide] = useState<0 | 1>(0);
+  // The server always renders the default style; the saved one is applied after mount.
+  const [variantId, setVariantId] = useState(DEFAULT_VARIANT_ID);
+  const variant = resolveVariant(variantId);
+  const sections = variant.sections;
+  const last = sections.length - 1;
+  /** The section the sequence has settled on. */
+  const [pos, setPos] = useState(0);
   const [playing, setPlaying] = useState(true);
+  /** Temporary pauses: pointer over the text, or keyboard focus inside it. */
+  const [hovered, setHovered] = useState(false);
+  const [keyFocus, setKeyFocus] = useState(false);
   const reduced = usePrefersReducedMotion();
   const hidden = useTabHidden();
-  const { slide, pair } = state;
-  const current = INTRO_PAIRS[pair];
-  const isLast = pair === INTRO_PAIRS.length - 1;
+  const scroller = useRef<HTMLDivElement>(null);
+  const blocks = useRef<(HTMLElement | null)[]>([]);
+  blocks.current.length = sections.length;
 
-  // Reduced motion: whole pair at once, no automatic progression.
-  const qShown = reduced ? current.question.length : state.q;
-  const aShown = reduced ? answerText(current).length : state.a;
-  const done = qShown >= current.question.length && aShown >= answerText(current).length;
-  const autoplay = slide === 0 && playing && !hidden && !reduced;
+  useEffect(() => {
+    setVariantId(resolveVariant(readSavedVariant()).id);
+  }, []);
 
-  // One pending step at a time; any state change (including manual navigation) cancels it.
+  /** Show another intro style: back to its top, same paused/playing state. */
+  function chooseVariant(id: string) {
+    const v = resolveVariant(id);
+    saveVariant(v.id);
+    if (v.id === variantId) return;
+    setVariantId(v.id);
+    setPos(0);
+    scroller.current?.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  const autoplay = slide === 0 && playing && !hidden && !reduced && !hovered && !keyFocus;
+
+  const scrollToBlock = useCallback(
+    (i: number) => {
+      const el = blocks.current[i];
+      const box = scroller.current;
+      if (!el || !box) return;
+      box.scrollTo({ top: el.offsetTop, behavior: reduced ? "auto" : "smooth" });
+    },
+    [reduced],
+  );
+
+  // The one timer: after the current block has faded in and been held, scroll to the next.
+  // Any change (manual scroll, pause, slide or style change, unmount) cancels it.
   useEffect(() => {
     if (!autoplay) return;
-    const step = introStep(state);
+    const step = introStep(pos, sections.length);
     if (!step) return;
-    const t = window.setTimeout(() => setState(step.next), step.delay);
+    const t = window.setTimeout(() => scrollToBlock(step.next), step.delay);
     return () => window.clearTimeout(t);
-  }, [autoplay, state]);
+  }, [autoplay, pos, sections, scrollToBlock]);
 
-  const goTo = useCallback((s: 0 | 1) => {
-    // Returning to slide 1 always restarts the sequence.
-    setState(s === 0 ? INTRO_START : (prev) => ({ ...prev, slide: 1 }));
-    if (s === 0) setPlaying(true);
+  // Track where the scroll settles (automatic or manual) to know the current block.
+  useEffect(() => {
+    const box = scroller.current;
+    if (!box) return;
+    let t = 0;
+    const settle = () => {
+      const mark = box.scrollTop + box.clientHeight * 0.4;
+      let i = 0;
+      blocks.current.forEach((el, k) => {
+        if (el && el.offsetTop <= mark) i = k;
+      });
+      setPos(i);
+    };
+    const onScroll = () => {
+      window.clearTimeout(t);
+      t = window.setTimeout(settle, 140);
+    };
+    box.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.clearTimeout(t);
+      box.removeEventListener("scroll", onScroll);
+    };
   }, []);
-  const toPair = (i: number) => setState({ slide: 0, pair: i, q: 0, a: 0 });
+
+  /** Mouse wheel, touch, scrollbar drag or scroll keys: the visitor is reading, stop. */
+  const manual = () => setPlaying(false);
+
+  const goTo = (s: 0 | 1) => {
+    setSlide(s);
+    setPlaying(false); // manual navigation pauses until Play
+  };
   const other = (slide === 0 ? 1 : 0) as 0 | 1;
+
+  function togglePlay() {
+    if (playing) return setPlaying(false);
+    if (pos >= last) scrollToBlock(0); // at the invitation, Play starts again from the top
+    setPlaying(true);
+  }
+
+  function skipToInvitation() {
+    setPlaying(false);
+    scrollToBlock(last);
+  }
 
   function onKeyDown(e: React.KeyboardEvent) {
     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
@@ -200,6 +268,9 @@ export default function HeroCarousel({ banner, kicker }: { banner: BannerImage |
     }
   }
 
+  const booking: Booking = bookingUrl
+    ? { href: bookingUrl, props: { target: "_blank", rel: "noopener noreferrer" }, label: BOOKING.label }
+    : { href: "#contact", props: {}, label: BOOKING.fallbackLabel };
   const caption = banner?.caption || BANNER_CAPTION;
 
   return (
@@ -211,7 +282,7 @@ export default function HeroCarousel({ banner, kicker }: { banner: BannerImage |
       onKeyDown={onKeyDown}
     >
       <div className="hero-slides">
-        {/* Slide 1 — animated questions and answers */}
+        {/* Slide 1 — scrolling questions and answers, then the invitation */}
         <div
           className={`hero-slide intro-slide${slide === 0 ? " is-active" : ""}`}
           role="group"
@@ -220,32 +291,61 @@ export default function HeroCarousel({ banner, kicker }: { banner: BannerImage |
           aria-hidden={slide !== 0}
           inert={slide !== 0}
         >
-          <NetworkCanvas running={slide === 0 && !hidden && !reduced} />
-          <div className="intro-content">
+          <div className="intro-head">
             {kicker && <p className="intro-kicker">{kicker}</p>}
-            <div className="intro-stage">
-              {/* Invisible copies of every pair reserve the tallest height: no layout jumps. */}
-              {INTRO_PAIRS.map((p, i) => (
-                <div key={i} className="intro-pair is-ghost" aria-hidden>
-                  <p className="intro-q">{p.question}</p>
-                  <p className="intro-a">{typedAnswer(p.answer, Infinity, false)}</p>
-                </div>
-              ))}
-              <div className="intro-pair" aria-hidden={!done}>
-                <p className="intro-q">
-                  {current.question.slice(0, qShown)}
-                  {!reduced && qShown < current.question.length && <span className="intro-cursor" />}
-                </p>
-                <p className="intro-a">
-                  {typedAnswer(current.answer, aShown, done)}
-                  {!reduced && qShown >= current.question.length && <span className={`intro-cursor${done ? " is-idle" : ""}`} />}
-                </p>
+            {INTRO_VARIANTS.length > 1 && (
+              // Versions of slide 1, not carousel slides: kept apart from the slide dots.
+              <div className="intro-style" role="group" aria-label="Intro style">
+                <span className="intro-style-label" aria-hidden>
+                  Intro style
+                </span>
+                {INTRO_VARIANTS.map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    className="intro-style-btn"
+                    aria-pressed={v.id === variant.id}
+                    onClick={() => chooseVariant(v.id)}
+                  >
+                    {v.label}
+                  </button>
+                ))}
               </div>
-            </div>
-            {/* Screen readers get each pair once it is complete, not letter by letter. */}
-            <p className="sr-only" aria-live="polite">
-              {done && slide === 0 ? `${current.question} ${answerText(current)}` : ""}
-            </p>
+            )}
+          </div>
+          <div
+            ref={scroller}
+            className={`intro-scroll is-${variant.id}`}
+            tabIndex={0}
+            role="region"
+            aria-label={variant.title}
+            onWheel={manual}
+            onTouchStart={manual}
+            onPointerDown={(e) => {
+              // Dragging the scrollbar (not clicking a link or button) counts as manual scrolling.
+              if (e.target === e.currentTarget) manual();
+            }}
+            onKeyDown={(e) => {
+              if (SCROLL_KEYS.has(e.key) && (e.target === e.currentTarget || e.key !== " ")) manual();
+            }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            onFocus={(e) => setKeyFocus(e.target.matches(":focus-visible"))}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setKeyFocus(false);
+            }}
+          >
+            {sections.map((s, i) => (
+              <article
+                key={i}
+                ref={(el) => {
+                  blocks.current[i] = el;
+                }}
+                className={`intro-block is-${s.kind}${pos === i ? " is-current" : ""}`}
+              >
+                <Section section={s} booking={booking} />
+              </article>
+            ))}
           </div>
         </div>
 
@@ -299,41 +399,28 @@ export default function HeroCarousel({ banner, kicker }: { banner: BannerImage |
           <LuChevronRight aria-hidden />
         </button>
 
-        {slide === 0 ? (
+        {slide === 0 && (
           <>
-            {(reduced || !playing) && (
-              <>
-                <button type="button" className="hc-btn" disabled={pair === 0} onClick={() => toPair(pair - 1)}>
-                  Previous question
-                </button>
-                <button type="button" className="hc-btn" disabled={isLast} onClick={() => toPair(pair + 1)}>
-                  Next question
-                </button>
-              </>
-            )}
             {!reduced && (
               <button
                 type="button"
                 className="hc-btn"
                 aria-pressed={!playing}
-                aria-label={playing ? "Pause intro" : "Play intro"}
-                onClick={() => setPlaying((p) => !p)}
+                aria-label={playing ? "Pause automatic scrolling" : "Play automatic scrolling"}
+                onClick={togglePlay}
               >
                 {playing ? <LuPause aria-hidden /> : <LuPlay aria-hidden />}
               </button>
             )}
-            <span className="hc-progress" aria-label={`Question ${pair + 1} of ${INTRO_PAIRS.length}`}>
-              {pair + 1} / {INTRO_PAIRS.length}
-            </span>
-            <button type="button" className="hc-btn" onClick={() => goTo(1)}>
-              <LuSkipForward aria-hidden /> Skip intro
+            <span className="hc-progress">{pos < last ? `${pos + 1} / ${last}` : "Invitation"}</span>
+            <button type="button" className="hc-btn" disabled={pos >= last} onClick={skipToInvitation}>
+              <LuSkipForward aria-hidden /> Skip to invitation
             </button>
           </>
-        ) : (
-          <button type="button" className="hc-btn" onClick={() => goTo(0)}>
-            <LuRotateCcw aria-hidden /> Replay intro
-          </button>
         )}
+        <a className="hc-btn hc-book" href={booking.href} {...booking.props}>
+          <LuCalendarCheck aria-hidden /> {booking.label}
+        </a>
       </div>
     </div>
   );

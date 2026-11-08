@@ -590,67 +590,234 @@ img {
 .intro-slide {
   position: relative;
   display: flex;
-  align-items: center;
-  min-height: clamp(400px, 62vh, 640px);
+  flex-direction: column;
+  /* Fixed height: the sequence scrolls inside, so the carousel never changes size. */
+  height: clamp(480px, 72vh, 720px);
   overflow: hidden;
-  background:
-    radial-gradient(circle at 80% 20%, rgba(20, 157, 221, 0.22), transparent 45%),
-    radial-gradient(circle at 10% 90%, rgba(5, 99, 187, 0.3), transparent 50%),
-    linear-gradient(135deg, #030a14 0%, #061a33 60%, #0a2c55 100%);
+  /* Decorative background (human ↔ AI brains). It belongs to the slide, not the scrolling
+     text, so it stays put while the sequence scrolls over it. The gradients only darken the
+     text side a little: the image is already dark. */
+  background-color: #050b16;
+  background-image:
+    linear-gradient(90deg, rgba(3, 8, 18, 0.62) 0%, rgba(3, 8, 18, 0.4) 42%, rgba(3, 8, 18, 0.08) 72%, transparent 100%),
+    linear-gradient(180deg, rgba(3, 8, 18, 0.35) 0%, transparent 22%, transparent 80%, rgba(3, 8, 18, 0.45) 100%),
+    url("/humanaibrain-2400.webp");
+  background-size: cover;
+  background-repeat: no-repeat;
+  /* Keep the meeting point of the two brains (about 57% across) in view. */
+  background-position: 60% 50%;
 }
 
-.intro-canvas {
-  position: absolute;
-  inset: 0;
+/* Header row (name + intro style) and the text column share one left edge. */
+.intro-head,
+.intro-block {
   width: 100%;
-  height: 100%;
+  max-width: 860px;
+  margin-left: clamp(0px, 4vw, 56px);
+  margin-right: auto;
+  padding-left: 32px;
+  padding-right: 32px;
 }
 
-.intro-content {
+.intro-head {
   position: relative;
-  width: 100%;
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: 72px 32px 112px;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  padding-top: 22px;
+}
+
+/* "Intro style" selector: versions of slide 1, styled apart from the slide dots. */
+.intro-style {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid rgba(159, 216, 255, 0.3);
+  border-radius: 999px;
+  background: rgba(4, 12, 24, 0.55);
+}
+
+.intro-style-label {
+  padding: 0 8px 0 10px;
+  font-size: 0.75rem;
+  color: #9fb8d4;
+}
+
+.intro-style-btn {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #cfe6ff;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.intro-style-btn:hover {
+  color: #fff;
+  background: rgba(34, 181, 255, 0.18);
+}
+
+.intro-style-btn[aria-pressed="true"] {
+  background: #0563bb;
+  color: #fff;
+  font-weight: 700;
+}
+
+.intro-style-btn:focus-visible {
+  outline: 3px solid #9fd8ff;
+  outline-offset: 2px;
 }
 
 .intro-kicker {
+  margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-size: 0.82rem;
   font-weight: 700;
   color: #9fd8ff;
-  margin: 0 0 22px;
 }
 
-.intro-stage {
-  display: grid;
+/* The scrolling sequence: one block per view, the invitation may be taller. */
+.intro-scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: y proximity;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(159, 216, 255, 0.45) transparent;
+  /* Soft fades where text enters and leaves. */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
+  /* Readable over the image without any card behind the text. */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55), 0 2px 18px rgba(0, 0, 0, 0.5);
 }
 
-.intro-pair {
-  grid-area: 1 / 1;
+.intro-scroll:focus-visible {
+  outline: 3px solid #9fd8ff;
+  outline-offset: -3px;
 }
 
-.intro-pair.is-ghost {
-  visibility: hidden;
+.intro-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100%;
+  padding-top: 48px;
+  padding-bottom: 48px;
+  scroll-snap-align: start;
+  opacity: 0.35;
+  transition: opacity 0.5s ease;
+}
+
+.intro-block.is-current,
+.is-reduced .intro-block {
+  opacity: 1;
+}
+
+.intro-topic {
+  margin: 0 0 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #22b5ff;
 }
 
 .intro-q {
   font-family: var(--font-heading);
-  font-size: clamp(1.55rem, 3.6vw, 2.7rem);
+  font-size: clamp(1.55rem, 3.2vw, 2.6rem);
   font-weight: 800;
   line-height: 1.2;
   color: #fff;
-  margin: 0 0 20px;
+  margin: 0 0 18px;
   overflow-wrap: break-word;
 }
 
 .intro-a {
-  font-size: clamp(1.1rem, 2.1vw, 1.55rem);
-  line-height: 1.5;
-  color: #9fd8ff;
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  line-height: 1.55;
+  color: #e3ecf7;
   margin: 0;
   overflow-wrap: break-word;
+}
+
+/* Poem version: elegant serif, stanza spacing kept, first line emphasized. */
+.intro-poem-title {
+  margin: 0 0 18px;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #22b5ff;
+}
+
+.intro-stanza {
+  margin: 0;
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  font-size: clamp(1.12rem, 2vw, 1.5rem);
+  line-height: 1.65;
+  color: #e3ecf7;
+  overflow-wrap: break-word;
+}
+
+.intro-stanza-lead {
+  display: inline-block;
+  margin-bottom: 2px;
+  font-size: 1.12em;
+  font-weight: 700;
+  font-style: italic;
+  color: #fff;
+}
+
+/* Closing invitation: headline, skills, body, invitation, button, postscript. */
+.intro-block.is-closing {
+  justify-content: flex-start;
+  padding-top: 44px;
+  padding-bottom: 44px;
+}
+
+.intro-skills {
+  margin: 0 0 18px;
+  font-weight: 700;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  color: #22b5ff;
+}
+
+.intro-body {
+  margin: 0 0 14px;
+  font-size: clamp(1rem, 1.7vw, 1.2rem);
+  line-height: 1.55;
+  color: #e3ecf7;
+}
+
+/* No card: just a blue accent rule beside the invitation. */
+.intro-invite {
+  margin: 10px 0 20px;
+  padding: 4px 0 4px 18px;
+  border-left: 3px solid #22b5ff;
+  font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+  line-height: 1.55;
+  color: #fff;
+}
+
+.intro-invite-lead {
+  display: inline-block;
+  margin-bottom: 4px;
+  font-family: var(--font-heading);
+  font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+  font-weight: 800;
+  color: #fff;
 }
 
 .intro-cta {
@@ -665,28 +832,41 @@ img {
   color: #22b5ff;
 }
 
-.intro-cursor {
-  display: inline-block;
-  width: 0.09em;
-  min-width: 3px;
-  height: 1em;
-  margin-left: 3px;
-  vertical-align: -0.12em;
-  background: #22b5ff;
+.intro-closing-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.intro-cursor.is-idle {
-  animation: intro-blink 1s steps(1) infinite;
+.intro-invite {
+  align-self: stretch;
 }
 
-@keyframes intro-blink {
-  50% {
-    opacity: 0;
+/* Wide screens: body beside the invitation, so the whole closing block fits in one view. */
+@media (min-width: 1100px) {
+  .intro-block.is-closing {
+    justify-content: center;
+  }
+  .intro-closing-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 40px;
+    align-items: start;
+  }
+  .intro-closing-cols .intro-invite {
+    margin-top: 0;
   }
 }
 
+.intro-ps {
+  margin: 16px 0 0;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #b9c9dc;
+}
+
 .hero-carousel .hero-banner figcaption {
-  bottom: 76px;
+  bottom: 18px;
   right: 32px;
 }
 
@@ -706,8 +886,8 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: clamp(400px, 62vh, 640px);
-  padding: 32px 32px 96px;
+  height: 100%;
+  padding: 32px;
   background: linear-gradient(135deg, #061426 0%, #0a2c55 55%, #0b3d73 100%);
 }
 
@@ -720,18 +900,25 @@ img {
   margin: 0;
 }
 
+/* Controls sit in their own bar under the slides: they never cover the text. */
 .hero-carousel-controls {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 18px;
+  position: relative;
   z-index: 3;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 0 16px;
+  padding: 10px 16px;
+  background: #040c18;
+  border-top: 1px solid rgba(159, 216, 255, 0.15);
+}
+
+.hc-btn.hc-book {
+  background: #0563bb;
+  border-color: #22b5ff;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .hc-btn {
@@ -798,7 +985,8 @@ img {
 
 .hc-btn:focus-visible,
 .hc-dot:focus-visible,
-.intro-cta:focus-visible {
+.intro-cta:focus-visible,
+.intro-book:focus-visible {
   outline: 3px solid #9fd8ff;
   outline-offset: 2px;
 }
@@ -816,17 +1004,39 @@ img {
   .hero-slide.is-active {
     transition: none;
   }
-  .intro-cursor.is-idle {
-    animation: none;
+  .intro-block {
+    transition: none;
   }
 }
 
 @media (max-width: 767px) {
-  .intro-content {
-    padding: 48px 16px 150px;
+  .intro-slide {
+    height: clamp(480px, 74svh, 660px);
+    /* Text spans the whole width here: an even, light overlay; smaller image file. */
+    background-image:
+      linear-gradient(180deg, rgba(3, 8, 18, 0.5) 0%, rgba(3, 8, 18, 0.42) 50%, rgba(3, 8, 18, 0.55) 100%),
+      url("/humanaibrain-1280.webp");
+    /* Centre on the spark between the two brains. */
+    background-position: 57% 50%;
+  }
+  .intro-head,
+  .intro-block {
+    margin-left: 0;
+  }
+  .intro-head {
+    padding: 16px 72px 8px 16px; /* clear of the floating menu button */
+  }
+  .intro-style-label {
+    display: none;
+  }
+  .intro-block {
+    padding: 28px 16px;
+  }
+  .intro-invite {
+    padding: 14px 14px;
   }
   .hero-banner-fallback {
-    padding: 24px 16px 150px;
+    padding: 24px 16px;
   }
   /* Wide banner on a narrow screen: show it whole, centred, rather than cropping it. */
   .banner-slide {
@@ -839,7 +1049,6 @@ img {
   }
   .banner-slide .hero-banner {
     width: 100%;
-    margin-bottom: 100px;
   }
   .hero-carousel .hero-banner figcaption {
     position: static;
@@ -850,8 +1059,8 @@ img {
     display: none;
   }
   .hero-carousel-controls {
-    bottom: 12px;
     gap: 6px;
+    padding: 8px 10px;
   }
   .hc-btn {
     padding: 0 10px;
