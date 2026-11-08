@@ -1044,7 +1044,8 @@
   cursor: pointer;
 }
 
-.bg-thumb img {
+.bg-thumb img,
+.bg-thumb video {
   width: 100%;
   height: 80px;
   object-fit: cover;

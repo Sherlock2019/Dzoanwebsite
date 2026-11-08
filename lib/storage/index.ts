@@ -12,8 +12,9 @@ export interface ObjectStorage {
 // content, so the media route only ever serves them to the signed-in owner.
 // ".bin" = any other file attached to a custom section: served as application/octet-stream and
 // always downloaded (never rendered), so its content can't run in the site's origin.
+// "videos" holds background videos (MP4/WebM), served inline with range requests so they can stream.
 const KEY_PATTERN =
-  /^(images|documents|sources)\/\d{4}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(\.thumb)?\.(png|jpg|webp|pdf|docx|txt|md|bin)$/;
+  /^((images|documents|sources)\/\d{4}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(\.thumb)?\.(png|jpg|webp|pdf|docx|txt|md|bin)|videos\/\d{4}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(mp4|webm))$/;
 
 export function isValidKey(key: string): boolean {
   return KEY_PATTERN.test(key);
@@ -27,6 +28,8 @@ export const CONTENT_TYPES: Record<string, string> = {
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   txt: "text/plain; charset=utf-8",
   md: "text/markdown; charset=utf-8",
+  mp4: "video/mp4",
+  webm: "video/webm",
 };
 
 export function contentTypeForKey(key: string): string {

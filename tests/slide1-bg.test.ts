@@ -18,10 +18,10 @@ describe("slide 1 background settings", () => {
   it("uses a version's override, else the shared setting", () => {
     const shared = image();
     const v3 = { ...DEFAULT_SLIDE1_BG, dynamic: { ...DEFAULT_SLIDE1_BG.dynamic, theme: "brain" as const } };
-    const s = { all: shared, overrides: { V3: v3 }, library: [] };
-    expect(resolveSlide1Bg(s, "V2")).toBe(shared);
-    expect(resolveSlide1Bg(s, "V3")).toBe(v3);
-    expect(resolveSlide1Bg(s, "V4")).toBe(shared);
+    const s = { all: shared, overrides: { V3: v3 }, library: [], videos: [] };
+    expect(resolveSlide1Bg(s, "V2")).toEqual(shared);
+    expect(resolveSlide1Bg(s, "V3")).toEqual(v3);
+    expect(resolveSlide1Bg(s, "V4")).toEqual(shared);
   });
 
   it("serves the current image, or the uploaded one", () => {

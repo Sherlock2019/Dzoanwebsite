@@ -4,14 +4,15 @@
 //   - "dynamic": an animated neural network (layered, brain-shaped, the rotating 3D
 //                "electronic brain" with sparkles, or the "AI engine": the brain fed by business,
 //                data and MLOps blocks, powered by GPU compute, producing outputs), on a canvas;
-//   - "image":   a fixed image: the current one (humanaibrain), the electronic brain, or an upload.
+//   - "image":   a fixed image: the current one (humanaibrain), the electronic brain, or an upload;
+//   - "video":   an uploaded MP4/WebM video, muted and looping.
 //
 // One shared setting ("all"), optionally overridden per site version (V2, V3, V4).
 
 import { fullUrl } from "@/lib/media-url";
 import type { Media } from "@/lib/types";
 
-export const BG_TYPES = ["dynamic", "image"] as const;
+export const BG_TYPES = ["dynamic", "image", "video"] as const;
 export type BgType = (typeof BG_TYPES)[number];
 
 export const NETWORK_THEMES = ["layered", "brain", "electro", "engine"] as const;
@@ -49,10 +50,25 @@ export interface ImageBg {
   overlay: number;
 }
 
+/** An uploaded background video (MP4/WebM). */
+export interface VideoFile {
+  key: string;
+  filename: string;
+}
+
+export interface VideoBg {
+  media: VideoFile | null;
+  /** Focal point, in percent (CSS object-position). */
+  position: { x: number; y: number };
+  /** Dark layer over the video, 0–0.85 (keeps the text readable). */
+  overlay: number;
+}
+
 export interface Slide1Bg {
   type: BgType;
   dynamic: DynamicBg;
   image: ImageBg;
+  video: VideoBg;
 }
 
 export interface Slide1BgSettings {
@@ -62,12 +78,15 @@ export interface Slide1BgSettings {
   overrides: Partial<Record<SiteVersion, Slide1Bg>>;
   /** Images uploaded for this background, kept for later reuse. */
   library: Media[];
+  /** Videos uploaded for this background, kept for later reuse. */
+  videos: VideoFile[];
 }
 
 export const DEFAULT_DYNAMIC: DynamicBg = { theme: "layered", palette: "blue-cyan", density: 1, speed: 1, glow: 0.6, overlay: 0.3 };
 export const DEFAULT_IMAGE: ImageBg = { source: "current", media: null, position: { x: 60, y: 50 }, overlay: 0.45 };
-export const DEFAULT_SLIDE1_BG: Slide1Bg = { type: "dynamic", dynamic: DEFAULT_DYNAMIC, image: DEFAULT_IMAGE };
-export const DEFAULT_SLIDE1_SETTINGS: Slide1BgSettings = { all: DEFAULT_SLIDE1_BG, overrides: {}, library: [] };
+export const DEFAULT_VIDEO: VideoBg = { media: null, position: { x: 50, y: 50 }, overlay: 0.45 };
+export const DEFAULT_SLIDE1_BG: Slide1Bg = { type: "dynamic", dynamic: DEFAULT_DYNAMIC, image: DEFAULT_IMAGE, video: DEFAULT_VIDEO };
+export const DEFAULT_SLIDE1_SETTINGS: Slide1BgSettings = { all: DEFAULT_SLIDE1_BG, overrides: {}, library: [], videos: [] };
 
 /** The current image (humanaibrain), large and small. */
 export const CURRENT_IMAGE = { large: "/humanaibrain-2400.webp", small: "/humanaibrain-1280.webp" };
@@ -76,7 +95,7 @@ export const CURRENT_IMAGE = { large: "/humanaibrain-2400.webp", small: "/humana
 export const ELECTRO_IMAGE = { large: "/electrobrain.webp", small: "/electrobrain-1280.webp" };
 
 export const LABELS = {
-  type: { dynamic: "Dynamic neural network", image: "Fixed image" } as Record<BgType, string>,
+  type: { dynamic: "Dynamic neural network", image: "Fixed image", video: "Video" } as Record<BgType, string>,
   theme: {
     layered: "Layered network",
     brain: "Brain-shaped network",
@@ -93,9 +112,27 @@ export const PALETTE_RGB: Record<Palette, { base: string; forward: string; backw
   cyan: { base: "50, 170, 220", forward: "80, 225, 255", backward: "170, 245, 255" },
 };
 
+/** A setting with every part present (settings saved by older versions may lack newer parts). */
+export function normalizeBg(b: Partial<Slide1Bg> | null | undefined): Slide1Bg {
+  return {
+    ...DEFAULT_SLIDE1_BG,
+    ...b,
+    dynamic: { ...DEFAULT_DYNAMIC, ...b?.dynamic },
+    image: { ...DEFAULT_IMAGE, ...b?.image },
+    video: { ...DEFAULT_VIDEO, ...b?.video },
+  };
+}
+
+/** Full settings with defaults filled in. */
+export function normalizeSettings(s: Partial<Slide1BgSettings> | null | undefined): Slide1BgSettings {
+  const overrides: Slide1BgSettings["overrides"] = {};
+  for (const v of SITE_VERSIONS) if (s?.overrides?.[v]) overrides[v] = normalizeBg(s.overrides[v]);
+  return { all: normalizeBg(s?.all), overrides, library: s?.library ?? [], videos: s?.videos ?? [] };
+}
+
 /** The setting a version shows: its override, else the shared one, else the default. */
 export function resolveSlide1Bg(settings: Slide1BgSettings | null | undefined, version: SiteVersion): Slide1Bg {
-  return settings?.overrides?.[version] ?? settings?.all ?? DEFAULT_SLIDE1_BG;
+  return normalizeBg(settings?.overrides?.[version] ?? settings?.all);
 }
 
 /** URL of a fixed image (an upload without its file falls back to the current image). */
