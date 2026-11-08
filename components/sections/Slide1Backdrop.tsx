@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
+import AIEngine from "./AIEngine";
 import ElectroBrain from "./ElectroBrain";
 import NeuralBackground from "./NeuralBackground";
 import { CURRENT_IMAGE, imageBgUrl, type Slide1Bg } from "@/lib/slide1-bg";
@@ -16,7 +17,9 @@ const layer: CSSProperties = { position: "absolute", inset: 0, pointerEvents: "n
 export default function Slide1Backdrop({ bg, running }: { bg: Slide1Bg; running: boolean }) {
   const [failed, setFailed] = useState(false);
   const dynamic = bg.type === "dynamic" && !failed;
-  const electro = bg.dynamic.theme === "electro";
+  const theme = bg.dynamic.theme;
+  // Themes drawn from the electronic-brain image fall back to that image.
+  const electro = theme === "electro" || theme === "engine";
   // A failing canvas shows the matching image instead.
   const image = failed ? { ...bg.image, source: electro ? ("electro" as const) : ("current" as const) } : bg.image;
   const url = imageBgUrl(image);
@@ -26,7 +29,9 @@ export default function Slide1Backdrop({ bg, running }: { bg: Slide1Bg; running:
     <div className="slide1-bg" aria-hidden style={{ ...layer, overflow: "hidden", background: "#030A12" }}>
       {dynamic ? (
         <>
-          {electro ? (
+          {theme === "engine" ? (
+            <AIEngine settings={bg.dynamic} running={running} onFail={() => setFailed(true)} />
+          ) : theme === "electro" ? (
             <ElectroBrain settings={bg.dynamic} running={running} onFail={() => setFailed(true)} />
           ) : (
             <NeuralBackground key={bg.dynamic.theme} settings={bg.dynamic} running={running} onFail={() => setFailed(true)} />
