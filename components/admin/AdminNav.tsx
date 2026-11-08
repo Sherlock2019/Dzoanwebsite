@@ -9,6 +9,7 @@ import {
   LuExternalLink,
   LuLayers,
   LuLayoutDashboard,
+  LuListOrdered,
   LuLogOut,
   LuNetwork,
   LuRocket,
@@ -21,10 +22,11 @@ import { SECTION_ICON_MAP } from "@/lib/icons";
 
 const LINKS = [
   { href: "/admin", label: "Dashboard", icon: LuLayoutDashboard },
+  { href: "/admin/profile#menu-sections", label: "Menu: names & order", icon: LuListOrdered },
   { href: "/admin/profile", label: "Profile & résumé", icon: LuUser },
   { href: "/admin/projects", label: "Projects", icon: LuCode },
   { href: "/admin/architectures", label: "Architectures", icon: LuNetwork },
-  { href: "/admin/current", label: "Full project details", icon: LuRocket },
+  { href: "/admin/current", label: "Full resume portfolio", icon: LuRocket },
   { href: "/admin/experience", label: "Experience", icon: LuBriefcase },
   { href: "/admin/skills", label: "Skills & stacks", icon: LuSettings },
   { href: "/admin/certifications", label: "Certifications", icon: LuAward },

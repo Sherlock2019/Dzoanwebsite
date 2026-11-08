@@ -65,6 +65,10 @@ export default async function Dashboard() {
           <li>Everything you create starts as a <strong>draft</strong>. Drafts and their images are invisible to visitors.</li>
           <li>Use <strong>Save &amp; publish</strong> (or Publish in a list) to make an item public; Unpublish hides it again.</li>
           <li>Use the arrows in each list to set the order shown on the site.</li>
+          <li>
+            Rename, reorder or hide the site&apos;s sections (left menu) under{" "}
+            <Link href="/admin/profile#menu-sections">Menu: names &amp; order</Link>. Add new sections under Custom sections.
+          </li>
           <li>Images: JPEG, PNG or WebP up to 15 MB. Diagrams are kept at full resolution; thumbnails are generated automatically.</li>
         </ul>
       </section>

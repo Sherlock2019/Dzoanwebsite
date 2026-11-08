@@ -149,10 +149,10 @@ export const COLLECTION_CONFIG: Record<CollectionName, CollectionConfig> = {
   },
   current: {
     name: "current",
-    label: "Full Project Details",
+    label: "Full Resume Portfolio",
     singular: "project",
     description:
-      "Shown on the site as \"Full Project Details\". Attach a detailed PDF to each: visitors must confirm their email with a 6-digit code before they can download it. Most recently updated appear first.",
+      "Shown on the site as \"Full Resume Portfolio Download\" (rename it under Menu: names & order). Attach a detailed PDF to each: visitors must confirm their email with a 6-digit code before they can download it. Most recently updated appear first.",
     titleField: "title",
     subtitleField: "stage",
     publicPath: "current",

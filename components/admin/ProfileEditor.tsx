@@ -241,7 +241,7 @@ export default function ProfileEditor({ initial, customSections }: { initial: Pr
         </fieldset>
       ))}
 
-      <fieldset className="admin-fieldset">
+      <fieldset className="admin-fieldset" id="menu-sections">
         <legend>Left menu &amp; sections</legend>
         <p className="hint">
           Same order as the left menu and the page. Use the arrows to move a section, type a new name (menu entry and
