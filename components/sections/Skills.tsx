@@ -1,5 +1,5 @@
 import MediaImage from "@/components/ui/MediaImage";
-import { CATEGORY_ICONS, skillIcon } from "@/lib/icons";
+import { CATEGORY_COLORS, CATEGORY_ICONS, skillColor, skillIcon } from "@/lib/icons";
 import { thumbUrl } from "@/lib/media-url";
 import type { Profile, SkillCategory } from "@/lib/types";
 import { sectionLabel, sectionShown } from "@/lib/section-labels";
@@ -10,7 +10,8 @@ function CategoryColumn({ category }: { category: SkillCategory }) {
   return (
     <div className="skill-column">
       <h3>
-        <Icon aria-hidden className="skill-column-icon" /> {category.title}
+        <Icon aria-hidden className="skill-column-icon" style={{ color: CATEGORY_COLORS[category.icon] || CATEGORY_COLORS.other }} />{" "}
+        {category.title}
       </h3>
       {category.description && <p className="skill-column-desc">{category.description}</p>}
       <ul className="skill-list">
@@ -18,7 +19,7 @@ function CategoryColumn({ category }: { category: SkillCategory }) {
           const ItemIcon = skillIcon(item, category.icon);
           return (
             <li key={item}>
-              <ItemIcon aria-hidden className="skill-icon" />
+              <ItemIcon aria-hidden className="skill-icon" style={{ color: skillColor(item, category.icon) }} />
               <span>{item}</span>
             </li>
           );
@@ -82,7 +83,7 @@ export default function Skills({ profile, skills }: { profile: Profile; skills: 
                         const ItemIcon = skillIcon(item, c.icon);
                         return (
                           <li key={item}>
-                            <ItemIcon aria-hidden />
+                            <ItemIcon aria-hidden style={{ color: skillColor(item, c.icon) }} />
                             <span>{item}</span>
                           </li>
                         );
