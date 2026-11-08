@@ -8,7 +8,7 @@ import type { CurrentProject } from "@/lib/types";
 import SectionTitle from "./SectionTitle";
 
 /** Button text when a project has a single gated file (with several, each shows its filename). */
-export const DOWNLOAD_LABEL = "Projects Portfolio Download";
+export const DOWNLOAD_LABEL = "Full Portfolio Download";
 
 export default function CurrentProjects({ items, title = SECTION_LABELS.current }: { items: CurrentProject[]; title?: string }) {
   if (!items.length) return null;
