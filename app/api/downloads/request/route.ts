@@ -8,8 +8,9 @@ import { findDownload, verifiedVisitor } from "@/lib/gated-items";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Step 1 of a gated download. A visitor who already confirmed an email gets the link straight
-// away; otherwise this checks the email and sends a 6-digit code to it.
+// Step 1 of a gated download. The visitor always gives their email; if that same email was
+// already confirmed in this browser they get the link straight away, otherwise this checks the
+// email and sends a 6-digit code to it.
 
 export async function POST(req: Request) {
   if (!isSameOrigin(req)) return NextResponse.json({ error: "Cross-origin request blocked" }, { status: 403 });
@@ -22,11 +23,13 @@ export async function POST(req: Request) {
   const found = await findDownload(body.project, body.index);
   if (!found) return NextResponse.json({ error: "This document is no longer available." }, { status: 404 });
 
+  // Always ask for the email (no download without one).
+  if (!body.email) return NextResponse.json({ need: "email" });
   const visitor = await verifiedVisitor();
-  if (visitor) {
+  const typed = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+  if (visitor && visitor.email.toLowerCase() === typed) {
     return NextResponse.json({ url: `/api/downloads/file?t=${downloadToken(visitor, found.project.id, body.index as number)}` });
   }
-  if (!body.email) return NextResponse.json({ need: "email" });
 
   if (!mailConfigured()) {
     return NextResponse.json({ error: "Downloads are not available right now. Please use the contact section instead." }, { status: 503 });
