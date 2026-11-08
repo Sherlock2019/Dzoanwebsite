@@ -6,6 +6,9 @@ import { formatDate } from "@/lib/text";
 import type { CurrentProject } from "@/lib/types";
 import SectionTitle from "./SectionTitle";
 
+/** Button text when a project has a single gated file (with several, each shows its filename). */
+export const DOWNLOAD_LABEL = "Projects Portfolio Download";
+
 export default function CurrentProjects({ items }: { items: CurrentProject[] }) {
   if (!items.length) return null;
   return (
@@ -45,7 +48,14 @@ export default function CurrentProjects({ items }: { items: CurrentProject[] }) 
                   {p.downloads.length > 0 && (
                     <div className="download-row">
                       {p.downloads.map((f, i) => (
-                        <DownloadGate key={i} projectId={p.id} index={i} filename={f.filename} projectTitle={p.title} />
+                        <DownloadGate
+                          key={i}
+                          projectId={p.id}
+                          index={i}
+                          filename={f.filename}
+                          projectTitle={p.title}
+                          label={p.downloads.length === 1 ? DOWNLOAD_LABEL : undefined}
+                        />
                       ))}
                     </div>
                   )}

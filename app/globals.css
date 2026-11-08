@@ -2433,6 +2433,11 @@ button.arch-media {
   max-width: 100%;
   text-align: left;
 }
+.btn-download span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .gate {
   width: min(440px, calc(100vw - 32px));
   border: 0;

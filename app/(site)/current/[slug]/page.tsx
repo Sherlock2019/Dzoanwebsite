@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BackLink, DetailBlock, ExternalLinks, TagList } from "@/components/detail/Detail";
+import { DOWNLOAD_LABEL } from "@/components/sections/CurrentProjects";
 import DownloadGate from "@/components/ui/DownloadGate";
 import MediaGallery from "@/components/ui/MediaGallery";
 import StatusBadge from "@/components/ui/StatusBadge";
@@ -50,7 +51,14 @@ export default async function CurrentProjectPage({ params }: Props) {
               <h2>Full project details</h2>
               <div className="download-row">
                 {p.downloads.map((f, i) => (
-                  <DownloadGate key={i} projectId={p.id} index={i} filename={f.filename} projectTitle={p.title} />
+                  <DownloadGate
+                    key={i}
+                    projectId={p.id}
+                    index={i}
+                    filename={f.filename}
+                    projectTitle={p.title}
+                    label={p.downloads.length === 1 ? DOWNLOAD_LABEL : undefined}
+                  />
                 ))}
               </div>
             </section>

@@ -17,7 +17,20 @@ async function post(url: string, body: object) {
   return { ok: res.ok, ...data };
 }
 
-export default function DownloadGate({ projectId, index, filename, projectTitle }: { projectId: string; index: number; filename: string; projectTitle: string }) {
+export default function DownloadGate({
+  projectId,
+  index,
+  filename,
+  projectTitle,
+  label,
+}: {
+  projectId: string;
+  index: number;
+  filename: string;
+  projectTitle: string;
+  /** Button text; defaults to the filename without its extension. */
+  label?: string;
+}) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [step, setStep] = useState<Step>("details");
   const [busy, setBusy] = useState(false);
@@ -84,8 +97,8 @@ export default function DownloadGate({ projectId, index, filename, projectTitle 
 
   return (
     <>
-      <button type="button" className="btn btn-primary btn-download" onClick={open} disabled={busy}>
-        <LuDownload aria-hidden /> {filename.replace(/\.(pdf|docx)$/i, "")}
+      <button type="button" className="btn btn-primary btn-download" onClick={open} disabled={busy} title={filename}>
+        <LuDownload aria-hidden /> <span>{label || filename.replace(/\.(pdf|docx)$/i, "")}</span>
       </button>
       <dialog ref={dialog} className="gate" aria-labelledby={`gate-${projectId}-${index}`} onClose={() => setError("")}>
         <button type="button" className="gate-close" onClick={() => dialog.current?.close()} aria-label="Close">
