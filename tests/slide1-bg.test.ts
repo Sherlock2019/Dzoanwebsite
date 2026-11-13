@@ -30,6 +30,7 @@ describe("slide 1 background settings", () => {
     // The AI engine and the electronic brain are dynamic themes too.
     expect(slide1BgSettingsSchema.safeParse({ ...DEFAULT_SLIDE1_SETTINGS, all: { ...DEFAULT_SLIDE1_BG, dynamic: { ...DEFAULT_SLIDE1_BG.dynamic, theme: "engine" } } }).success).toBe(true);
     expect(slide1BgSettingsSchema.safeParse({ ...DEFAULT_SLIDE1_SETTINGS, all: { ...DEFAULT_SLIDE1_BG, dynamic: { ...DEFAULT_SLIDE1_BG.dynamic, theme: "electro" } } }).success).toBe(true);
+    expect(slide1BgSettingsSchema.safeParse({ ...DEFAULT_SLIDE1_SETTINGS, all: { ...DEFAULT_SLIDE1_BG, dynamic: { ...DEFAULT_SLIDE1_BG.dynamic, theme: "bulb" } } }).success).toBe(true);
     expect(imageBgUrl(image({ source: "upload", media: { key: "images/2026/a.webp", alt: "" } }).image)).toBe("/media/images/2026/a.webp");
     // An upload without its file falls back to the current image.
     expect(imageBgUrl(image({ source: "upload", media: null }).image)).toBe(CURRENT_IMAGE.large);

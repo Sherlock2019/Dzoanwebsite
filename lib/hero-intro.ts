@@ -1,7 +1,7 @@
 // Content and timing of the home hero carousel. Edit freely.
 //
 // Slide 1 has two versions ("intro styles"), listed in INTRO_VARIANTS, picked with the selector:
-//   - Questions & Answers: one question at a time; it fades in, its answer types out under it,
+//   - The problems we will solve (id "qa"): one question at a time; it fades in, its answer types out under it,
 //     and it stays `holdMs`. Topic buttons ("How can I help a …") jump to any of them.
 //   - The poem: scrolls slowly and continuously; in each stanza the first two lines are red.
 // Both end on "Then we really need to talk." The carousel then moves to slide 2: the banner image,
@@ -55,7 +55,7 @@ export interface IntroVariant {
 /** Last line of slide 1, in both versions. */
 export const TALK = "Then we really need to talk.";
 
-/** Heading of the topic buttons (Questions & Answers version only). */
+/** Heading of the topic buttons ("The problems we will solve" version only). */
 export const QA_NAV_HEADING = "How can I help a …";
 
 export const INVITATION: Invitation = {
@@ -74,8 +74,8 @@ export const BOOKING = {
 
 const QA_VARIANT: IntroVariant = {
   id: "qa",
-  label: "Questions & Answers",
-  title: "Questions & Answers",
+  label: "The problems we will solve",
+  title: "The problems we will solve",
   sections: [
     {
       kind: "qa",

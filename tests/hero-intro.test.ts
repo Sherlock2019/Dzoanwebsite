@@ -5,12 +5,12 @@ const qa = resolveVariant("qa");
 const poem = resolveVariant("poem");
 
 describe("hero intro versions", () => {
-  it("has stable, unique ids; Questions & Answers is the default", () => {
+  it("has stable, unique ids; The problems we will solve is the default", () => {
     const ids = INTRO_VARIANTS.map((v) => v.id);
     expect(ids).toEqual(["qa", "poem"]);
     expect(new Set(ids).size).toBe(ids.length);
     expect(DEFAULT_VARIANT_ID).toBe("qa");
-    expect(INTRO_VARIANTS.map((v) => v.label)).toEqual(["Questions & Answers", "If you need..."]);
+    expect(INTRO_VARIANTS.map((v) => v.label)).toEqual(["The problems we will solve", "If you need..."]);
   });
 
   it("falls back to the default for a missing or unknown saved id", () => {

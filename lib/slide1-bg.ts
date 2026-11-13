@@ -2,7 +2,8 @@
 // (Dashboard → Slide 1 background) and saved in the profile. Every visitor gets the saved choice.
 //
 //   - "dynamic": an animated neural network (layered, brain-shaped, the rotating 3D
-//                "electronic brain" with sparkles, or the "AI engine": the brain fed by business,
+//                "electronic brain" with sparkles, its v2 "idea bulb" whose sparks converge and whose
+//                neurons gather into a lit light bulb, or the "AI engine": the brain fed by business,
 //                data and MLOps blocks, powered by GPU compute, producing outputs), on a canvas;
 //   - "image":   a fixed image: the current one (humanaibrain), the electronic brain, or an upload;
 //   - "video":   an uploaded MP4/WebM video, muted and looping.
@@ -15,7 +16,7 @@ import type { Media } from "@/lib/types";
 export const BG_TYPES = ["dynamic", "image", "video"] as const;
 export type BgType = (typeof BG_TYPES)[number];
 
-export const NETWORK_THEMES = ["layered", "brain", "electro", "engine"] as const;
+export const NETWORK_THEMES = ["layered", "brain", "electro", "bulb", "engine"] as const;
 export type NetworkTheme = (typeof NETWORK_THEMES)[number];
 
 export const PALETTES = ["blue-cyan", "deep-blue", "cyan"] as const;
@@ -100,6 +101,7 @@ export const LABELS = {
     layered: "Layered network",
     brain: "Brain-shaped network",
     electro: "Electronic brain (3D, rotating, sparkles)",
+    bulb: "Electronic brain v2: idea bulb (sparks converge, neurons light a bulb)",
     engine: "AI engine (business, data, MLOps, GPU → outputs)",
   } as Record<NetworkTheme, string>,
   palette: { "blue-cyan": "Blue & cyan", "deep-blue": "Deep blue", cyan: "Cyan" } as Record<Palette, string>,

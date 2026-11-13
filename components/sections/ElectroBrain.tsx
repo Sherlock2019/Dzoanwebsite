@@ -18,7 +18,8 @@ const LOBES = [
   [0.26, -0.86, 0, 0.1, 0.36, 0.12], // brain stem
 ] as const;
 
-const inside = (x: number, y: number, z: number, s = 1) =>
+/** Whether a model point is inside the brain volume (scaled by `s`). Shared with the bulb theme. */
+export const inside = (x: number, y: number, z: number, s = 1) =>
   LOBES.some(([cx, cy, cz, rx, ry, rz]) => ((x - cx) / (rx * s)) ** 2 + ((y - cy) / (ry * s)) ** 2 + ((z - cz) / (rz * s)) ** 2 <= 1);
 
 const SPARK_COLORS = ["90, 175, 255", "255, 214, 90", "110, 255, 170"]; // blue, yellow, green

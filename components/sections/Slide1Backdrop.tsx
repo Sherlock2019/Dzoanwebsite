@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import AIEngine from "./AIEngine";
+import BulbBrain from "./BulbBrain";
 import ElectroBrain from "./ElectroBrain";
 import NeuralBackground from "./NeuralBackground";
 import { mediaUrl } from "@/lib/media-url";
@@ -62,7 +63,7 @@ export default function Slide1Backdrop({ bg, running }: { bg: Slide1Bg; running:
   const video = bg.type === "video" && !failed && bg.video.media !== null;
   const theme = bg.dynamic.theme;
   // Themes drawn from the electronic-brain image fall back to that image.
-  const electro = theme === "electro" || theme === "engine";
+  const electro = theme === "electro" || theme === "bulb" || theme === "engine";
   // A failing canvas or video shows a matching image instead.
   const image = failed || bg.type === "video" ? { ...bg.image, source: electro && bg.type === "dynamic" ? ("electro" as const) : ("current" as const) } : bg.image;
   const url = imageBgUrl(image);
@@ -88,6 +89,8 @@ export default function Slide1Backdrop({ bg, running }: { bg: Slide1Bg; running:
             <AIEngine settings={bg.dynamic} running={running} onFail={fail} />
           ) : theme === "electro" ? (
             <ElectroBrain settings={bg.dynamic} running={running} onFail={fail} />
+          ) : theme === "bulb" ? (
+            <BulbBrain settings={bg.dynamic} running={running} onFail={fail} />
           ) : (
             <NeuralBackground key={bg.dynamic.theme} settings={bg.dynamic} running={running} onFail={fail} />
           )}
