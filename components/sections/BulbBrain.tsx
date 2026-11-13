@@ -8,8 +8,9 @@ import { inside } from "./ElectroBrain";
 // born. Each cycle (~14 s at speed 1): (1) the 3D brain of glowing neurons turns, twinkling; (2) sparks
 // start from neurons all over the brain, run along neural pathways and meet in the centre; (3) over
 // ~5 s, neurons leave the brain one after another, sparkling as they fly through the centre, and
-// gather like drones in a night sky into a small light bulb inside the brain, traced progressively
-// (glass, then screw base, then filament), each point the same small neuron as everywhere else;
+// gather like drones in a night sky into a small 3D light bulb inside the brain (points on its
+// surface, turning with the brain, with the same depth shading), built bottom-up (screw base, neck,
+// glass, then the filament), each point the same small neuron as everywhere else;
 // (4) the finished bulb sparkles brighter than the dimmed brain around it, the filament warm yellow;
 // (5) it dissolves: the neurons fly back to their places in the brain, and the loop starts again.
 // Illustrative only. Falls back to the electronic-brain image like the "electro" theme.
@@ -39,47 +40,62 @@ interface P3 {
   z: number;
 }
 
-/** Bulb outline in units of the brain size (x right, y down, glass centre at y = -0.3). */
-function bulbLines(): { part: Part; pts: [number, number][] }[] {
-  const glass: [number, number][] = [[0.22, 0.5]];
-  const a0 = 0.5; // half-opening of the glass at the bottom, radians
-  for (let i = 0; i <= 64; i++) {
-    const a = a0 + ((Math.PI * 2 - 2 * a0) * i) / 64;
-    glass.push([Math.sin(a) * 0.6, -0.3 + Math.cos(a) * 0.6]);
-  }
-  glass.push([-0.22, 0.5]);
-  return [
-    { part: 0, pts: glass },
-    { part: 1, pts: [[-0.22, 0.56], [0.22, 0.56]] },
-    { part: 1, pts: [[-0.2, 0.66], [0.2, 0.66]] },
-    { part: 1, pts: [[-0.17, 0.76], [0.17, 0.76]] },
-    { part: 1, pts: [[-0.11, 0.84], [0, 0.9], [0.11, 0.84]] },
-    { part: 2, pts: [[-0.1, 0.5], [-0.1, 0.12], [-0.05, 0], [0, 0.12], [0.05, 0], [0.1, 0.12], [0.1, 0.5]] },
-  ];
-}
+/** The bulb, in the brain's model units (y up), inside the brain: glass sphere centre and radius. */
+const GLASS_Y = 0.22;
+const GLASS_R = 0.42;
+/** The glass is open at the bottom where the neck starts (cosine of the opening, from the centre). */
+const GLASS_OPEN = 0.82;
+/** Neurons at full bulb size (fewer when the brain has fewer neurons: at most half of them). */
+const BULB_FULL = 210;
 
-/** The bulb's size relative to the brain: small enough to sit inside it. */
-const BULB_SCALE = 0.5;
-
-/** Points spaced `gap` apart (bulb units) along the bulb outline. */
-function bulbPoints(gap: number) {
-  const lines = bulbLines();
-  const points: { x: number; y: number; part: Part }[] = [];
-  for (const { part, pts } of lines) {
-    points.push({ x: pts[0][0], y: pts[0][1], part });
-    let carry = 0; // distance walked since the last point
-    for (let i = 1; i < pts.length; i++) {
-      const [ax, ay] = pts[i - 1];
-      const [bx, by] = pts[i];
-      const len = Math.hypot(bx - ax, by - ay);
-      let t = gap - carry;
-      for (; t <= len; t += gap) {
-        points.push({ x: ax + ((bx - ax) * t) / len, y: ay + ((by - ay) * t) / len, part });
-      }
-      carry = len - (t - gap);
+/**
+ * Points on the surface of a 3D light bulb, like drones in the sky: screw base rings, neck, glass
+ * sphere (open at the bottom), filament inside. Ordered bottom-up, filament last: the order in
+ * which they are built. `f` (0..1) thins every part evenly when fewer neurons are available.
+ */
+function bulb3D(f: number): (P3 & { part: Part })[] {
+  const pts: (P3 & { part: Part })[] = [];
+  const n = (count: number) => Math.max(4, Math.round(count * f));
+  const ring = (y: number, r: number, count: number, part: Part, turn: number) => {
+    const c = n(count);
+    for (let i = 0; i < c; i++) {
+      const a = turn + (Math.PI * 2 * i) / c;
+      pts.push({ x: r * Math.cos(a), y, z: r * Math.sin(a), part });
     }
+  };
+  // Screw base, from its tip up, then the neck.
+  ring(-0.49, 0.07, 6, 1, 0);
+  ring(-0.42, 0.15, 14, 1, 0.2);
+  ring(-0.35, 0.155, 14, 1, 0.4);
+  ring(-0.28, 0.16, 14, 1, 0.6);
+  ring(-0.21, 0.17, 12, 0, 0.8);
+  ring(-0.155, 0.205, 13, 0, 1);
+  // Glass: evenly spread over the sphere (Fibonacci), bottom opening left out, built bottom to top.
+  const glass: (P3 & { part: Part })[] = [];
+  const total = n(122);
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < total; i++) {
+    const v = 1 - (2 * (i + 0.5)) / total; // -1 (bottom) .. 1 (top)
+    if (v < -GLASS_OPEN) continue;
+    const r = Math.sqrt(1 - v * v);
+    const a = i * golden;
+    glass.push({ x: GLASS_R * r * Math.cos(a), y: GLASS_Y + GLASS_R * v, z: GLASS_R * r * Math.sin(a), part: 0 });
   }
-  return points;
+  glass.sort((p, q) => p.y - q.y);
+  pts.push(...glass);
+  // Filament: two supports and a zigzag, in the middle of the glass. Last: the idea lights up.
+  const fil: [number, number][] = [[-0.07, -0.15], [-0.07, 0.12], [-0.035, 0.2], [0, 0.12], [0.035, 0.2], [0.07, 0.12], [0.07, -0.15]];
+  const lens = fil.slice(1).map((p, i) => Math.hypot(p[0] - fil[i][0], p[1] - fil[i][1]));
+  const length = lens.reduce((s, l) => s + l, 0);
+  const c = n(16);
+  for (let j = 0; j < c; j++) {
+    let d = (length * j) / (c - 1);
+    let i = 0;
+    while (i < lens.length - 1 && d > lens[i]) d -= lens[i++];
+    const t = Math.min(1, d / lens[i]);
+    pts.push({ x: fil[i][0] + (fil[i + 1][0] - fil[i][0]) * t, y: fil[i][1] + (fil[i + 1][1] - fil[i][1]) * t, z: 0, part: 2 });
+  }
+  return pts;
 }
 
 const ease = (t: number) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
@@ -104,8 +120,8 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
     let nodes: P3[] = [];
     let edges: [number, number][] = [];
     let adj: number[][] = [];
-    // Bulb: target points (bulb units) and which neuron goes to which point.
-    let bulb: { x: number; y: number; part: Part }[] = [];
+    // Bulb: target points (3D, brain model units) and which neuron goes to which point.
+    let bulb: (P3 & { part: Part })[] = [];
     let owner: number[] = []; // bulb point -> neuron
     let role: Int32Array = new Int32Array(0); // neuron -> bulb point, or -1
     // Per bulb point: when its neuron leaves (forming, dissolving) and a small detour near the centre.
@@ -113,6 +129,7 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
     let returnAt = new Float32Array(0);
     let detourX = new Float32Array(0);
     let detourY = new Float32Array(0);
+    let detourZ = new Float32Array(0);
     let mOf = new Float32Array(0); // per neuron, this frame: 0 in the brain .. 1 in the bulb
     let coreX = 0;
     let coreY = 0;
@@ -182,13 +199,10 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
         adj[a].push(b);
         adj[b].push(a);
       }
-      // The bulb: points a few neuron-widths apart (like drones), so each one reads as its own light.
-      // Its neurons are picked from all over the brain; at most half of them, so the brain stays.
-      layout();
-      const gapPx = mobile ? 9 : 12;
-      const shape = bulbPoints(gapPx / (size * BULB_SCALE));
+      // The 3D bulb, made of neurons picked from all over the brain: at most half of them, so the
+      // brain keeps its shape around it.
       const picked = nodes.map((_, i) => i).sort(() => Math.random() - 0.5);
-      bulb = shape.slice(0, Math.floor(nodes.length / 2));
+      bulb = bulb3D(Math.min(1, nodes.length / 2 / BULB_FULL)).slice(0, Math.floor(nodes.length / 2));
       owner = bulb.map((_, k) => picked[k]);
       role = new Int32Array(nodes.length).fill(-1);
       owner.forEach((n, k) => (role[n] = k));
@@ -197,8 +211,9 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
       const nb = bulb.length;
       leaveAt = Float32Array.from(bulb, (_, k) => clamp01(k / Math.max(1, nb - 1) + (Math.random() - 0.5) * 0.06));
       returnAt = Float32Array.from(bulb, () => Math.random());
-      detourX = Float32Array.from(bulb, () => (Math.random() - 0.5) * 0.36);
-      detourY = Float32Array.from(bulb, () => (Math.random() - 0.5) * 0.36);
+      detourX = Float32Array.from(bulb, () => (Math.random() - 0.5) * 0.3);
+      detourY = Float32Array.from(bulb, () => (Math.random() - 0.5) * 0.3);
+      detourZ = Float32Array.from(bulb, () => (Math.random() - 0.5) * 0.3);
       mOf = new Float32Array(nodes.length);
       px = new Float32Array(nodes.length);
       py = new Float32Array(nodes.length);
@@ -266,44 +281,54 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
       size = Math.min(mobile ? w * 0.44 : w * 0.33, h * 0.46);
     }
 
-    /** Screen position of a bulb point: centred in the brain, glass slightly above the middle. */
-    const bulbX = (k: number) => cx + bulb[k].x * size * BULB_SCALE;
-    const bulbYAt = (y: number) => cy + (y + 0.1) * size * BULB_SCALE;
-    const bulbY = (k: number) => bulbYAt(bulb[k].y);
+    // One 3D → screen projection for the brain and the bulb alike: same rotation, tilt and
+    // perspective, so the bulb turns with the brain and has the same depth shading.
+    let rCos = 1;
+    let rSin = 0;
+    const TILT_C = Math.cos(0.18);
+    const TILT_S = Math.sin(0.18);
+    let sx = 0;
+    let sy = 0;
+    let sd = 0;
+    function toScreen(mx: number, my: number, mz: number) {
+      const x = mx * rCos + mz * rSin;
+      const z0 = -mx * rSin + mz * rCos;
+      const y = my * TILT_C - z0 * TILT_S;
+      const z = my * TILT_S + z0 * TILT_C;
+      const persp = 3.2 / (3.2 + z);
+      sx = cx + x * size * persp;
+      sy = cy - y * size * persp;
+      sd = Math.max(0, Math.min(1, (1 - z) / 2)); // depth factor 0 (back) .. 1 (front)
+    }
 
     function project(t: number) {
       layout();
-      coreX = cx;
-      coreY = bulbYAt(-0.3); // centre of the bulb glass: where the sparks and neurons meet
-      const bs = size * BULB_SCALE;
-      const cos = Math.cos(angle);
-      const sin = Math.sin(angle);
-      const tilt = 0.18;
-      const ct = Math.cos(tilt);
-      const st = Math.sin(tilt);
+      rCos = Math.cos(angle);
+      rSin = Math.sin(angle);
+      toScreen(0, GLASS_Y, 0); // centre of the bulb glass: where the sparks and neurons meet
+      coreX = sx;
+      coreY = sy;
       for (let i = 0; i < nodes.length; i++) {
         const n = nodes[i];
-        const x = n.x * cos + n.z * sin;
-        const z0 = -n.x * sin + n.z * cos;
-        const y = n.y * ct - z0 * st;
-        const z = n.y * st + z0 * ct;
-        const persp = 3.2 / (3.2 + z);
-        px[i] = cx + x * size * persp;
-        py[i] = cy - y * size * persp;
-        pd[i] = Math.max(0, Math.min(1, (1 - z) / 2));
+        toScreen(n.x, n.y, n.z);
+        px[i] = qx[i] = sx;
+        py[i] = qy[i] = sy;
+        pd[i] = sd;
         const k = role[i];
         const s = k >= 0 ? flight(k, t) : 0;
         mOf[i] = s;
         if (s > 0) {
-          // A curve from the neuron's place in the brain, through (near) the centre, to the bulb.
-          const ox = coreX + detourX[k] * bs;
-          const oy = coreY + detourY[k] * bs;
+          // In 3D: a curve from the neuron's place in the brain, through (near) the centre, to its
+          // place on the bulb. Projected like everything else, so depth keeps changing on the way.
+          const b = bulb[k];
           const u = 1 - s;
-          qx[i] = u * u * px[i] + 2 * u * s * ox + s * s * bulbX(k);
-          qy[i] = u * u * py[i] + 2 * u * s * oy + s * s * bulbY(k);
-        } else {
-          qx[i] = px[i];
-          qy[i] = py[i];
+          const ox = detourX[k];
+          const oy = GLASS_Y + detourY[k];
+          const oz = detourZ[k];
+          toScreen(u * u * n.x + 2 * u * s * ox + s * s * b.x, u * u * n.y + 2 * u * s * oy + s * s * b.y, u * u * n.z + 2 * u * s * oz + s * s * b.z);
+          qx[i] = sx;
+          qy[i] = sy;
+          pd[i] = sd;
         }
       }
     }
@@ -330,12 +355,12 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
       project(t);
       ctx!.clearRect(0, 0, w, h);
       ctx!.globalCompositeOperation = "lighter";
-      const bs = size * BULB_SCALE;
+      const bs = size * GLASS_R; // the glass radius on screen
 
       // Nothing is drawn for the bulb itself: its shape and light come only from its neurons.
       // The centre, charged by arriving sparks.
       charge *= Math.exp(-dt / 1600);
-      if (charge > 0.01 && m < 1) glowAt(coreX, coreY, 10 + bs * 0.35 * charge, "230, 250, 255", 0.4 * glow * charge * (1 - m));
+      if (charge > 0.01 && m < 1) glowAt(coreX, coreY, 10 + bs * 0.6 * charge, "230, 250, 255", 0.4 * glow * charge * (1 - m));
 
       // Brain connections: those touching a bulb neuron fade out as it leaves (no stretched lines);
       // the others only dim, so the brain stays around the bulb.
@@ -356,7 +381,8 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
         const k = role[i];
         const onBulb = k >= 0;
         const s = mOf[i];
-        const d = onBulb ? pd[i] + (1 - pd[i]) * s : pd[i];
+        // Real depth (back of the bulb dimmer, front brighter: that is what makes it 3D), lifted a little.
+        const d = onBulb ? pd[i] + (1 - pd[i]) * 0.35 * s : pd[i];
         const a = onBulb ? 1 : 1 - 0.5 * m;
         const r = (mobile ? 1.3 : 1.7) * (0.6 + 0.7 * d);
         const moving = Math.sin(Math.PI * s); // 0 at rest, 1 mid-flight
