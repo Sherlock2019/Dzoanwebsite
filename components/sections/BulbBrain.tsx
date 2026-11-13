@@ -4,17 +4,20 @@ import { useEffect, useRef } from "react";
 import type { DynamicBg } from "@/lib/slide1-bg";
 import { inside } from "./ElectroBrain";
 
-// "Idea bulb" background for slide 1 (shared by V2, V3 and V4), version 2 of the electronic brain.
-// Each cycle: (1) the 3D brain of glowing neurons turns, twinkling; (2) sparks start from neurons all
-// over the brain, run along neural pathways and meet in the centre, charging it; (3) part of the
-// neurons leave the brain and gather into a light bulb (glass, neck, screw base, filament) while the
-// rest dims; (4) the bulb lights up, warm and pulsing; (5) the neurons return to the brain.
+// "Idea bulb" background for slide 1 (shared by V2, V3 and V4): the electronic brain where an idea is
+// born. Each cycle: (1) the 3D brain of glowing neurons turns, twinkling; (2) sparks start from
+// neurons all over the brain, run along neural pathways and meet in the centre; (3) some of the
+// neurons travel inward and gather, like drones in a night sky, into a small light bulb inside the
+// brain: glass, screw base and filament outlined by separate points, each the same small neuron as
+// everywhere else; (4) the bulb switches on: its neurons sparkle and shine brighter than the dimmed
+// brain around them, the filament warm yellow; (5) they return to their places in the brain.
 // Illustrative only. Falls back to the electronic-brain image like the "electro" theme.
 
 const BASE = "70, 150, 255";
 const PULSE = "120, 230, 255";
 const WARM = "255, 214, 90";
 const SPARK_COLORS = ["90, 175, 255", "255, 214, 90", "110, 255, 170"]; // blue, yellow, green
+const BULB_SPARKS = ["235, 248, 255", "140, 235, 255", "255, 214, 90"]; // white, cyan, yellow
 const MAX_NODES = 480;
 
 /** Phase lengths (ms at speed 1): brain, sparks converge, form the bulb, bulb lit, back to the brain. */
@@ -48,14 +51,13 @@ function bulbLines(): { part: Part; pts: [number, number][] }[] {
   ];
 }
 
-/** Points about `count` evenly spaced along the bulb outline, and the links between neighbours. */
-function bulbPoints(count: number) {
+/** The bulb's size relative to the brain: small enough to sit inside it. */
+const BULB_SCALE = 0.5;
+
+/** Points spaced `gap` apart (bulb units) along the bulb outline. */
+function bulbPoints(gap: number) {
   const lines = bulbLines();
-  let total = 0;
-  for (const { pts } of lines) for (let i = 1; i < pts.length; i++) total += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
-  const gap = total / Math.max(8, count - lines.length);
   const points: { x: number; y: number; part: Part }[] = [];
-  const links: [number, number][] = [];
   for (const { part, pts } of lines) {
     points.push({ x: pts[0][0], y: pts[0][1], part });
     let carry = 0; // distance walked since the last point
@@ -66,12 +68,11 @@ function bulbPoints(count: number) {
       let t = gap - carry;
       for (; t <= len; t += gap) {
         points.push({ x: ax + ((bx - ax) * t) / len, y: ay + ((by - ay) * t) / len, part });
-        links.push([points.length - 2, points.length - 1]);
       }
       carry = len - (t - gap);
     }
   }
-  return { points, links };
+  return points;
 }
 
 const ease = (t: number) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
@@ -96,9 +97,8 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
     let nodes: P3[] = [];
     let edges: [number, number][] = [];
     let adj: number[][] = [];
-    // Bulb: target points (bulb units), their links, and which neuron goes to which point.
+    // Bulb: target points (bulb units) and which neuron goes to which point.
     let bulb: { x: number; y: number; part: Part }[] = [];
-    let bulbLinks: [number, number][] = [];
     let owner: number[] = []; // bulb point -> neuron
     let role: Int32Array = new Int32Array(0); // neuron -> bulb point, or -1
     let frame = 0;
@@ -110,6 +110,7 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
     let sparks: { n: number; born: number; life: number; color: string }[] = [];
     let pulses: { path: number[]; start: number; dur: number }[] = [];
     let spawnAcc = 0;
+    let spawnBulb = 0;
     // Positions of this frame: brain projection, then the drawn position (brain -> bulb).
     let px = new Float32Array(0);
     let py = new Float32Array(0);
@@ -164,11 +165,13 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
         adj[a].push(b);
         adj[b].push(a);
       }
-      // About 40 % of the neurons, picked from all over the brain, form the bulb.
-      const shape = bulbPoints(Math.max(40, Math.round(nodes.length * 0.4)));
+      // The bulb: points a few neuron-widths apart (like drones), so each one reads as its own light.
+      // Its neurons are picked from all over the brain; at most half of them, so the brain stays.
+      layout();
+      const gapPx = mobile ? 9 : 12;
+      const shape = bulbPoints(gapPx / (size * BULB_SCALE));
       const picked = nodes.map((_, i) => i).sort(() => Math.random() - 0.5);
-      bulb = shape.points.slice(0, nodes.length);
-      bulbLinks = shape.links.filter(([a, b]) => a < bulb.length && b < bulb.length);
+      bulb = shape.slice(0, Math.floor(nodes.length / 2));
       owner = bulb.map((_, k) => picked[k]);
       role = new Int32Array(nodes.length).fill(-1);
       owner.forEach((n, k) => (role[n] = k));
@@ -219,11 +222,20 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
       return { m, lit, converging };
     }
 
-    function project(m: number) {
+    function layout() {
       // Right of the text on wide screens, centred on phones (same place as the electronic brain).
       cx = mobile ? w * 0.5 : w * 0.66;
       cy = h * 0.5;
       size = Math.min(mobile ? w * 0.44 : w * 0.33, h * 0.46);
+    }
+
+    /** Screen position of a bulb point: centred in the brain, glass slightly above the middle. */
+    const bulbX = (k: number) => cx + bulb[k].x * size * BULB_SCALE;
+    const bulbYAt = (y: number) => cy + (y + 0.1) * size * BULB_SCALE;
+    const bulbY = (k: number) => bulbYAt(bulb[k].y);
+
+    function project(m: number) {
+      layout();
       const cos = Math.cos(angle);
       const sin = Math.sin(angle);
       const tilt = 0.18;
@@ -241,8 +253,8 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
         pd[i] = Math.max(0, Math.min(1, (1 - z) / 2));
         const k = role[i];
         if (k >= 0 && m > 0) {
-          qx[i] = px[i] + (cx + bulb[k].x * size - px[i]) * m;
-          qy[i] = py[i] + (cy + bulb[k].y * size - py[i]) * m;
+          qx[i] = px[i] + (bulbX(k) - px[i]) * m;
+          qy[i] = py[i] + (bulbY(k) - py[i]) * m;
         } else {
           qx[i] = px[i];
           qy[i] = py[i];
@@ -271,67 +283,76 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
       const lit = lit0 * (still ? 1 : 0.88 + 0.12 * Math.sin(now / 420));
       project(m);
       const coreX = cx;
-      const coreY = cy - 0.3 * size; // centre of the bulb glass: where the sparks meet
+      const coreY = bulbYAt(-0.3); // centre of the bulb glass: where the sparks meet
       ctx!.clearRect(0, 0, w, h);
       ctx!.globalCompositeOperation = "lighter";
+      const bs = size * BULB_SCALE;
 
-      // The bulb's light, behind everything.
-      if (lit > 0.01) glowAt(coreX, coreY, size * 1.25, WARM, 0.26 * glow * lit + 0.04 * lit);
+      // Nothing is drawn for the bulb itself: its shape and light come only from its neurons.
       // The centre, charged by arriving sparks.
       charge *= Math.exp(-dt / 1600);
-      if (charge > 0.01 && m < 1) glowAt(coreX, coreY, 18 + size * 0.35 * charge, "230, 250, 255", 0.45 * glow * charge * (1 - m));
+      if (charge > 0.01 && m < 1) glowAt(coreX, coreY, 10 + bs * 0.35 * charge, "230, 250, 255", 0.4 * glow * charge * (1 - m));
 
-      // Brain connections fade out as the bulb forms; bulb links fade in.
+      // Brain connections: those touching a bulb neuron fade out as it leaves (no stretched lines);
+      // the others only dim, so the brain stays around the bulb.
       ctx!.lineWidth = 0.7;
-      const fade = 1 - 0.88 * m;
       for (const [a, b] of edges) {
         const d = (pd[a] + pd[b]) / 2;
+        const fade = role[a] >= 0 || role[b] >= 0 ? Math.max(0, 1 - 2 * m) : 1 - 0.5 * m;
+        if (fade <= 0.01) continue;
         ctx!.strokeStyle = `rgba(${BASE}, ${(0.08 + 0.34 * d) * fade})`;
         ctx!.beginPath();
         ctx!.moveTo(qx[a], qy[a]);
         ctx!.lineTo(qx[b], qy[b]);
         ctx!.stroke();
       }
-      if (m > 0.01) {
-        ctx!.lineWidth = 1;
-        for (const [a, b] of bulbLinks) {
-          const warm = bulb[a].part === 2;
-          ctx!.strokeStyle = `rgba(${warm && lit > 0.05 ? WARM : PULSE}, ${m * (0.3 + 0.45 * lit)})`;
-          ctx!.beginPath();
-          ctx!.moveTo(qx[owner[a]], qy[owner[a]]);
-          ctx!.lineTo(qx[owner[b]], qy[owner[b]]);
-          ctx!.stroke();
-        }
-      }
-
-      // Neurons: the bulb's become uniformly bright; the others dim.
+      // Neurons, the same size and style as the electronic brain. The bulb's shine brighter than the
+      // brain around them (which dims), and its filament turns warm yellow when it is on.
       for (let i = 0; i < nodes.length; i++) {
         const k = role[i];
-        const d = k >= 0 ? pd[i] + (1 - pd[i]) * m : pd[i];
-        const a = k >= 0 ? 1 : 1 - 0.8 * m;
-        const r = (mobile ? 1.3 : 1.7) * (0.6 + 0.7 * d) * (k >= 0 ? 1 + 0.35 * lit : 1);
-        const filament = k >= 0 && bulb[k].part === 2 && lit > 0.05;
-        ctx!.fillStyle = `rgba(${filament ? WARM : BASE}, ${(0.14 + 0.2 * d + (k >= 0 ? 0.25 * lit : 0)) * a})`;
+        const onBulb = k >= 0;
+        const d = onBulb ? pd[i] + (1 - pd[i]) * m : pd[i];
+        const a = onBulb ? 1 : 1 - 0.5 * m;
+        const r = (mobile ? 1.3 : 1.7) * (0.6 + 0.7 * d);
+        const boost = onBulb ? m * (0.35 + 0.65 * lit) : 0; // 0 .. 1: how much brighter than the brain
+        const warm = onBulb && bulb[k].part === 2 && lit > 0.05;
+        ctx!.fillStyle = `rgba(${warm ? WARM : BASE}, ${(0.14 + 0.2 * d + 0.3 * boost) * a})`;
         ctx!.beginPath();
-        ctx!.arc(qx[i], qy[i], r * (2.8 + (k >= 0 ? 1.6 * lit : 0)), 0, Math.PI * 2);
+        ctx!.arc(qx[i], qy[i], r * (2.8 + 0.8 * boost), 0, Math.PI * 2);
         ctx!.fill();
-        ctx!.fillStyle = filament ? `rgba(255, 236, 170, ${0.7 + 0.3 * lit})` : `rgba(110, 185, 255, ${(0.5 + 0.5 * d) * a})`;
+        ctx!.fillStyle = warm
+          ? `rgba(255, 232, 160, ${0.75 + 0.25 * lit})`
+          : `rgba(${Math.round(110 + 120 * boost)}, ${Math.round(185 + 60 * boost)}, 255, ${(0.5 + 0.5 * d) * a})`;
         ctx!.beginPath();
         ctx!.arc(qx[i], qy[i], r, 0, Math.PI * 2);
         ctx!.fill();
       }
 
       if (!still) {
-        // Twinkles: all over the brain; on the bulb (mostly warm) while it is lit.
-        const rate = (mobile ? 18 : 34) * density;
-        if (Math.random() < (rate * dt) / 1000) {
-          const onBulb = m > 0.5 && owner.length > 0;
+        // Twinkles all over the brain, as in the electronic brain…
+        const rate = (mobile ? 18 : 34) * density * (1 - 0.5 * m);
+        if (Math.random() < (rate * dt) / 1000)
           sparks.push({
-            n: onBulb ? owner[Math.floor(Math.random() * owner.length)] : Math.floor(Math.random() * nodes.length),
+            n: Math.floor(Math.random() * nodes.length),
             born: now,
             life: 700 + Math.random() * 900,
-            color: onBulb && Math.random() < 0.6 ? WARM : SPARK_COLORS[Math.floor(Math.random() * SPARK_COLORS.length)],
+            color: SPARK_COLORS[Math.floor(Math.random() * SPARK_COLORS.length)],
           });
+        // …and, once the bulb has formed, its own neurons sparkle far more: that is its light.
+        // Filament neurons sparkle warm yellow; the glass and base white, cyan and yellow.
+        if (owner.length) {
+          const bulbRate = (mobile ? 30 : 55) * m * (0.25 + 0.75 * lit);
+          spawnBulb += (bulbRate * dt) / 1000;
+          while (spawnBulb >= 1) {
+            spawnBulb -= 1;
+            const k = Math.floor(Math.random() * owner.length);
+            sparks.push({
+              n: owner[k],
+              born: now,
+              life: 500 + Math.random() * 700,
+              color: bulb[k].part === 2 ? WARM : BULB_SPARKS[Math.floor(Math.random() * BULB_SPARKS.length)],
+            });
+          }
         }
         sparks = sparks.filter((s) => {
           const a = (now - s.born) / s.life;

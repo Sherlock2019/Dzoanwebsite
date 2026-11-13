@@ -229,9 +229,9 @@ export default function BackgroundEditor({ initial }: { initial: Slide1BgSetting
               <p className="hint">Blue neurons with blue, yellow and green sparkles; the brain turns 360°. Speed sets the rotation.</p>
             ) : d.theme === "bulb" ? (
               <p className="hint">
-                Version 2 of the electronic brain: sparks run from neurons all over the brain and meet in the centre, then the
-                neurons gather into a light bulb that lights up, and return to the brain. Speed sets the pace; density how many
-                neurons and sparks.
+                The electronic brain where an idea is born: sparks run from neurons all over the brain and meet in the centre,
+                then some neurons gather inside the brain, like drones, into a small light bulb that sparkles brighter than the
+                brain around it, and return. Speed sets the pace; density how many neurons and sparks.
               </p>
             ) : d.theme === "engine" ? (
               <p className="hint">

@@ -101,7 +101,7 @@ export const LABELS = {
     layered: "Layered network",
     brain: "Brain-shaped network",
     electro: "Electronic brain (3D, rotating, sparkles)",
-    bulb: "Electronic brain v2: idea bulb (sparks converge, neurons light a bulb)",
+    bulb: "Electronic brain v2: idea bulb (neurons gather into a sparkling bulb)",
     engine: "AI engine (business, data, MLOps, GPU → outputs)",
   } as Record<NetworkTheme, string>,
   palette: { "blue-cyan": "Blue & cyan", "deep-blue": "Deep blue", cyan: "Cyan" } as Record<Palette, string>,
