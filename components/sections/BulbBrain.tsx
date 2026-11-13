@@ -5,12 +5,13 @@ import type { DynamicBg } from "@/lib/slide1-bg";
 import { inside } from "./ElectroBrain";
 
 // "Idea bulb" background for slide 1 (shared by V2, V3 and V4): the electronic brain where an idea is
-// born. Each cycle: (1) the 3D brain of glowing neurons turns, twinkling; (2) sparks start from
-// neurons all over the brain, run along neural pathways and meet in the centre; (3) some of the
-// neurons travel inward and gather, like drones in a night sky, into a small light bulb inside the
-// brain: glass, screw base and filament outlined by separate points, each the same small neuron as
-// everywhere else; (4) the bulb switches on: its neurons sparkle and shine brighter than the dimmed
-// brain around them, the filament warm yellow; (5) they return to their places in the brain.
+// born. Each cycle (~14 s at speed 1): (1) the 3D brain of glowing neurons turns, twinkling; (2) sparks
+// start from neurons all over the brain, run along neural pathways and meet in the centre; (3) over
+// ~5 s, neurons leave the brain one after another, sparkling as they fly through the centre, and
+// gather like drones in a night sky into a small light bulb inside the brain, traced progressively
+// (glass, then screw base, then filament), each point the same small neuron as everywhere else;
+// (4) the finished bulb sparkles brighter than the dimmed brain around it, the filament warm yellow;
+// (5) it dissolves: the neurons fly back to their places in the brain, and the loop starts again.
 // Illustrative only. Falls back to the electronic-brain image like the "electro" theme.
 
 const BASE = "70, 150, 255";
@@ -20,8 +21,14 @@ const SPARK_COLORS = ["90, 175, 255", "255, 214, 90", "110, 255, 170"]; // blue,
 const BULB_SPARKS = ["235, 248, 255", "140, 235, 255", "255, 214, 90"]; // white, cyan, yellow
 const MAX_NODES = 480;
 
-/** Phase lengths (ms at speed 1): brain, sparks converge, form the bulb, bulb lit, back to the brain. */
-const PHASES = { brain: 2600, converge: 4200, morph: 1900, lit: 4200, release: 1900 };
+/**
+ * Phase lengths (ms at speed 1): brain, sparks start converging, the bulb forms progressively,
+ * the finished bulb sparkles, then it dissolves back into the brain.
+ */
+const PHASES = { brain: 2000, converge: 1800, form: 5000, lit: 2600, dissolve: 2800 };
+/** Flight of one neuron: brain → through the centre → its place in the bulb, and back (ms at speed 1). */
+const FLIGHT = 1500;
+const FLIGHT_BACK = 1400;
 
 /** Bulb parts: 0 glass and neck, 1 screw base, 2 filament. */
 type Part = 0 | 1 | 2;
@@ -101,6 +108,14 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
     let bulb: { x: number; y: number; part: Part }[] = [];
     let owner: number[] = []; // bulb point -> neuron
     let role: Int32Array = new Int32Array(0); // neuron -> bulb point, or -1
+    // Per bulb point: when its neuron leaves (forming, dissolving) and a small detour near the centre.
+    let leaveAt = new Float32Array(0);
+    let returnAt = new Float32Array(0);
+    let detourX = new Float32Array(0);
+    let detourY = new Float32Array(0);
+    let mOf = new Float32Array(0); // per neuron, this frame: 0 in the brain .. 1 in the bulb
+    let coreX = 0;
+    let coreY = 0;
     let frame = 0;
     let visible = true;
     let last = 0;
@@ -122,7 +137,9 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
     let size = 0;
 
     const dur = (k: keyof typeof PHASES) => PHASES[k] / speed;
-    const cycleMs = () => dur("brain") + dur("converge") + dur("morph") + dur("lit") + dur("release");
+    const cycleMs = () => dur("brain") + dur("converge") + dur("form") + dur("lit") + dur("dissolve");
+    /** Time in the cycle when the bulb is complete (also the still frame). */
+    const formedAt = () => dur("brain") + dur("converge") + dur("form");
 
     function build() {
       const dpr = Math.min(window.devicePixelRatio || 1, mobile ? 1 : 1.5);
@@ -175,6 +192,14 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
       owner = bulb.map((_, k) => picked[k]);
       role = new Int32Array(nodes.length).fill(-1);
       owner.forEach((n, k) => (role[n] = k));
+      // Departures follow the outline (glass, then base, then filament), so the shape is traced
+      // progressively, with a little jitter so it feels like a swarm rather than a pen.
+      const nb = bulb.length;
+      leaveAt = Float32Array.from(bulb, (_, k) => clamp01(k / Math.max(1, nb - 1) + (Math.random() - 0.5) * 0.06));
+      returnAt = Float32Array.from(bulb, () => Math.random());
+      detourX = Float32Array.from(bulb, () => (Math.random() - 0.5) * 0.36);
+      detourY = Float32Array.from(bulb, () => (Math.random() - 0.5) * 0.36);
+      mOf = new Float32Array(nodes.length);
       px = new Float32Array(nodes.length);
       py = new Float32Array(nodes.length);
       pd = new Float32Array(nodes.length);
@@ -203,23 +228,35 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
       return p;
     }
 
-    /** Phase factors at time t of the cycle: m = brain (0) → bulb (1), lit = bulb light 0..1. */
+    /**
+     * Phase factors at time t of the cycle: m = how much of the bulb exists (0 .. 1, dims the brain),
+     * lit = the finished bulb's sparkle 0..1, converging = sparks run to the centre.
+     */
     function phase(t: number) {
       const b = dur("brain");
       const c = b + dur("converge");
-      const mo = c + dur("morph");
-      const l = mo + dur("lit");
-      const m = t < c ? 0 : t < mo ? ease((t - c) / dur("morph")) : t < l ? 1 : 1 - ease((t - l) / dur("release"));
+      const f = c + dur("form");
+      const l = f + dur("lit");
+      const m = t < c ? 0 : t < f ? clamp01((t - c) / dur("form")) : t < l ? 1 : 1 - clamp01((t - l) / dur("dissolve"));
       const lit =
-        t < c + dur("morph") * 0.5
+        t < f - dur("form") * 0.15
           ? 0
-          : t < mo
-            ? clamp01((t - c - dur("morph") * 0.5) / (dur("morph") * 0.5))
+          : t < f
+            ? clamp01((t - f + dur("form") * 0.15) / (dur("form") * 0.15))
             : t < l
               ? 1
-              : clamp01(1 - (t - l) / (dur("release") * 0.5));
-      const converging = t >= b && t < b + dur("converge") * 0.8;
+              : clamp01(1 - (t - l) / (dur("dissolve") * 0.4));
+      const converging = t >= b && t < c + dur("form") * 0.5;
       return { m, lit, converging };
+    }
+
+    /** Where bulb point k's neuron is at time t: 0 in the brain .. 1 in its place in the bulb. */
+    function flight(k: number, t: number) {
+      const c = dur("brain") + dur("converge");
+      const l = formedAt() + dur("lit");
+      if (t < c) return 0;
+      if (t < l) return ease((t - c - leaveAt[k] * (dur("form") - FLIGHT / speed)) / (FLIGHT / speed));
+      return 1 - ease((t - l - returnAt[k] * (dur("dissolve") - FLIGHT_BACK / speed)) / (FLIGHT_BACK / speed));
     }
 
     function layout() {
@@ -234,8 +271,11 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
     const bulbYAt = (y: number) => cy + (y + 0.1) * size * BULB_SCALE;
     const bulbY = (k: number) => bulbYAt(bulb[k].y);
 
-    function project(m: number) {
+    function project(t: number) {
       layout();
+      coreX = cx;
+      coreY = bulbYAt(-0.3); // centre of the bulb glass: where the sparks and neurons meet
+      const bs = size * BULB_SCALE;
       const cos = Math.cos(angle);
       const sin = Math.sin(angle);
       const tilt = 0.18;
@@ -252,9 +292,15 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
         py[i] = cy - y * size * persp;
         pd[i] = Math.max(0, Math.min(1, (1 - z) / 2));
         const k = role[i];
-        if (k >= 0 && m > 0) {
-          qx[i] = px[i] + (bulbX(k) - px[i]) * m;
-          qy[i] = py[i] + (bulbY(k) - py[i]) * m;
+        const s = k >= 0 ? flight(k, t) : 0;
+        mOf[i] = s;
+        if (s > 0) {
+          // A curve from the neuron's place in the brain, through (near) the centre, to the bulb.
+          const ox = coreX + detourX[k] * bs;
+          const oy = coreY + detourY[k] * bs;
+          const u = 1 - s;
+          qx[i] = u * u * px[i] + 2 * u * s * ox + s * s * bulbX(k);
+          qy[i] = u * u * py[i] + 2 * u * s * oy + s * s * bulbY(k);
         } else {
           qx[i] = px[i];
           qy[i] = py[i];
@@ -278,12 +324,10 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
       const dt = last ? Math.min(64, now - last) : 16;
       last = now;
       if (!still) angle += ((Math.PI * 2) / 26000) * speed * dt;
-      const t = still ? dur("brain") + dur("converge") + dur("morph") : now - cycleStart;
+      const t = still ? formedAt() + 1 : now - cycleStart;
       const { m, lit: lit0, converging } = phase(t);
       const lit = lit0 * (still ? 1 : 0.88 + 0.12 * Math.sin(now / 420));
-      project(m);
-      const coreX = cx;
-      const coreY = bulbYAt(-0.3); // centre of the bulb glass: where the sparks meet
+      project(t);
       ctx!.clearRect(0, 0, w, h);
       ctx!.globalCompositeOperation = "lighter";
       const bs = size * BULB_SCALE;
@@ -298,7 +342,7 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
       ctx!.lineWidth = 0.7;
       for (const [a, b] of edges) {
         const d = (pd[a] + pd[b]) / 2;
-        const fade = role[a] >= 0 || role[b] >= 0 ? Math.max(0, 1 - 2 * m) : 1 - 0.5 * m;
+        const fade = role[a] >= 0 || role[b] >= 0 ? Math.max(0, 1 - 4 * Math.max(mOf[a], mOf[b])) : 1 - 0.5 * m;
         if (fade <= 0.01) continue;
         ctx!.strokeStyle = `rgba(${BASE}, ${(0.08 + 0.34 * d) * fade})`;
         ctx!.beginPath();
@@ -311,10 +355,19 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
       for (let i = 0; i < nodes.length; i++) {
         const k = role[i];
         const onBulb = k >= 0;
-        const d = onBulb ? pd[i] + (1 - pd[i]) * m : pd[i];
+        const s = mOf[i];
+        const d = onBulb ? pd[i] + (1 - pd[i]) * s : pd[i];
         const a = onBulb ? 1 : 1 - 0.5 * m;
         const r = (mobile ? 1.3 : 1.7) * (0.6 + 0.7 * d);
-        const boost = onBulb ? m * (0.35 + 0.65 * lit) : 0; // 0 .. 1: how much brighter than the brain
+        const moving = Math.sin(Math.PI * s); // 0 at rest, 1 mid-flight
+        const boost = onBulb ? Math.max(s * (0.35 + 0.65 * lit), moving) : 0; // 0 .. 1: brighter than the brain
+        // In flight, the neuron sparkles: a small spark halo around it, as it travels.
+        if (moving > 0.05) {
+          ctx!.fillStyle = `rgba(${PULSE}, ${0.28 * glow * moving})`;
+          ctx!.beginPath();
+          ctx!.arc(qx[i], qy[i], 3 + 6 * glow * moving, 0, Math.PI * 2);
+          ctx!.fill();
+        }
         const warm = onBulb && bulb[k].part === 2 && lit > 0.05;
         ctx!.fillStyle = `rgba(${warm ? WARM : BASE}, ${(0.14 + 0.2 * d + 0.3 * boost) * a})`;
         ctx!.beginPath();
@@ -341,11 +394,12 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
         // …and, once the bulb has formed, its own neurons sparkle far more: that is its light.
         // Filament neurons sparkle warm yellow; the glass and base white, cyan and yellow.
         if (owner.length) {
-          const bulbRate = (mobile ? 30 : 55) * m * (0.25 + 0.75 * lit);
+          const bulbRate = (mobile ? 30 : 55) * m * (0.4 + 0.6 * lit);
           spawnBulb += (bulbRate * dt) / 1000;
           while (spawnBulb >= 1) {
             spawnBulb -= 1;
             const k = Math.floor(Math.random() * owner.length);
+            if (mOf[owner[k]] < 0.95) continue; // only neurons already in place: the bulb lights up as it forms
             sparks.push({
               n: owner[k],
               born: now,
@@ -357,7 +411,7 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
         sparks = sparks.filter((s) => {
           const a = (now - s.born) / s.life;
           if (a >= 1) return false;
-          const k = Math.sin(Math.PI * a) * (0.4 + 0.6 * (role[s.n] >= 0 ? Math.max(pd[s.n], m) : pd[s.n] * (1 - 0.8 * m)));
+          const k = Math.sin(Math.PI * a) * (0.4 + 0.6 * (role[s.n] >= 0 ? Math.max(pd[s.n], mOf[s.n]) : pd[s.n] * (1 - 0.5 * m)));
           ctx!.fillStyle = `rgba(${s.color}, ${0.35 * glow * k})`;
           ctx!.beginPath();
           ctx!.arc(qx[s.n], qy[s.n], 4 + 9 * glow * k, 0, Math.PI * 2);
@@ -440,7 +494,7 @@ export default function BulbBrain({ settings, running, onFail }: { settings: Dyn
         if (!frame) {
           last = 0;
           // Resume from the lit bulb (what the still frame shows), then back to the brain.
-          cycleStart = performance.now() - (dur("brain") + dur("converge") + dur("morph"));
+          cycleStart = performance.now() - formedAt();
           frame = requestAnimationFrame(tick);
         }
       } else {
